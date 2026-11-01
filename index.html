@@ -84,7 +84,7 @@ footer{margin-top:40px;text-align:center;font-size:10px;letter-spacing:.35em;col
 </div>
 <div class="modal" id="modal"><div class="panel" id="panel"></div></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
 <script src="config.js"></script>
 <script>
 const REG={NA:"North America",EU:"Europe",AS:"Asia"};
@@ -182,7 +182,8 @@ document.addEventListener("click",async e=>{
 $("#q").addEventListener("input",render);
 document.addEventListener("keydown",e=>e.key==="Escape"&&closeModal());
 (async()=>{
-  if(!window.supabase||!CFG.url||CFG.url.includes("YOUR-")){reason="Cloud not set up yet. Add your Supabase URL and key to config.js (see README).";render();return}
+  if(!window.supabase){reason="Couldn’t load the Supabase library. Check your connection or turn off ad blockers, then reload.";render();return}
+  if(!CFG.url||CFG.url.includes("YOUR-")){reason="Cloud not set up yet. Add your Supabase URL and key to config.js (see README).";render();return}
   sb=supabase.createClient(CFG.url,CFG.key);
   sb.auth.onAuthStateChange(()=>refreshAuth());
   await refreshAuth();await loadProfiles();
