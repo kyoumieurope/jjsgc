@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JJSGC · Rankings</title>
+<link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07070a;--panel:#0e0e12;--row:#121217;--fg:#f2f2f2;--dim:#80808c;--line:#23232b;--glow:0 0 14px rgba(255,255,255,.45);
+--serif:'Pirata One',Georgia,serif;--sans:'Archivo',system-ui,-apple-system,Segoe UI,sans-serif;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);overflow-x:hidden}
+.wrap{max-width:900px;margin:0 auto;padding:0 18px 60px}
+header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:22px 0;padding:14px 20px;background:var(--panel);border:1px solid var(--line);border-radius:14px}
+.logo{font:400 30px var(--serif);text-shadow:var(--glow);letter-spacing:.04em}
+.logo small{font:600 10px var(--sans);letter-spacing:.35em;color:var(--dim);margin-left:12px;text-shadow:none}
+input,select{background:#000;border:1px solid var(--line);color:var(--fg);padding:11px 14px;font:400 14px var(--sans);outline:none;border-radius:8px;width:100%}
+input:focus,select:focus{border-color:#888}
+#q{max-width:240px}
+button{font:600 12px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--fg);background:transparent;border:1px solid #555;padding:11px 18px;cursor:pointer;border-radius:8px;transition:.15s}
+button:hover{background:var(--fg);color:#000}
+button.solid{background:var(--fg);color:#000}button.solid:hover{background:#000;color:var(--fg)}
+button.ghost{border-color:var(--line);color:var(--dim)}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{margin:0;font-size:24px;font-weight:800}
+.sub{color:var(--dim);font-size:13px;margin-top:4px}.sub b{color:var(--fg);font-weight:600}
+.tabs{display:flex;gap:6px;margin-bottom:14px;border-bottom:1px solid var(--line)}
+.tab{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;color:var(--dim);padding:12px 18px;letter-spacing:.1em}
+.tab:hover{background:none;color:var(--fg)}
+.tab.on{color:var(--fg);border-color:var(--fg)}
+.tab small{margin-left:6px;opacity:.6}
+.cols{display:grid;grid-template-columns:1fr 70px;padding:0 20px 8px;font-size:10px;letter-spacing:.3em;color:#4a4a55}
+.cols span:last-child{text-align:center}
+.list{display:flex;flex-direction:column;gap:8px}
+.card{display:grid;grid-template-columns:1fr 70px;align-items:center;gap:10px;background:var(--row);border:1px solid var(--line);border-radius:10px;overflow:hidden;cursor:pointer;transition:.15s;padding-right:14px}
+.card:hover{border-color:#777;transform:translateX(3px)}
+.l{display:flex;align-items:center;gap:14px;min-width:0}
+.rk{width:84px;height:56px;flex:none;display:grid;place-items:center;font:italic 800 26px var(--sans);background:#1a1a20;clip-path:polygon(0 0,100% 0,82% 100%,0 100%);padding-right:10px;color:#cfcfd6}
+.rk.r1{background:linear-gradient(120deg,#f6c445,#c88a12);color:#fff}
+.rk.r2{background:linear-gradient(120deg,#c3c8d0,#7d8592);color:#fff}
+.rk.r3{background:linear-gradient(120deg,#d98a4a,#9a5424);color:#fff}
+.av{width:38px;height:38px;border-radius:8px;border:1px solid #444;display:grid;place-items:center;font:22px var(--serif);flex:none;background:#000}
+.nm{font-weight:800;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pt{color:var(--dim);font-size:13px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rg{justify-self:center;width:52px;text-align:center;padding:10px 0;border-radius:8px;font-weight:800;font-size:15px}
+.NA{background:#3a1717;color:#ff6b6b}.EU{background:#13301c;color:#5ee07e}.AS{background:#15263f;color:#6db4ff}
+button:disabled{opacity:.35;cursor:not-allowed;pointer-events:none}
+.cloud{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--dim)}
+.cloud i{width:7px;height:7px;border-radius:50%;background:#555}.cloud.ok i{background:#5ee07e;box-shadow:0 0 8px #5ee07e}.cloud.bad i{background:#ff6b6b}
+.empty{border:1px dashed var(--line);border-radius:10px;padding:46px 20px;text-align:center;color:var(--dim)}
+.note{font-size:12px;color:var(--dim);margin:0 0 12px;border-left:2px solid #555;padding:6px 12px}
+.modal{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;padding:20px}
+.modal.open{display:flex}
+.panel{width:100%;max-width:400px;background:var(--panel);border:1px solid #444;border-radius:14px;padding:26px}
+.panel h3{margin:0;font-size:22px;font-weight:800}
+label{display:block;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--dim);margin:16px 0 6px}
+.acts{display:flex;gap:8px;margin-top:22px;flex-wrap:wrap}
+.kv{display:grid;grid-template-columns:90px 1fr;gap:10px;font-size:14px;margin-top:16px}.kv span:nth-child(odd){color:var(--dim);font-size:10px;letter-spacing:.25em;text-transform:uppercase;padding-top:3px}
+.badge{display:inline-block;border:1px solid #666;border-radius:20px;padding:4px 10px;font-size:10px;letter-spacing:.15em;margin-top:10px;color:var(--dim)}
+.err{color:#ff8a8a;font-size:12px;margin-top:10px}
+footer{margin-top:40px;text-align:center;font-size:10px;letter-spacing:.35em;color:#4a4a55}
+@media(max-width:560px){.rk{width:64px;font-size:20px}.nm{font-size:15px}#q{max-width:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="logo">✦ JJSGC<small>RANKINGS</small></div>
+  <input id="q" placeholder="Search player…" autocomplete="off">
+</header>
+
+<div class="top">
+  <div><h1>Jujutsu Shenanigans Rankings</h1><div class="sub"><b id="cnt">0</b> players ranked by grade · Hosted by Kyoumiv &amp; Tooj</div><div class="cloud" id="cloud" style="margin-top:8px"><i></i><span>Connecting…</span></div></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><button id="auth">Sign in with Discord</button><button class="solid" id="mine">Create profile</button></div>
+</div>
+
+<div class="tabs" id="tabs"></div>
+<div class="note" id="note" hidden></div>
+<div class="cols"><span>PLAYER</span><span>REGION</span></div>
+<div class="list" id="list"></div>
+<footer>JJSGC</footer>
+</div>
+<div class="modal" id="modal"><div class="panel" id="panel"></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script>
+const REG={NA:"North America",EU:"Europe",AS:"Asia"};
+const GRADES={G1:"Grade 1",SG1:"Special Grade 1",SG:"Special Grade"},GKEYS=["G1","SG1","SG"];
+const SUBS=["Weak","Low","Stable","Mid","Strong","High"];
+const score=p=>Math.max(0,GKEYS.indexOf(p.grade))*6+Math.max(0,SUBS.indexOf(p.sub));
+const gl=p=>(GRADES[p.grade]||GRADES.G1)+" · "+(p.sub||"Weak");
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let sb=null,uid=null,isOwner=false,profiles=[],filter="ALL",demo=true,reason="Connecting…",editId=null;
+
+function ranked(){
+  const s=[...profiles].sort((a,b)=>score(b)-score(a)||(a.created||0)-(b.created||0));
+  let last=null,rank=0;
+  s.forEach((p,i)=>{if(score(p)!==last){rank=i+1;last=score(p)}p.rank=rank});
+  return s;
+}
+function setCloud(){
+  const ok=!demo;
+  $("#cloud").className="cloud "+(ok?"ok":"bad");
+  $("#cloud").lastChild.textContent=ok?"Cloud synced":"Cloud offline";
+  $("#note").hidden=ok;$("#note").textContent=reason;
+  $("#mine").disabled=!ok||!uid;
+}
+function render(){
+  const all=ranked(),t=$("#q").value.trim().toLowerCase();
+  const n=r=>r==="ALL"?all.length:all.filter(p=>p.region===r).length;
+  $("#cnt").textContent=all.length;
+  $("#tabs").innerHTML=["ALL","NA","EU","AS"].map(r=>`<button class="tab ${r===filter?"on":""}" data-r="${r}">${r==="ALL"?"Overall":r}<small>${n(r)}</small></button>`).join("");
+  const list=all.filter(p=>(filter==="ALL"||p.region===filter)&&(!t||(p.name+" "+p.roblox).toLowerCase().includes(t)));
+  $("#list").innerHTML=list.length?list.map(p=>`<div class="card" data-id="${esc(p.id)}">
+    <div class="l"><div class="rk ${p.rank<=3?"r"+p.rank:""}">${p.rank}.</div><div class="av">${esc((p.name||"?")[0].toUpperCase())}</div>
+    <div style="min-width:0"><div class="nm">${esc(p.name)}</div><div class="pt">${esc(gl(p))} · @${esc(p.roblox)}</div></div></div>
+    <div class="rg ${p.region}">${p.region}</div></div>`).join("")
+    :`<div class="empty">No players yet. Create the first profile.</div>`;
+  setCloud();
+}
+function openModal(h){$("#panel").innerHTML=h;$("#modal").classList.add("open")}
+function closeModal(){$("#modal").classList.remove("open")}
+function view(p){
+  const mine=p.id===uid;
+  openModal(`<h3>${esc(p.name)}</h3><div class="sub">@${esc(p.roblox)}</div><span class="badge">◈ Roblox linked · self-reported</span>
+  <div class="kv"><span>Rank</span><span>#${p.rank}</span><span>Grade</span><span>${esc(GRADES[p.grade]||GRADES.G1)}</span><span>Sub-grade</span><span>${esc(p.sub||"Weak")}</span><span>Region</span><span>${REG[p.region]}</span></div>
+  <div class="acts">${mine||isOwner?`<button class="solid" id="edit" data-id="${esc(p.id)}">Edit</button>`:""}${(mine||isOwner)&&!demo?`<button class="ghost" id="del" data-id="${esc(p.id)}">Remove</button>`:""}<button class="ghost" id="x">Close</button></div>`);
+}
+function form(p){
+  p=p||{};editId=p.id||uid;
+  openModal(`<h3>${p.name?"Edit profile":"Create profile"}</h3>
+  <label>Display name</label><input id="f_name" maxlength="24" value="${esc(p.name)}">
+  <label>Roblox username</label><input id="f_rb" maxlength="20" value="${esc(p.roblox)}" placeholder="e.g. Builderman">
+  <label>Region</label><select id="f_r">${Object.entries(REG).map(([k,v])=>`<option value="${k}" ${k===p.region?"selected":""}>${k} · ${v}</option>`).join("")}</select>
+  ${isOwner?`<label>Grade (host only)</label><select id="f_g">${Object.entries(GRADES).map(([k,v])=>`<option value="${k}" ${k===(p.grade||"G1")?"selected":""}>${v}</option>`).join("")}</select><label>Sub-grade (host only)</label><select id="f_s">${SUBS.slice().reverse().map(s=>`<option ${s===(p.sub||"Weak")?"selected":""}>${s}</option>`).join("")}</select>`:""}
+  <div class="err" id="err"></div>
+  <div class="acts"><button class="solid" id="save">Save</button><button class="ghost" id="x">Cancel</button></div>`);
+}
+const CFG=window.JJSGC_CONFIG||{};
+async function save(){
+  const v=id=>$("#"+id).value.trim(),old=profiles.find(p=>p.id===editId)||{};
+  const d={name:v("f_name"),roblox:v("f_rb").replace(/^@/,""),region:$("#f_r").value};
+  if(!d.name)return $("#err").textContent="Add a display name.";
+  if(!/^[A-Za-z0-9_]{3,20}$/.test(d.roblox))return $("#err").textContent="Roblox usernames are 3–20 letters, numbers or underscores.";
+  if(!sb||!uid)return $("#err").textContent="Sign in to save.";
+  try{
+    let r=old.id?await sb.from("profiles").update(d).eq("user_id",editId):await sb.from("profiles").insert({user_id:uid,...d});
+    if(r.error)throw r.error;
+    if(isOwner&&$("#f_g")){r=await sb.rpc("set_grade",{target:editId||uid,g:$("#f_g").value,s:$("#f_s").value});if(r.error)throw r.error}
+    closeModal();await loadProfiles();
+  }catch(e){$("#err").textContent=e.code==="23505"?"That Roblox username is already taken.":"Couldn’t save: "+(e.message||"permission denied")}
+}
+async function loadProfiles(){
+  const {data,error}=await sb.from("profiles").select("*");
+  if(error){demo=true;reason="Couldn’t load profiles: "+error.message;render();return}
+  demo=false;reason="";
+  profiles=data.filter(p=>REG[p.region]).map(p=>({id:p.user_id,name:p.name,roblox:p.roblox,region:p.region,grade:p.grade,sub:p.sub,created:Date.parse(p.created_at)||0}));
+  render();
+}
+async function refreshAuth(){
+  const {data:{session}}=await sb.auth.getSession();
+  uid=session?session.user.id:null;isOwner=false;
+  if(uid){const r=await sb.rpc("is_admin");isOwner=r.data===true}
+  $("#auth").textContent=uid?"Sign out":"Sign in with Discord";
+  render();
+}
+document.addEventListener("click",async e=>{
+  const t=e.target;
+  if(t.id==="modal"||t.id==="x")return closeModal();
+  if(t.id==="auth"){if(!sb)return;return uid?(await sb.auth.signOut()):sb.auth.signInWithOAuth({provider:"discord",options:{redirectTo:location.origin+location.pathname}})}
+  if(t.id==="mine")return form(profiles.find(p=>p.id===uid));
+  if(t.id==="save")return save();
+  if(t.id==="edit")return form(profiles.find(p=>p.id===t.dataset.id));
+  if(t.id==="del"){await sb.from("profiles").delete().eq("user_id",t.dataset.id);closeModal();return loadProfiles()}
+  const tab=t.closest(".tab");if(tab){filter=tab.dataset.r;return render()}
+  const c=t.closest(".card");if(c){ranked();const p=profiles.find(p=>p.id===c.dataset.id);if(p)view(p)}
+});
+$("#q").addEventListener("input",render);
+document.addEventListener("keydown",e=>e.key==="Escape"&&closeModal());
+(async()=>{
+  if(!window.supabase||!CFG.url||CFG.url.includes("YOUR-")){reason="Cloud not set up yet. Add your Supabase URL and key to config.js (see README).";render();return}
+  sb=supabase.createClient(CFG.url,CFG.key);
+  sb.auth.onAuthStateChange(()=>refreshAuth());
+  await refreshAuth();await loadProfiles();
+  sb.channel("profiles").on("postgres_changes",{event:"*",schema:"public",table:"profiles"},loadProfiles).subscribe();
+})();
+render();
+</script>
+</body>
+</html>
