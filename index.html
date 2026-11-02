@@ -155,7 +155,7 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 
 /* ---- players page ---- */
 .atlas{margin-top:16px;padding:10px 14px 6px;background:radial-gradient(60% 80% at 50% 40%,rgba(120,90,200,.1),transparent),var(--panel);border:1px solid var(--line);border-radius:14px}
-.atlas svg{display:block;width:100%;height:auto;max-height:300px}
+.atlas svg{display:block;width:100%;height:auto;max-height:380px}
 .atlas .grat{stroke:#1b1b24;stroke-width:1;fill:none}
 .cont{cursor:pointer;outline:none;transition:opacity .25s}
 .cont path{fill:rgba(255,255,255,.035);stroke:#5a5a66;stroke-width:1.4;stroke-dasharray:4 4;stroke-linejoin:round;transition:.25s}
@@ -174,11 +174,11 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 .reg .rc{font:800 18px var(--sans);color:var(--rc)}
 .reg .rn{font-size:12px;color:var(--dim)}
 .reg .rm{font-size:11px;color:var(--dim);margin-top:4px}.reg .rm b{color:var(--fg)}
-[data-c=NA]{--rc:#ff6b6b;--rf:rgba(255,107,107,.16)}[data-c=EU]{--rc:#5ee07e;--rf:rgba(94,224,126,.15)}[data-c=AS]{--rc:#6db4ff;--rf:rgba(109,180,255,.16)}
+[data-c]{--rc:#f2f2f2;--rf:rgba(255,255,255,.13)}
 .rstats{margin-top:16px;padding:18px 20px;background:var(--panel);border:1px solid var(--line);border-radius:14px;animation:rise .4s both}
 .rs-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}.rs-head h3{margin:0;font-size:18px;font-weight:800}
 .rs-head .rc{font:800 12px var(--sans);letter-spacing:.1em;padding:5px 10px;border-radius:8px;color:var(--rc,#cfcfd6);border:1px solid var(--rc,#555)}
-.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .tile{background:var(--row);border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0}
 .tile span{display:block;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--dim)}
 .tile b{display:block;margin-top:6px;font:800 28px var(--sans)}.tile b.sm{font-size:15px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -193,9 +193,9 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 .pc-top>div:nth-child(2){min-width:0;flex:1}
 .pc-grade{margin:14px 0 8px;font:400 24px var(--serif);text-shadow:var(--glow);letter-spacing:.03em}
 .pc-bar{height:5px;border-radius:5px;background:#1a1a20;overflow:hidden}.pc-bar i{display:block;height:100%;background:linear-gradient(90deg,#666,var(--rc,#fff));border-radius:5px}
-.pc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+.pc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}
 .pc-stats span{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}.pc-stats b{display:block;margin-top:3px;font-size:13px;font-weight:700}
-@media(max-width:700px){.regs{grid-template-columns:1fr 1fr}.tiles{grid-template-columns:1fr 1fr}.dr{grid-template-columns:100px 1fr 24px}}
+@media(max-width:700px){.regs{grid-template-columns:1fr 1fr}.tiles{grid-template-columns:1fr 1fr 1fr}.dr{grid-template-columns:100px 1fr 24px}}
 
 /* ---- roles & permissions ---- */
 .rbox{margin:0 0 18px;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 20px}
@@ -211,6 +211,35 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 .rchip.on{background:var(--fg);color:#000;border-color:var(--fg)}
 .rchip.on:hover{background:#ddd;color:#000}
 .rrow .host{font-size:10px;padding:4px 10px}
+
+/* ---- flashing host names ---- */
+.flash{background:linear-gradient(90deg,#fff 0%,#a99bff 25%,#fff 50%,#ffd86b 75%,#fff 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:flashtxt 2.4s linear infinite,flashglow 1.1s ease-in-out infinite alternate}
+@keyframes flashtxt{to{background-position:-250% 0}}
+@keyframes flashglow{from{filter:drop-shadow(0 0 2px rgba(255,255,255,.35))}to{filter:drop-shadow(0 0 9px rgba(190,170,255,.95))}}
+.host.hostflash{border-color:#fff;color:#fff;animation:flashglow 1.1s ease-in-out infinite alternate}
+.chip:hover{background:var(--row);color:var(--fg);border-color:#999}
+
+/* ---- staff section on Players ---- */
+.staffsec{margin-top:16px}
+.staffsec .sl{margin-bottom:10px;color:#cfcfd6;text-shadow:var(--glow)}
+.staffgrid{margin-top:0}
+.staffgrid .pc{border-top-color:#fff;background:linear-gradient(160deg,rgba(255,255,255,.06),transparent 65%),var(--row);box-shadow:0 0 22px rgba(160,140,255,.12)}
+
+/* ---- host panel: overview ---- */
+.ovg{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;align-items:start}
+.ovg .rbox{margin:0}
+.spark{display:flex;align-items:flex-end;gap:4px;height:70px;margin:10px 0 14px}
+.sp{flex:1;height:100%;display:flex;align-items:flex-end;background:#16161c;border-radius:4px}
+.sp i{display:block;width:100%;background:linear-gradient(#fff,#777);border-radius:4px}
+.mini{font-size:13px;padding:9px 0;border-top:1px solid var(--line);color:#cfcfd6;line-height:1.45}
+.mini b{color:#fff}.mini span{display:block;color:var(--dim);font-size:11px;margin-top:2px}
+.mini.click{cursor:pointer}.mini.click:hover{color:#fff}
+@media(max-width:760px){.ovg{grid-template-columns:1fr}}
+/* ---- host panel: activity log ---- */
+.lg{display:grid;grid-template-columns:150px 1fr;gap:14px;padding:12px 16px;background:var(--row);border:1px solid var(--line);border-left:2px solid #444;border-radius:10px;font-size:14px;animation:rise .4s both}
+.lg.pl{border-left-color:#fff}
+.lg-t{font-size:12px;color:var(--dim)}
+@media(max-width:620px){.lg{grid-template-columns:1fr;gap:4px}}
 </style>
 </head>
 <body>
@@ -240,9 +269,6 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
       <div class="step" style="--i:2"><div class="n">III</div><div><h4>Prove it again</h4><p>You must be <b>evaluated every grade reset</b> to stay on the leaderboard.</p></div></div>
       <div class="step" style="--i:3"><div class="n">IV</div><div><h4>Something off?</h4><p>If anything is wrong (grade, name, region), <b>message the hosts</b> on Discord.</p></div></div>
     </div></div>
-
-  <div class="sl" style="margin:38px 0 14px">Everyone registered</div>
-  <div class="strip" id="strip"></div>
 
   <div class="log" id="logbox">
     <div class="logh"><div class="sl">Change log</div><button class="ghost" id="logEdit" hidden>Edit</button></div>
@@ -274,12 +300,13 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 
 <section class="view" id="v_players" hidden style="margin-top:26px">
   <div><h2>Players</h2><div class="sub">Pick a continent to check its stats.</div></div>
+  <div class="staffsec" id="staffsec" hidden><div class="sl">Hosts &amp; Staff</div><div class="pgrid staffgrid" id="staffgrid"></div></div>
   <div class="atlas" id="atlas">
-    <svg viewBox="0 0 600 240" role="img" aria-label="Region map: North America, Europe, Asia">
-      <g class="grat"><path d="M0 60H600M0 120H600M0 180H600M100 0V240M200 0V240M300 0V240M400 0V240M500 0V240"/></g>
-      <g class="cont" data-pr="NA" data-c="NA" tabindex="0" role="button" aria-label="North America"><path d="M20,40 L40,30 L62,34 L72,24 L108,26 L128,20 L160,22 L178,30 L200,28 L214,44 L206,56 L196,56 L184,52 L176,64 L184,76 L190,84 L178,92 L180,106 L166,116 L158,132 L164,148 L158,152 L148,138 L142,146 L148,162 L156,176 L146,184 L132,176 L120,160 L108,146 L92,128 L80,108 L64,92 L50,78 L40,64 L30,56 Z"/><path d="M232,14 L258,12 L262,32 L248,46 L236,34 Z"/><text x="120" y="222">NORTH AMERICA</text></g>
-      <g class="cont" data-pr="EU" data-c="EU" tabindex="0" role="button" aria-label="Europe"><path d="M276,112 L280,100 L274,90 L286,82 L292,70 L304,66 L300,52 L310,36 L322,28 L330,40 L324,52 L334,60 L346,54 L352,70 L342,78 L350,92 L344,106 L332,112 L336,124 L326,128 L318,116 L312,130 L304,118 L296,122 L292,134 L278,130 Z"/><path d="M266,64 L276,60 L278,74 L270,78 Z"/><text x="312" y="156">EUROPE</text></g>
-      <g class="cont" data-pr="AS" data-c="AS" tabindex="0" role="button" aria-label="Asia"><path d="M358,64 L374,46 L404,36 L444,30 L486,32 L526,38 L552,50 L570,64 L560,78 L548,84 L552,96 L540,104 L528,108 L516,124 L508,138 L500,150 L494,168 L486,182 L478,168 L470,148 L458,134 L448,146 L440,164 L432,176 L424,160 L414,140 L402,128 L394,132 L398,146 L386,156 L376,142 L368,122 L358,108 L364,92 L356,78 Z"/><path d="M566,86 L576,80 L574,106 L564,110 Z"/><text x="450" y="206">ASIA</text></g>
+    <svg viewBox="0 0 556 300" role="img" aria-label="Region map: North America, Europe, Asia">
+      <g class="grat"><path d="M0 50H556M0 100H556M0 150H556M0 200H556M0 250H556M100 0V300M200 0V300M300 0V300M400 0V300M500 0V300"/></g>
+      <g class="cont" data-pr="NA" data-c="NA" tabindex="0" role="button" aria-label="North America"><path fill-rule="evenodd" d="M16,114 L10,121 L10,124 L13,126 L15,129 L13,131 L8,132 L7,134 L10,136 L14,136 L16,138 L10,145 L8,149 L17,157 L17,159 L9,166 L6,167 L6,168 L9,169 L19,163 L25,156 L26,153 L31,149 L41,150 L54,155 L56,157 L57,161 L62,170 L67,177 L71,180 L68,184 L68,199 L74,210 L79,215 L84,227 L86,229 L88,229 L88,225 L90,224 L96,231 L96,234 L100,239 L106,241 L111,241 L123,249 L129,248 L131,246 L130,244 L124,239 L123,233 L120,232 L115,236 L113,236 L110,232 L110,224 L111,222 L115,219 L125,218 L129,221 L131,227 L134,226 L134,216 L136,212 L149,198 L154,194 L159,186 L159,182 L162,179 L171,175 L172,173 L171,170 L170,170 L165,164 L162,155 L161,154 L157,154 L155,156 L153,156 L147,148 L145,147 L142,148 L139,154 L138,169 L137,172 L134,173 L128,165 L116,160 L114,157 L114,151 L125,135 L132,128 L132,125 L130,123 L123,121 L119,121 L114,123 L111,126 L109,125 L92,125 L72,115 L67,115 L61,118 L54,119 L44,114 L37,114 L34,112 L31,112 L26,110 L19,112 Z"/><text x="89" y="272">NORTH AMERICA</text></g>
+      <g class="cont" data-pr="EU" data-c="EU" tabindex="0" role="button" aria-label="Europe"><path fill-rule="evenodd" d="M346,125 L345,124 L336,131 L333,131 L332,132 L326,130 L322,131 L319,135 L310,142 L308,140 L306,135 L308,133 L313,133 L315,132 L316,129 L309,121 L301,117 L296,117 L295,116 L286,119 L280,126 L279,130 L277,132 L277,134 L265,146 L263,152 L263,159 L264,160 L268,160 L270,158 L272,158 L273,159 L273,166 L276,167 L281,161 L283,148 L285,145 L285,143 L288,140 L290,141 L290,145 L288,152 L290,154 L294,155 L296,158 L282,170 L273,170 L271,168 L271,166 L268,165 L268,168 L265,172 L248,184 L252,189 L251,193 L249,195 L247,194 L243,194 L242,195 L240,206 L241,207 L249,207 L252,206 L257,199 L259,199 L261,195 L268,194 L270,197 L276,202 L276,207 L278,208 L281,203 L279,199 L275,195 L276,193 L283,199 L285,205 L288,206 L292,201 L297,198 L299,192 L316,187 L337,176 L339,172 L339,168 L340,167 L340,163 L341,162 L341,158 L343,152 Z"/><text x="262" y="232">EUROPE</text></g>
+      <g class="cont" data-pr="AS" data-c="AS" tabindex="0" role="button" aria-label="Asia"><path fill-rule="evenodd" d="M536,143 L534,140 L528,138 L525,134 L517,128 L514,128 L513,127 L495,128 L489,121 L472,114 L465,114 L458,118 L451,118 L450,116 L448,115 L447,112 L441,108 L427,107 L421,103 L421,96 L423,93 L424,88 L421,85 L415,87 L412,83 L407,82 L404,84 L404,86 L401,90 L392,89 L387,92 L379,100 L377,105 L377,108 L375,111 L373,112 L366,112 L364,115 L364,121 L363,122 L361,121 L361,116 L364,109 L361,107 L357,110 L353,118 L347,123 L344,152 L343,153 L343,157 L342,158 L339,175 L328,182 L312,189 L311,195 L314,197 L313,200 L301,200 L300,201 L300,209 L304,212 L303,218 L305,220 L305,223 L307,225 L308,233 L310,236 L310,238 L317,249 L319,250 L324,250 L333,246 L339,240 L339,236 L338,235 L332,233 L325,227 L327,224 L341,231 L357,234 L360,238 L360,243 L361,244 L361,249 L363,256 L367,260 L371,257 L372,250 L374,246 L382,239 L387,238 L395,247 L395,257 L400,267 L404,268 L405,265 L403,261 L403,258 L401,255 L403,254 L406,258 L411,257 L413,255 L413,250 L411,247 L410,242 L415,238 L419,238 L427,234 L431,229 L432,226 L432,216 L430,212 L430,207 L432,205 L435,206 L437,208 L439,216 L443,219 L445,216 L445,212 L443,208 L444,204 L455,198 L461,186 L462,178 L461,177 L457,177 L455,175 L455,173 L461,167 L467,165 L479,165 L480,164 L483,164 L490,159 L492,159 L493,161 L483,175 L483,183 L485,186 L490,178 L494,176 L496,167 L498,164 L502,162 L511,160 L513,158 L515,158 L518,156 L519,154 L519,148 L522,145 L527,148 L532,148 L535,146 Z"/><text x="420" y="290">ASIA</text></g>
       <g id="dots"></g>
     </svg>
   </div>
@@ -290,6 +317,10 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 </section>
 
 <section class="view" id="v_host" hidden style="margin-top:26px">
+  <div style="margin-bottom:12px"><h2 id="hh">Host panel</h2><div class="sub" id="hstat"></div></div>
+  <div class="tabs" id="htabs" style="flex-wrap:wrap;margin-bottom:16px"></div>
+  <div id="hp_over"><div id="obox"></div></div>
+  <div id="hp_roles" hidden>
   <div class="rbox" id="rbox" hidden>
     <div class="sl" style="margin-bottom:8px">Roles &amp; permissions</div>
     <div id="rlist"></div>
@@ -297,8 +328,26 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
     <div class="sub" style="margin-top:10px">Tick what each role may do. Hosts always can do everything. Give a role to a player from their profile.</div>
     <div class="err" id="rerr"></div>
   </div>
-  <div class="bar"><div style="padding-bottom:10px"><h2>Host panel</h2><div class="sub" id="hstat"></div></div><input id="hq" placeholder="Search name, Roblox, Discord ID…" autocomplete="off"></div>
+  </div>
+  <div id="hp_players">
+  <div class="bar"><div></div><input id="hq" placeholder="Search name, Roblox, Discord ID…" autocomplete="off" style="margin-bottom:10px"></div>
   <div class="list" id="hlist"></div>
+  </div>
+  <div id="hp_logs" hidden>
+    <div class="bar"><div class="sl" id="lcount" style="padding-bottom:12px"></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"><select id="lf" style="width:auto"><option value="">All types</option><option value="placement">Placements</option><option value="bans">Bans</option><option value="roles">Roles</option><option value="players">Players</option><option value="site">Site</option></select><input id="lq" placeholder="Search activity…" autocomplete="off" style="max-width:220px"></div></div>
+    <div class="list" id="llist"></div>
+  </div>
+  <div id="hp_place" hidden>
+    <div class="bar"><div class="sl" id="ccount" style="padding-bottom:12px"></div><input id="cq" placeholder="Search placements…" autocomplete="off" style="max-width:240px;margin-bottom:10px"></div>
+    <div class="list" id="clist"></div>
+  </div>
+  <div id="hp_stats" hidden><div id="sbox"></div></div>
+  <div id="hp_export" hidden>
+    <div class="rbox"><div class="sl" style="margin-bottom:10px">Export</div>
+      <div class="acts" style="margin-top:0"><button class="solid" id="exP">Download players (CSV)</button><button id="exL">Download activity log (CSV)</button><button id="exC">Copy leaderboard for Discord</button></div>
+      <div class="sub" style="margin-top:10px">Players CSV includes names, regions, grades, board rank, bans, roles and Discord IDs. The activity log export needs the activity log permission too.</div>
+    </div>
+  </div>
 </section>
 <footer>JJSGC</footer>
 </div>
@@ -311,14 +360,26 @@ const REG={NA:"North America",EU:"Europe",AS:"Asia"};
 const GRADES={G1:"Grade 1",SG1:"Special Grade 1",SG:"Special Grade"},GKEYS=["G1","SG1","SG"];
 const SUBS=["Low","Mid","High"],SSUBS=["Weak","Stable","Strong"];
 const score=p=>Math.max(0,GKEYS.indexOf(p.grade))*9+Math.max(0,SUBS.indexOf(p.sub))*3+Math.max(0,SSUBS.indexOf(p.subsub));
-const PERMS={ban:"Ban / unban players",grades:"Edit grades & board",changelog:"Edit change log"};
+const PERMS={ban:"Ban / unban players",grades:"Edit grades & board",changelog:"Edit change log",logs:"View activity log",placements:"View placement history",stats:"View stats",export:"Export data (CSV)"};
+const STAFFP=["ban","grades","logs","placements","stats","export"];
 let roleDefs={};
 const roleTip=r=>(roleDefs[r]||[]).map(k=>PERMS[k]).filter(Boolean).join(" · ");
 const badge=r=>`<span class="host" title="${esc(roleTip(r))}">${esc(r)}</span>`;
 const myRoles=()=>{const p=profiles.find(p=>p.id===uid);return p&&!p.banned?p.roles:[]};
 const can=k=>isOwner||(!!uid&&myRoles().some(r=>(roleDefs[r]||[]).includes(k)));
-const staff=()=>isOwner||can("ban")||can("grades");
-const tags=p=>(p.banned?'<span class="host bn">Banned</span>':"")+p.roles.map(badge).join("");
+const staff=()=>isOwner||STAFFP.some(k=>can(k));
+/* Hosts flash. Add Discord IDs in config.js as hostIds:["123..."], or give someone a role named "Host". */
+const HOST_IDS=((window.JJSGC_CONFIG||{}).hostIds||[]).map(String);
+const isHost=p=>(!!p.discord&&HOST_IDS.includes(String(p.discord)))||(p.roles||[]).some(r=>/^hosts?$/i.test(r))||(p.id===uid&&isOwner);
+const nmx=p=>`<span class="${isHost(p)?"flash":""}">${esc(p.name)}</span>`;
+const tags=p=>(p.banned?'<span class="host bn">Banned</span>':"")+(isHost(p)?'<span class="host hostflash">Host</span>':"")+p.roles.filter(r=>!/^hosts?$/i.test(r)).map(badge).join("");
+/* rank badge: #1 yellow, #2 white, fading to pure black at #20+ */
+const rkStyle=r=>{
+  if(r===1)return"background:linear-gradient(120deg,#ffe45c,#f2b800);color:#2a1d00";
+  if(r>=20)return"background:#000;color:#6a6a74";
+  const L=Math.round(100*(20-r)/18);
+  return`background:hsl(0 0% ${L}%);color:${L>50?"#000":"#cfcfd6"}`;
+};
 const gl=p=>(GRADES[p.grade]||GRADES.G1)+" · "+(p.sub||"Low")+" "+(p.subsub||"Weak");
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -344,24 +405,24 @@ function setCloud(){
 }
 function renderAuth(){
   $("#authbox").innerHTML=uid&&me
-    ?`<button class="chip" id="meBtn">${av({name:me.name,avatar:me.avatar})}<span>${esc(me.name)}</span>${isOwner?`<span class="host">Host</span>`:""}${myRoles().map(badge).join("")}</button><button class="ghost" id="logout">Sign out</button>`
+    ?`<button class="chip" id="meBtn">${av({name:me.name,avatar:me.avatar})}<span class="${isOwner?"flash":""}">${esc(me.name)}</span>${isOwner?`<span class="host hostflash">Host</span>`:""}${myRoles().map(badge).join("")}</button><button class="ghost" id="logout">Sign out</button>`
     :`<button class="solid" id="login">Continue with Discord</button>`;
   if($("#login"))$("#login").disabled=!sb;
 }
 function row(p,i){const on=p.ranked&&!p.banned;
-  return `<div class="card" data-id="${esc(p.id)}" style="--i:${Math.min(i||0,14)}"><div class="l"><div class="rk ${on?(p.rank<=3?"r"+p.rank:""):"no"}">${on?p.rank+".":"—"}</div>${av(p)}
-  <div style="min-width:0"><div class="nm">${esc(p.name)}${tags(p)}</div><div class="pt">${on?esc(gl(p)):"Not competitive"} · @${esc(p.roblox)}</div></div></div>
+  return `<div class="card" data-id="${esc(p.id)}" style="--i:${Math.min(i||0,14)}"><div class="l"><div class="rk ${on?"":"no"}"${on?` style="${rkStyle(p.rank)}"`:""}>${on?p.rank+".":"—"}</div>${av(p)}
+  <div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${on?esc(gl(p)):"Not competitive"} · @${esc(p.roblox)}</div></div></div>
   <div class="rg ${p.region}">${p.region}</div></div>`;
 }
 function hrow(p,i){
-  return `<div class="card hrow" data-id="${esc(p.id)}" style="--i:${Math.min(i||0,14)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${esc(p.name)}${tags(p)}</div><div class="pt">${esc(gl(p))} · @${esc(p.roblox)} · ${p.region}${p.ranked?" · on board":""} · ${esc(p.discord)}</div></div></div>
+  return `<div class="card hrow" data-id="${esc(p.id)}" style="--i:${Math.min(i||0,14)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${esc(gl(p))} · @${esc(p.roblox)} · ${p.region}${p.ranked?" · on board":""} · ${esc(p.discord)}</div></div></div>
   ${can("ban")?`<button class="ghost" data-ban="${esc(p.id)}">${p.banned?"Unban":"Ban"}</button>`:""}</div>`;
 }
 function go(v){
   if(v==="host"&&!staff())v="home";pg=v;
   const show=v==="board"?"list":v;
   ["home","list","players","host"].forEach(k=>{const el=$("#v_"+k),on=k===show;el.hidden=!on;if(on){el.classList.remove("view");void el.offsetWidth;el.classList.add("view")}});
-    render();window.scrollTo(0,0);
+    if(v==="host")loadAudit();render();window.scrollTo(0,0);
 }
 function render(){
   if(pg==="host"&&!staff())return go("home");
@@ -373,13 +434,12 @@ function render(){
   const list=src.filter(p=>inR(p)&&(!t||(p.name+" "+p.roblox).toLowerCase().includes(t)));
   $("#head").textContent=t?`${list.length} result${list.length===1?"":"s"} for “${$("#q").value.trim()}”`:"";
   $("#list").innerHTML=list.length?list.map(row).join(""):`<div class="empty">${t?"No players found.":"No competitive players yet."}</div>`;
-  $("#strip").innerHTML=profiles.length?profiles.map((p,i)=>`<button class="pill" data-id="${esc(p.id)}" style="--i:${Math.min(i,24)}">${av(p)}<span>${esc(p.name)}</span></button>`).join(""):`<div class="empty">Nobody has registered yet.</div>`;
   if(pg==="host"){
     const h=$("#hq").value.trim().toLowerCase();
     $("#hstat").textContent=`${profiles.length} profiles · ${board.length} on the board · ${profiles.filter(p=>p.banned).length} banned`;
     const hl=profiles.filter(p=>!h||(p.name+" "+p.roblox+" "+p.discord).toLowerCase().includes(h));
     $("#hlist").innerHTML=hl.length?hl.map(hrow).join(""):`<div class="empty">No users found.</div>`;
-    renderRoles();
+    renderHost(board);
   }
   if(pg==="players")renderPlayers(board);
   renderLog();setCloud();
@@ -387,42 +447,142 @@ function render(){
 
 /* ---- players page ---- */
 let pf="ALL";
-const SLOTS={NA:[[90,50],[120,45],[150,45],[75,70],[105,70],[135,70],[160,80],[95,95],[125,100],[150,110],[110,125],[140,130]],
-EU:[[318,45],[320,66],[296,92],[318,90],[338,86],[306,106],[330,104],[286,116]],
-AS:[[380,70],[415,52],[450,48],[485,52],[520,58],[420,82],[455,80],[490,84],[525,88],[400,108],[445,110],[480,112]]};
+const SLOTS={NA:[[103,189],[14,122],[82,125],[121,242],[156,175],[127,126],[63,164],[135,207],[86,221],[103,153],[48,132],[21,154],[72,193]],
+EU:[[317,162],[243,205],[265,154],[297,119],[289,200],[343,128],[264,183],[289,169],[293,144],[310,186]],
+AS:[[397,164],[531,144],[320,246],[408,254],[408,86],[461,133],[334,183],[450,196],[351,125],[377,212],[490,173],[419,127],[367,252],[417,216],[304,207],[435,161],[497,133],[361,160],[386,115],[341,218],[418,186],[463,162],[376,184],[381,141],[395,231],[441,114]]};
 const onB=p=>p.ranked&&!p.banned;
-function avgLabel(b){
-  if(!b.length)return "—";
-  const s=Math.round(b.reduce((n,p)=>n+score(p),0)/b.length);
-  return GRADES[GKEYS[Math.min(2,Math.floor(s/9))]]+" · "+SUBS[Math.floor(s%9/3)]+" "+SSUBS[s%3];
-}
 function pcard(p,i){
-  const on=onB(p),sc=on?score(p):0;
+  const on=onB(p);
   return `<div class="pc" data-c="${p.region}" data-id="${esc(p.id)}" style="--i:${Math.min(i,14)}">
-  <div class="pc-top">${av(p)}<div><div class="nm">${esc(p.name)}${tags(p)}</div><div class="pt">@${esc(p.roblox)}</div></div><div class="rg ${p.region}">${p.region}</div></div>
+  <div class="pc-top">${av(p)}<div><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">@${esc(p.roblox)}</div></div><div class="rg ${p.region}">${p.region}</div></div>
   <div class="pc-grade">${on?esc(GRADES[p.grade]||GRADES.G1):p.banned?"Banned":"Not competitive"}</div>
-  <div class="pc-bar"><i style="width:${on?Math.max(6,Math.round(sc/26*100)):0}%"></i></div>
-  <div class="pc-stats"><div><span>Rank</span><b>${on?"#"+p.rank:"—"}</b></div><div><span>Tier</span><b>${on?esc(p.sub):"—"}</b></div><div><span>Stability</span><b>${on?esc(p.subsub):"—"}</b></div><div><span>Power</span><b>${on?sc+"/26":"—"}</b></div></div></div>`;
+  <div class="pc-stats"><b>${on?"#"+p.rank:"—"}</b><b>${on?esc(p.sub):"—"}</b><b>${on?esc(p.subsub):"—"}</b></div></div>`;
 }
 function renderPlayers(board){
   const t=$("#pq").value.trim().toLowerCase();
   const of=r=>profiles.filter(p=>r==="ALL"||p.region===r),bo=r=>board.filter(p=>r==="ALL"||p.region===r);
-  $("#regs").innerHTML=["ALL","NA","EU","AS"].map(r=>`<button class="reg ${r===pf?"on":""}" data-pr="${r}" data-c="${r}"><span class="rc">${r==="ALL"?"ALL":r}</span><span class="rn">${r==="ALL"?"Worldwide":REG[r]}</span><span class="rm"><b>${of(r).length}</b> players · <b>${bo(r).length}</b> ranked</span></button>`).join("");
+  $("#regs").innerHTML=["ALL","NA","EU","AS"].map(r=>`<button class="reg ${r===pf?"on":""}" data-pr="${r}" data-c="${r}"><span class="rc">${r==="ALL"?"ALL":r}</span><span class="rn">${r==="ALL"?"JJSGC":REG[r]}</span><span class="rm"><b>${of(r).length}</b> players · <b>${bo(r).length}</b> ranked</span></button>`).join("");
   document.querySelectorAll("#atlas .cont").forEach(g=>g.classList.toggle("on",g.dataset.pr===pf));
   $("#atlas").classList.toggle("sel",pf!=="ALL");
   $("#dots").innerHTML=Object.keys(SLOTS).map(r=>of(r).slice().sort((a,b)=>onB(b)-onB(a)).slice(0,36).map((p,i)=>{
     const sl=SLOTS[r],[x,y]=sl[i%sl.length],k=Math.floor(i/sl.length)*4;
     return `<circle class="dot ${onB(p)?"rk":""}" data-id="${esc(p.id)}" cx="${x+k}" cy="${y+k}" r="${onB(p)?4:3}"><title>${esc(p.name)}</title></circle>`}).join("")).join("");
-  const L=of(pf),b=bo(pf),top=b[0],dist=GKEYS.slice().reverse().map(k=>[GRADES[k],b.filter(p=>p.grade===k).length]),mx=Math.max(1,...dist.map(d=>d[1]));
+  const L=of(pf),b=bo(pf),top=b[0];
   $("#rstats").setAttribute("data-c",pf);
-  $("#rstats").innerHTML=`<div class="rs-head"><span class="rc">${pf==="ALL"?"ALL":pf}</span><h3>${pf==="ALL"?"Worldwide":REG[pf]}</h3></div>
+  $("#rstats").innerHTML=`<div class="rs-head"><span class="rc">${pf==="ALL"?"ALL":pf}</span><h3>${pf==="ALL"?"JJSGC":REG[pf]}</h3></div>
   <div class="tiles"><div class="tile"><span>Players</span><b>${L.length}</b></div><div class="tile"><span>On the board</span><b>${b.length}</b></div>
   <div class="tile"><span>Top player</span><b class="sm">${top?esc(top.name):"—"}</b><em>${top?esc(gl(top)):"Nobody ranked yet"}</em></div>
-  <div class="tile"><span>Average grade</span><b class="sm">${avgLabel(b)}</b></div></div>
-  <div class="dist">${dist.map(([n,c])=>`<div class="dr"><span>${n}</span><div class="db"><i style="width:${c/mx*100}%"></i></div><b>${c}</b></div>`).join("")}</div>`;
+  </div>`;
   const pl=L.filter(p=>!t||(p.name+" "+p.roblox).toLowerCase().includes(t)).sort((a,b)=>(a.banned-b.banned)||(onB(b)-onB(a))||score(b)-score(a));
+  renderStaff();
   $("#plabel").textContent=`${pl.length} player${pl.length===1?"":"s"}${pf==="ALL"?"":" · "+REG[pf]}`;
   $("#pgrid").innerHTML=pl.length?pl.map(pcard).join(""):`<div class="empty" style="grid-column:1/-1">${t?"No players found.":"Nobody has registered in this region yet."}</div>`;
+}
+
+/* ---- staff section on Players ---- */
+function renderStaff(){
+  const st=profiles.filter(p=>!p.banned&&(isHost(p)||p.roles.length)).sort((a,b)=>(isHost(b)-isHost(a))||(b.roles.length-a.roles.length)||score(b)-score(a));
+  $("#staffsec").hidden=!st.length;
+  $("#staffgrid").innerHTML=st.map((p,i)=>pcard(p,i)).join("");
+}
+
+/* ---- host panel: tabs, activity log, placements, stats, export ---- */
+let hostTab="over",audit=[],auditErr="";
+const fmt=t=>new Date(t).toLocaleString([],{dateStyle:"medium",timeStyle:"short"});
+const HT=[["over","Overview",()=>true],["players","Players",()=>true],["roles","Roles",()=>isOwner],["logs","Activity log",()=>can("logs")],["place","Placements",()=>can("placements")],["stats","Stats",()=>can("stats")],["export","Export",()=>can("export")]];
+function logEvent(action,kind,tid,tname,detail){
+  if(!sb||!uid)return;
+  sb.from("audit_log").insert({actor:uid,actor_name:(me&&me.name)||"?",action:String(action).slice(0,60),kind,target:tid||null,target_name:String(tname||"").slice(0,60),detail:String(detail||"").slice(0,300)})
+    .then(r=>{if(r.error)console.warn("audit_log:",r.error.message)});
+}
+async function loadAudit(){
+  if(!sb||!(can("logs")||can("placements")))return;
+  const r=await sb.from("audit_log").select("*").order("created_at",{ascending:false}).limit(500);
+  if(r.error){auditErr=r.error.message;audit=[]}else{auditErr="";audit=r.data||[]}
+  if(pg==="host")render();
+}
+function renderHost(board){
+  const tabs=HT.filter(t=>t[2]());
+  if(!tabs.some(t=>t[0]===hostTab))hostTab="over";
+  $("#hh").textContent=isOwner?"Host panel":"Staff panel";
+  $("#htabs").innerHTML=tabs.map(t=>`<button class="tab ${t[0]===hostTab?"on":""}" data-ht="${t[0]}">${t[1]}</button>`).join("");
+  ["over","players","roles","logs","place","stats","export"].forEach(k=>{$("#hp_"+k).hidden=k!==hostTab});
+  if(hostTab==="over")renderOverview(board);
+  if(hostTab==="roles")renderRoles();
+  if(hostTab==="logs")renderAuditList("#llist","#lcount",$("#lq").value,false,$("#lf").value);
+  if(hostTab==="place")renderAuditList("#clist","#ccount",$("#cq").value,true);
+  if(hostTab==="stats")renderStats(board);
+  if(hostTab==="export")$("#exL").disabled=!can("logs");
+}
+const catOf=a=>a.kind==="placement"?"placement":/ban/.test(a.action)?"bans":/role/.test(a.action)?"roles":/profile|joined/.test(a.action)?"players":"site";
+function renderAuditList(listSel,cntSel,q,placeOnly,cat){
+  const el=$(listSel),ct=$(cntSel);
+  if(auditErr){ct.textContent="";el.innerHTML=`<div class="empty">Couldn’t load the log: ${esc(auditErr)}<br>Run audit_log.sql in Supabase first.</div>`;return}
+  const s=(q||"").trim().toLowerCase();
+  const L=audit.filter(a=>(!placeOnly||a.kind==="placement")&&(!cat||catOf(a)===cat)&&(!s||(a.actor_name+" "+a.action+" "+a.target_name+" "+a.detail).toLowerCase().includes(s)));
+  ct.textContent=`${L.length} entr${L.length===1?"y":"ies"}${audit.length>=500?" · latest 500":""}`;
+  el.innerHTML=L.length?L.map(a=>`<div class="lg ${a.kind==="placement"?"pl":""}"><div class="lg-t">${esc(fmt(a.created_at))}</div><div><b>${esc(a.actor_name)}</b> · ${esc(a.action)}${a.target_name?` · <b>${esc(a.target_name)}</b>`:""}${a.detail?`<div class="pt" style="white-space:normal">${esc(a.detail)}</div>`:""}</div></div>`).join(""):`<div class="empty">Nothing logged yet.</div>`;
+}
+function renderStats(board){
+  const bars=o=>{const mx=Math.max(1,...o.map(x=>x[1]));return o.map(([l,n])=>`<div class="dr"><span>${esc(l)}</span><div class="db"><i style="width:${Math.round(100*n/mx)}%"></i></div><b>${n}</b></div>`).join("")};
+  const wk=profiles.filter(p=>p.created>Date.now()-6048e5).length;
+  const staffN=profiles.filter(p=>isHost(p)||p.roles.length).length;
+  const regs=Object.keys(REG).map(r=>[REG[r],profiles.filter(p=>p.region===r).length]);
+  const rungs=[];GKEYS.slice().reverse().forEach(g=>SUBS.slice().reverse().forEach(s=>{if(g==="G1"&&s==="Low")return;rungs.push([GRADES[g]+" · "+s,board.filter(p=>(p.grade||"G1")===g&&p.sub===s).length])}));
+  const acts={};audit.forEach(a=>{acts[a.actor_name]=(acts[a.actor_name]||0)+1});
+  const top=Object.entries(acts).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  $("#sbox").innerHTML=`<div class="rstats" style="margin-top:0"><div class="tiles">
+    <div class="tile"><span>Profiles</span><b>${profiles.length}</b></div><div class="tile"><span>On the board</span><b>${board.length}</b></div><div class="tile"><span>Banned</span><b>${profiles.filter(p=>p.banned).length}</b></div>
+    <div class="tile"><span>Joined · 7 days</span><b>${wk}</b></div><div class="tile"><span>Staff</span><b>${staffN}</b></div><div class="tile"><span>Roles</span><b>${Object.keys(roleDefs).length}</b></div></div>
+    <div class="sl" style="margin-top:18px">By region</div><div class="dist">${bars(regs)}</div>
+    <div class="sl" style="margin-top:18px">Board by grade</div><div class="dist">${bars(rungs)}</div>
+    ${top.length?`<div class="sl" style="margin-top:18px">Most active staff (latest log)</div><div class="dist">${bars(top)}</div>`:""}</div>`;
+}
+const histHtml=p=>{
+  if(!(can("placements")||can("logs"))||auditErr)return"";
+  const h=audit.filter(a=>a.target===p.id&&(a.kind==="placement"||can("logs"))).slice(0,6);
+  return h.length?`<label>History</label>${h.map(a=>`<div class="mini"><b>${esc(a.action)}</b>${a.detail?` — ${esc(a.detail)}`:""}<span>${esc(a.actor_name)} · ${esc(fmt(a.created_at))}</span></div>`).join("")}`:"";
+};
+function renderOverview(board){
+  const day=864e5,now=Date.now();
+  const waiting=profiles.filter(p=>!p.banned&&!p.ranked).sort((a,b)=>a.created-b.created);
+  const canA=(can("logs")||can("placements"))&&!auditErr;
+  const feedSrc=can("logs")?audit:audit.filter(a=>a.kind==="placement");
+  const today=audit.filter(a=>Date.parse(a.created_at)>now-day).length;
+  let spark="";
+  if(canA){
+    const days=[];for(let i=13;i>=0;i--){const d=new Date(now-i*day);d.setHours(0,0,0,0);days.push(d.getTime())}
+    const cnt=days.map(d=>feedSrc.filter(a=>{const t=Date.parse(a.created_at);return t>=d&&t<d+day}).length),mx=Math.max(1,...cnt);
+    spark=`<div class="sl">Activity · last 14 days</div><div class="spark">${cnt.map((n,i)=>`<div class="sp" title="${new Date(days[i]).toLocaleDateString([],{month:"short",day:"numeric"})}: ${n}"><i style="height:${Math.max(4,Math.round(100*n/mx))}%"></i></div>`).join("")}</div>`;
+  }
+  const feed=canA?`<div class="sl">Latest activity</div>${feedSrc.slice(0,8).map(a=>`<div class="mini"><b>${esc(a.actor_name)}</b> · ${esc(a.action)}${a.target_name?` · <b>${esc(a.target_name)}</b>`:""}${a.detail?`<span style="color:#9a9aa6">${esc(a.detail)}</span>`:""}<span>${esc(fmt(a.created_at))}</span></div>`).join("")||`<div class="sub">Nothing logged yet.</div>`}`:`<div class="sub">${auditErr?"Activity log unavailable — run audit_log.sql.":"Activity is only shown to staff with the log permission."}</div>`;
+  const q=waiting.slice(0,8).map(p=>{const d=Math.max(0,Math.floor((now-p.created)/day));return`<div class="mini click" data-id="${esc(p.id)}"><b>${esc(p.name)}</b> · @${esc(p.roblox)} · ${p.region}<span>Registered ${d?d+" day"+(d===1?"":"s")+" ago":"today"} · not on the board</span></div>`}).join("")||`<div class="sub">Everyone registered is evaluated.</div>`;
+  const roleRows=Object.keys(roleDefs).sort().map(n=>`<div class="mini"><b>${esc(n)}</b> · ${profiles.filter(p=>p.roles.includes(n)).length} member(s)<span>${esc(roleTip(n)||"No permissions")}</span></div>`).join("");
+  $("#obox").innerHTML=`<div class="rstats" style="margin-top:0"><div class="tiles">
+    <div class="tile"><span>Profiles</span><b>${profiles.length}</b></div><div class="tile"><span>On the board</span><b>${board.length}</b></div><div class="tile"><span>Waiting for eval</span><b>${waiting.length}</b></div>
+    <div class="tile"><span>Banned</span><b>${profiles.filter(p=>p.banned).length}</b></div><div class="tile"><span>Joined · 24h</span><b>${profiles.filter(p=>p.created>now-day).length}</b></div><div class="tile"><span>Actions · 24h</span><b>${canA?today:"—"}</b></div></div></div>
+    <div class="ovg"><div class="rbox">${spark}${feed}</div>
+    <div><div class="rbox"><div class="sl">Evaluation queue · ${waiting.length}</div>${q}</div>${roleRows?`<div class="rbox" style="margin-top:14px"><div class="sl">Roles</div>${roleRows}</div>`:""}</div></div>`;
+}
+function copyBoard(btn){
+  if(!can("export"))return;ranked();
+  const b=ranked(),lines=["**JJSGC Leaderboard** — "+new Date().toLocaleDateString([],{dateStyle:"long"})];
+  b.slice(0,25).forEach(p=>lines.push(`${p.rank}. ${p.name} — ${gl(p)} (${p.region})`));
+  if(b.length>25)lines.push(`…and ${b.length-25} more on the site`);
+  const txt=lines.join("\n"),done=()=>{const o=btn.textContent;btn.textContent="Copied!";setTimeout(()=>btn.textContent=o,1600)};
+  (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(done).catch(()=>{const ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");done()}catch(e){}ta.remove()});
+  logEvent("copied leaderboard","general",null,"","top "+Math.min(25,b.length));
+}
+function csv(rows){return"\ufeff"+rows.map(r=>r.map(v=>{let s=String(v==null?"":v);if(/^[=+\-@\t\r]/.test(s))s="'"+s;return/[",\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}).join(",")).join("\r\n")}
+function dl(name,text){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"text/csv;charset=utf-8"}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+function exportPlayers(){
+  if(!can("export"))return;ranked();
+  dl("jjsgc-players.csv",csv([["Name","Roblox","Region","Grade","Sub","Subsub","On board","Rank","Banned","Roles","Discord ID"]].concat(profiles.map(p=>[p.name,p.roblox,p.region,GRADES[p.grade]||GRADES.G1,p.sub,p.subsub,p.ranked?"yes":"no",onB(p)?p.rank:"",p.banned?"yes":"no",p.roles.join("; "),p.discord]))));
+  logEvent("exported players","general",null,"",profiles.length+" rows");
+}
+function exportLog(){
+  if(!can("export")||!can("logs"))return;
+  dl("jjsgc-activity-log.csv",csv([["Time","Actor","Action","Target","Detail","Type"]].concat(audit.map(a=>[a.created_at,a.actor_name,a.action,a.target_name,a.detail,a.kind]))));
 }
 
 /* ---- change log (hosts can edit) ---- */
@@ -444,7 +604,7 @@ async function saveLog(){
   const at=new Date().toISOString();
   const {error}=await sb.from("site_content").upsert({key:"changelog",body,updated_at:at});
   if(error)return $("#logErr").textContent="Couldn’t save: "+error.message+" (has the site_content table been created? see site_content.sql)";
-  logText=body;logAt=at;editingLog=false;$("#logErr").textContent="";renderLog();
+  logEvent("changelog edited","general",null,"",body.length+" characters");logText=body;logAt=at;editingLog=false;$("#logErr").textContent="";renderLog();
 }
 function openModal(h){$("#panel").innerHTML=h;$("#modal").classList.add("open")}
 function closeModal(){lock=false;$("#modal").classList.remove("open")}
@@ -464,10 +624,10 @@ function editor(p,isNew){
 }
 function view(p){
   editId=p.id;const self=(p.id===uid&&!p.banned)||isOwner,canEdit=self||can("grades")||can("ban");
-  openModal(`<div style="display:flex;gap:14px;align-items:center">${av(p)}<div><h3>${esc(p.name)}</h3><div class="sub">@${esc(p.roblox)}</div></div></div>
+  openModal(`<div style="display:flex;gap:14px;align-items:center">${av(p)}<div><h3>${nmx(p)}</h3><div class="sub">@${esc(p.roblox)}</div></div></div>
   ${self?"":`<span class="badge">◈ Roblox name is self-reported</span>`}
   <div class="kv"><span>Status</span><span>${p.banned?"Banned"+(p.reason?" — "+esc(p.reason):""):p.ranked?"Competitive #"+p.rank:"Not competitive"}</span><span>Grade</span><span>${p.ranked?esc(gl(p)):"—"}</span><span>Region</span><span>${REG[p.region]}</span><span>Roles</span><span>${p.roles.length?`<span class="rchips">${p.roles.map(badge).join("")}</span>`:"—"}</span></div>
-  ${canEdit?editor(p,false):""}<div class="err" id="err"></div>
+  ${histHtml(p)}${canEdit?editor(p,false):""}<div class="err" id="err"></div>
   <div class="acts">${canEdit?`<button class="solid" id="save">Save</button>`:""}${isOwner?`<button class="ghost" id="del">Remove</button>`:""}<button class="ghost" id="x">Close</button></div>`);
 }
 function onboard(){
@@ -503,7 +663,24 @@ async function save(){
       if(has("f_g")){r=await sb.rpc("role_update",{target:editId,g,s:sg,ss,rk});if(r.error)throw r.error}
       if(has("f_b")){r=await sb.rpc("role_ban",{target:editId,bn:$("#f_b").checked,br:v("f_br")});if(r.error)throw r.error}
     }
+    const wasR=old?onB(old):false,oRank=old?old.rank:null,oGl=old?gl(old):"";
+    const nb=has("f_b")?$("#f_b").checked:null,brv=has("f_br")?v("f_br"):"";
+    const nrl=(isOwner&&has("f_g"))?[...document.querySelectorAll("#panel .rchip.on")].map(x=>x.dataset.role):null;
     closeModal();await loadProfiles();
+    ranked();const np=profiles.find(x=>x.id===editId);
+    if(!old)logEvent("joined","general",uid,np?np.name:(me&&me.name),rb+" · "+rg);
+    else{
+      const nm=old.name,ng=g||"G1";
+      if(has("f_g")&&(!!old.ranked!==rk||(old.grade||"G1")!==ng||old.sub!==sg||old.subsub!==ss)){
+        const a=wasR?`${oGl} (#${oRank})`:"Not on board";
+        const b=rk?`${GRADES[ng]} · ${sg} ${ss}${np&&onB(np)?` (#${np.rank})`:""}`:"Not on board";
+        logEvent("placement","placement",editId,nm,a+" → "+b);
+      }
+      if(nb!==null&&nb!==!!old.banned)logEvent(nb?"banned":"unbanned","general",editId,nm,nb?brv:"");
+      if(nrl){const add=nrl.filter(x=>!old.roles.includes(x)),rem=old.roles.filter(x=>!nrl.includes(x));
+        if(add.length||rem.length)logEvent("roles changed","general",editId,nm,[add.length?"+ "+add.join(", "):"",rem.length?"− "+rem.join(", "):""].filter(Boolean).join(" · "))}
+      if(has("f_rb")&&(old.roblox!==rb||old.region!==rg))logEvent("profile edited","general",editId,nm,`${old.roblox} / ${old.region} → ${rb} / ${rg}`);
+    }
   }catch(e){$("#err").textContent=e.code==="23505"?"That Roblox username is already taken.":"Couldn’t save: "+(e.message||"permission denied")}
 }
 async function loadProfiles(){
@@ -514,17 +691,17 @@ async function loadProfiles(){
   if(!rr.error)roleDefs=Object.fromEntries(rr.data.map(r=>[r.name,(r.perms||"").split(",").map(x=>x.trim()).filter(x=>PERMS[x])]));
   const rc=await sb.rpc("registered_count");regN=(!rc.error&&typeof rc.data==="number")?rc.data:null;
   profiles=data.filter(p=>REG[p.region]).map(p=>({id:p.user_id,name:p.name,roblox:p.roblox,region:p.region,grade:p.grade,sub:SUBS.includes(p.sub)?p.sub:"Low",subsub:SSUBS.includes(p.subsub)?p.subsub:"Weak",ranked:!!p.ranked,banned:!!p.banned,reason:p.ban_reason||"",roles:(p.roles||"").split(",").map(x=>x.trim()).filter(Boolean),discord:p.discord_id||"",avatar:p.avatar_url,created:Date.parse(p.created_at)||0}));
-  renderAuth();render();maybeOnboard();
+  renderAuth();render();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();
 }
 function renderRoles(){
   $("#rbox").hidden=!isOwner;if(!isOwner)return;
   const names=[...new Set([...Object.keys(roleDefs),...profiles.flatMap(p=>p.roles)])].sort();
-  $("#rlist").innerHTML=names.length?names.map(n=>`<div class="rrow"><span class="host">${esc(n)}</span><div class="perms">${Object.entries(PERMS).map(([k,l])=>`<label><input type="checkbox" data-rp="${esc(n)}" data-k="${k}" ${(roleDefs[n]||[]).includes(k)?"checked":""}>${l}</label>`).join("")}</div>${n in roleDefs?`<button class="ghost" data-rdel="${esc(n)}">Remove</button>`:""}</div>`).join(""):`<div class="sub">No roles yet. Add one below.</div>`;
+  $("#rlist").innerHTML=names.length?names.map(n=>`<div class="rrow"><span class="host">${esc(n)}</span><span class="sub" style="margin:0;flex:none">${profiles.filter(p=>p.roles.includes(n)).length} member(s)</span><div class="perms">${Object.entries(PERMS).map(([k,l])=>`<label><input type="checkbox" data-rp="${esc(n)}" data-k="${k}" ${(roleDefs[n]||[]).includes(k)?"checked":""}>${l}</label>`).join("")}</div>${n in roleDefs?`<button class="ghost" data-rdel="${esc(n)}">Remove</button>`:""}</div>`).join(""):`<div class="sub">No roles yet. Add one below.</div>`;
 }
 async function saveRole(name,perms){
   const r=await sb.from("roles").upsert({name,perms:perms.join(",")});
   if(r.error){$("#rerr").textContent="Couldn’t save role: "+r.error.message+" (run roles.sql in Supabase first)";return false}
-  $("#rerr").textContent="";roleDefs[name]=perms;return true;
+  $("#rerr").textContent="";roleDefs[name]=perms;logEvent("role saved","general",null,name,perms.map(k=>PERMS[k]).join(", ")||"no permissions");return true;
 }
 document.addEventListener("change",async e=>{
   const c=e.target.closest&&e.target.closest("[data-rp]");if(!c||!isOwner)return;
@@ -541,11 +718,15 @@ async function refreshAuth(){
     const r=await sb.rpc("is_admin");isOwner=r.data===true;
     if(syncedFor!==uid){syncedFor=uid;sb.rpc("sync_discord").then(()=>loaded&&loadProfiles())}
   }
-  renderAuth();render();maybeOnboard();
+  renderAuth();render();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();
 }
 document.addEventListener("click",async e=>{
   const t=e.target;
   const gb=t.closest("[data-go]");if(gb)return go(gb.dataset.go);
+  const ht=t.closest("[data-ht]");if(ht){hostTab=ht.dataset.ht;if(hostTab==="over"||hostTab==="logs"||hostTab==="place"||hostTab==="stats")loadAudit();return render()}
+  if(t.closest("#exP"))return exportPlayers();
+  if(t.closest("#exL"))return exportLog();
+  if(t.closest("#exC"))return copyBoard(t.closest("#exC"));
   const pr=t.closest("[data-pr]");if(pr){pf=pr.dataset.pr;return render()}
   if(t.closest("#logEdit")){editingLog=true;$("#logTa").value=logText;renderLog();return $("#logTa").focus()}
   if(t.closest("#logCancel")){editingLog=false;$("#logErr").textContent="";return renderLog()}
@@ -558,21 +739,21 @@ document.addEventListener("click",async e=>{
   const rd=t.closest("[data-rdel]");
   if(rd){if(!isOwner||!confirm("Remove the role \u201c"+rd.dataset.rdel+"\u201d and its permissions?"))return;
     const x=await sb.from("roles").delete().eq("name",rd.dataset.rdel);
-    if(x.error)$("#rerr").textContent="Couldn\u2019t remove: "+x.error.message;else{delete roleDefs[rd.dataset.rdel];renderAuth();render()}return}
+    if(x.error)$("#rerr").textContent="Couldn\u2019t remove: "+x.error.message;else{logEvent("role removed","general",null,rd.dataset.rdel,"");delete roleDefs[rd.dataset.rdel];renderAuth();render()}return}
   const bb=t.closest("[data-ban]");
   if(bb){const p=profiles.find(p=>p.id===bb.dataset.ban);if(!p||!can("ban"))return;let r="";if(!p.banned){r=prompt("Ban reason (optional)");if(r===null)return}
-    const x=await sb.rpc(isOwner?"admin_ban":"role_ban",{target:p.id,bn:!p.banned,br:(r||"").slice(0,80)});if(x.error)alert(x.error.message);else loadProfiles();return}
+    const x=await sb.rpc(isOwner?"admin_ban":"role_ban",{target:p.id,bn:!p.banned,br:(r||"").slice(0,80)});if(x.error)alert(x.error.message);else{logEvent(p.banned?"unbanned":"banned","general",p.id,p.name,(r||"").slice(0,80));loadProfiles()}return}
   if(t.id==="modal"||t.id==="x")return tryClose();
   if(t.closest("#login")&&sb)return sb.auth.signInWithOAuth({provider:"discord",options:{redirectTo:location.origin+location.pathname}});
   if(t.closest("#logout")){await sb.auth.signOut();return}
   if(t.closest("#meBtn")){ranked();const p=profiles.find(p=>p.id===uid);return p?view(p):onboard()}
   if(t.id==="skip"){skipped=true;return closeModal()}
   if(t.id==="save")return save();
-  if(t.id==="del"){if(isOwner&&confirm("Remove this profile?")){await sb.rpc("admin_delete",{target:editId});closeModal();loadProfiles()}return}
+  if(t.id==="del"){if(isOwner&&confirm("Remove this profile?")){const dp=profiles.find(x=>x.id===editId);const dr=await sb.rpc("admin_delete",{target:editId});if(!dr.error)logEvent("profile removed","general",editId,dp?dp.name:"","");closeModal();loadProfiles()}return}
   const tab=t.closest(".tab");if(tab){filter=tab.dataset.r;return render()}
   const c=t.closest("[data-id]");if(c){ranked();const p=profiles.find(p=>p.id===c.dataset.id);if(p)view(p)}
 });
-$("#q").addEventListener("input",render);$("#pq").addEventListener("input",render);$("#hq").addEventListener("input",render);
+$("#q").addEventListener("input",render);$("#pq").addEventListener("input",render);$("#hq").addEventListener("input",render);$("#lq").addEventListener("input",render);$("#lf").addEventListener("change",render);$("#cq").addEventListener("input",render);
 document.addEventListener("keydown",e=>{if(e.key==="Escape")tryClose();if(e.key==="Enter"&&e.target.matches&&e.target.matches(".cont")){pf=e.target.dataset.pr;render()}});
 (async()=>{
   try{
@@ -584,6 +765,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")tryClose();if(e.key=
     sb.channel("site_content").on("postgres_changes",{event:"*",schema:"public",table:"site_content"},loadLog).subscribe();
     sb.channel("roles").on("postgres_changes",{event:"*",schema:"public",table:"roles"},loadProfiles).subscribe();
     sb.channel("profiles").on("postgres_changes",{event:"*",schema:"public",table:"profiles"},loadProfiles).subscribe();
+    sb.channel("audit_log").on("postgres_changes",{event:"INSERT",schema:"public",table:"audit_log"},()=>{if(pg==="host")loadAudit()}).subscribe();
   }finally{hideBoot()}
 })();
 renderAuth();render();
