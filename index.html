@@ -123,6 +123,94 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 .nm .host{margin-left:7px;vertical-align:middle}.host.bn{border-color:#ff6b6b;color:#ff8a8a}
 .hrow{grid-template-columns:1fr auto;cursor:pointer}.hrow .l{padding:10px 0 10px 12px}
 .hrow button{padding:8px 14px}
+
+/* ---- home: icon, banner, how-to, changelog ---- */
+.icon{width:150px;height:150px;margin:0 auto 20px;border-radius:28px;overflow:hidden;border:1px solid var(--line);box-shadow:0 0 50px rgba(160,140,255,.22);animation:rise .8s both}
+.icon img{display:block;width:100%;height:100%;object-fit:cover}
+.hero .lead{max-width:600px}
+.banner{max-width:620px;margin:26px auto 0;animation:rise 1s .5s both}
+.banner img{display:block;width:100%;height:auto}
+.how{max-width:780px;margin:30px auto 0;text-align:left;animation:rise 1s .55s both}
+.path{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;position:relative}
+.step{position:relative;display:flex;gap:14px;padding:16px 18px;background:linear-gradient(160deg,rgba(255,255,255,.04),transparent 60%),var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:.2s;animation:rise .6s calc(var(--i,0)*90ms + .6s) both}
+.step::before{content:"";position:absolute;inset:0 auto 0 0;width:2px;background:linear-gradient(#fff,transparent);opacity:.25;transition:.2s}
+.step:hover{transform:translateY(-3px);border-color:#555;box-shadow:0 0 26px rgba(160,140,255,.16)}
+.step:hover::before{opacity:.9}
+.step .n{flex:none;width:44px;height:44px;display:grid;place-items:center;font:400 26px var(--serif);border-radius:50%;border:1px dashed #666;text-shadow:var(--glow);background:rgba(255,255,255,.03)}
+.step h4{margin:2px 0 5px;font:600 11px var(--sans);letter-spacing:.3em;text-transform:uppercase;color:var(--dim)}
+.step p{margin:0;font-size:14px;line-height:1.6;color:#cfcfd6}.step p b{color:#fff}
+.climb{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px}
+.climb span{font-size:10.5px;letter-spacing:.06em;padding:4px 9px;border:1px solid var(--line);border-radius:20px;color:#b9b9c4;background:rgba(255,255,255,.03)}
+.climb span:last-child{color:#fff;border-color:#888;box-shadow:0 0 12px rgba(255,255,255,.18)}
+.climb i{font-style:normal;color:#555;font-size:11px}
+.log{max-width:780px;margin:40px auto 0;text-align:left;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px}
+.logh{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.logh button{padding:7px 14px}
+.logbody{white-space:pre-wrap;word-break:break-word;font-size:14px;line-height:1.75;color:#cfcfd6}
+.logbody .dim,.log .dim{color:var(--dim)}
+.log textarea{width:100%;min-height:170px;resize:vertical;background:#000;border:1px solid var(--line);color:var(--fg);padding:12px 14px;font:400 14px/1.6 var(--sans);outline:none;border-radius:8px}
+.log textarea:focus{border-color:#888}
+.log .sub{margin-top:12px;font-size:11px}
+@media(max-width:620px){.path{grid-template-columns:1fr}}
+
+/* ---- players page ---- */
+.atlas{margin-top:16px;padding:10px 14px 6px;background:radial-gradient(60% 80% at 50% 40%,rgba(120,90,200,.1),transparent),var(--panel);border:1px solid var(--line);border-radius:14px}
+.atlas svg{display:block;width:100%;height:auto;max-height:300px}
+.atlas .grat{stroke:#1b1b24;stroke-width:1;fill:none}
+.cont{cursor:pointer;outline:none;transition:opacity .25s}
+.cont path{fill:rgba(255,255,255,.035);stroke:#5a5a66;stroke-width:1.4;stroke-dasharray:4 4;stroke-linejoin:round;transition:.25s}
+.cont text{font:600 9px var(--sans);letter-spacing:.3em;fill:#666;text-anchor:middle;transition:.25s;pointer-events:none}
+.cont:hover path,.cont:focus-visible path{stroke:var(--rc);fill:var(--rf)}
+.cont:hover text,.cont:focus-visible text{fill:var(--rc)}
+.cont.on path{fill:var(--rf);stroke:var(--rc);stroke-dasharray:none;stroke-width:2;filter:drop-shadow(0 0 9px var(--rc))}
+.cont.on text{fill:var(--rc)}
+.atlas.sel .cont:not(.on){opacity:.5}
+.dot{fill:#fff;opacity:.55;cursor:pointer;transition:.2s}.dot.rk{opacity:1;filter:drop-shadow(0 0 4px #fff)}
+.dot:hover{r:5.5;opacity:1}
+.regs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.reg{--rc:#cfcfd6;display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;text-transform:none;letter-spacing:0;padding:12px 14px;background:var(--row);border:1px solid var(--line);border-radius:12px;color:var(--fg)}
+.reg:hover{background:var(--row);color:var(--fg);border-color:var(--rc);transform:translateY(-2px)}
+.reg.on{border-color:var(--rc);box-shadow:0 0 20px -4px var(--rc),inset 0 0 0 1px var(--rc)}
+.reg .rc{font:800 18px var(--sans);color:var(--rc)}
+.reg .rn{font-size:12px;color:var(--dim)}
+.reg .rm{font-size:11px;color:var(--dim);margin-top:4px}.reg .rm b{color:var(--fg)}
+[data-c=NA]{--rc:#ff6b6b;--rf:rgba(255,107,107,.16)}[data-c=EU]{--rc:#5ee07e;--rf:rgba(94,224,126,.15)}[data-c=AS]{--rc:#6db4ff;--rf:rgba(109,180,255,.16)}
+.rstats{margin-top:16px;padding:18px 20px;background:var(--panel);border:1px solid var(--line);border-radius:14px;animation:rise .4s both}
+.rs-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}.rs-head h3{margin:0;font-size:18px;font-weight:800}
+.rs-head .rc{font:800 12px var(--sans);letter-spacing:.1em;padding:5px 10px;border-radius:8px;color:var(--rc,#cfcfd6);border:1px solid var(--rc,#555)}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.tile{background:var(--row);border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0}
+.tile span{display:block;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--dim)}
+.tile b{display:block;margin-top:6px;font:800 28px var(--sans)}.tile b.sm{font-size:15px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tile em{display:block;font-style:normal;font-size:11px;color:var(--dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dist{margin-top:16px;display:grid;gap:8px}
+.dr{display:grid;grid-template-columns:130px 1fr 28px;align-items:center;gap:12px;font-size:12px;color:var(--dim)}.dr b{color:var(--fg);text-align:right}
+.db{height:6px;border-radius:6px;background:#1a1a20;overflow:hidden}.db i{display:block;height:100%;background:linear-gradient(90deg,#777,#fff);border-radius:6px;transition:width .5s}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;margin-top:6px}
+.pc{background:var(--row);border:1px solid var(--line);border-top:2px solid var(--rc,#555);border-radius:12px;padding:14px 16px;cursor:pointer;transition:.18s;animation:rise .5s calc(var(--i,0)*45ms) both}
+.pc:hover{transform:translateY(-3px);border-color:#777;border-top-color:var(--rc);box-shadow:0 0 24px rgba(160,140,255,.14)}
+.pc-top{display:flex;align-items:center;gap:12px}.pc-top .rg{margin-left:auto;width:44px;padding:7px 0;font-size:13px;flex:none}
+.pc-top>div:nth-child(2){min-width:0;flex:1}
+.pc-grade{margin:14px 0 8px;font:400 24px var(--serif);text-shadow:var(--glow);letter-spacing:.03em}
+.pc-bar{height:5px;border-radius:5px;background:#1a1a20;overflow:hidden}.pc-bar i{display:block;height:100%;background:linear-gradient(90deg,#666,var(--rc,#fff));border-radius:5px}
+.pc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+.pc-stats span{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}.pc-stats b{display:block;margin-top:3px;font-size:13px;font-weight:700}
+@media(max-width:700px){.regs{grid-template-columns:1fr 1fr}.tiles{grid-template-columns:1fr 1fr}.dr{grid-template-columns:100px 1fr 24px}}
+
+/* ---- roles & permissions ---- */
+.rbox{margin:0 0 18px;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 20px}
+.rrow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 0;border-top:1px solid var(--line)}
+.rrow:first-child{border-top:0}
+.perms{display:flex;gap:16px;flex-wrap:wrap;flex:1;justify-content:flex-end}
+.perms label{display:flex;align-items:center;gap:7px;margin:0;font-size:13px;letter-spacing:0;text-transform:none;color:#cfcfd6;cursor:pointer}
+.perms input{width:auto}
+.radd{display:flex;gap:8px;margin-top:12px}.radd input{max-width:220px}
+.rchips{display:flex;gap:6px;flex-wrap:wrap}
+.rchip{font:600 9px var(--sans);letter-spacing:.2em;text-transform:uppercase;border:1px solid #666;border-radius:10px;padding:5px 10px;color:var(--dim);background:transparent;cursor:pointer}
+.rchip:hover{background:#222;color:var(--fg)}
+.rchip.on{background:var(--fg);color:#000;border-color:var(--fg)}
+.rchip.on:hover{background:#ddd;color:#000}
+.rrow .host{font-size:10px;padding:4px 10px}
 </style>
 </head>
 <body>
@@ -137,21 +225,35 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 <div class="note" id="note" hidden style="margin-top:16px"></div>
 
 <section class="hero view" id="v_home">
-  <div class="sigil"><i>✦</i></div>
-  <div class="eyebrow">Jujutsu Shenanigans</div>
-  <p class="lead">A hidden ladder for the strongest sorcerers. Prove your grade, or remain in the dark.</p>
+  <div class="icon"><img src="JJSGC_mystic_vstretch_icon.gif" alt="JJSGC"></div>
+  <p class="lead">Hosted site by JJSGC for people to inspire climbing the ladder and getting better at the competitive scene. Have a blast people.</p>
   <div class="sub"><b id="cnt">0</b> registered people · Hosted by Kyoumiv &amp; Tooj</div>
   <div class="cta"><button class="solid" data-go="board">Enter the list</button><button data-go="players">See all players</button></div>
   <div class="cloud" id="cloud"><i></i><span>Connecting…</span></div>
-  <div class="side how"><div class="sl">How to get on the leaderboard</div>
-    <ol class="steps">
-      <li>Continue with <b>Discord</b>, then enter your Roblox username and region.</li>
-      <li>You must be at least <b>Grade 1 · Mid</b>, anywhere up to <b>Special Grade</b>, to be listed.</li>
-      <li>You must be <b>evaluated every grade reset</b> to stay on the leaderboard.</li>
-      <li>If something is wrong (grade, name, region), <b>message the hosts</b> on Discord.</li>
-    </ol></div>
-  <div class="sl" style="margin:34px 0 14px">Everyone registered</div>
+  <div class="banner"><img src="JJSGC_banner_transparent.webp" alt="JJSGC"></div>
+
+  <div class="how"><div class="sl">How to get on the leaderboard</div>
+    <div class="path">
+      <div class="step" style="--i:0"><div class="n">I</div><div><h4>Enter the gate</h4><p>Continue with <b>Discord</b>, then enter your <b>Roblox username</b> and <b>region</b>.</p></div></div>
+      <div class="step" style="--i:1"><div class="n">II</div><div><h4>Earn your rank</h4><p>You must be at least <b>Grade 1 · Mid</b>, anywhere up to <b>Special Grade</b>, to be listed.</p>
+        <div class="climb"><span>Grade 1 Mid</span><i>›</i><span>Grade 1 High</span><i>›</i><span>Special Grade 1</span><i>›</i><span>Special Grade</span></div></div></div>
+      <div class="step" style="--i:2"><div class="n">III</div><div><h4>Prove it again</h4><p>You must be <b>evaluated every grade reset</b> to stay on the leaderboard.</p></div></div>
+      <div class="step" style="--i:3"><div class="n">IV</div><div><h4>Something off?</h4><p>If anything is wrong (grade, name, region), <b>message the hosts</b> on Discord.</p></div></div>
+    </div></div>
+
+  <div class="sl" style="margin:38px 0 14px">Everyone registered</div>
   <div class="strip" id="strip"></div>
+
+  <div class="log" id="logbox">
+    <div class="logh"><div class="sl">Change log</div><button class="ghost" id="logEdit" hidden>Edit</button></div>
+    <div class="logbody" id="logBody"></div>
+    <div id="logEditor" hidden>
+      <textarea id="logTa" maxlength="4000" placeholder="e.g.&#10;Nov 2 — Added the Players page with region stats&#10;Nov 2 — New change log"></textarea>
+      <div class="acts"><button class="solid" id="logSave">Save</button><button class="ghost" id="logCancel">Cancel</button></div>
+      <div class="err" id="logErr"></div>
+    </div>
+    <div class="sub" id="logMeta"></div>
+  </div>
 </section>
 
 <section class="view" id="v_list" hidden style="margin-top:26px">
@@ -165,12 +267,36 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
     </main>
     <aside id="side">
       <div class="side"><div class="sl">On the board</div><div class="big" id="comp">0</div></div>
-      <div class="side"><div class="sl">The ladder</div><ol class="ladder"><li>Special Grade</li><li>Special Grade 1</li><li>Grade 1 (Mid and above)</li></ol><div class="sub">Each grade climbs Low · Mid · High, and each step climbs Weak · Stable · Strong.</div></div>
+      <div class="side"><div class="sl">The ladder</div><ol class="ladder"><li>Special Grade</li><li>Special Grade 1</li><li>Grade 1 (Mid and above)</li></ol><div class="sub">Every single subgrade divides people from the ladder, remember that.</div></div>
     </aside>
   </div>
 </section>
 
+<section class="view" id="v_players" hidden style="margin-top:26px">
+  <div><h2>Players</h2><div class="sub">Pick a continent to check its stats.</div></div>
+  <div class="atlas" id="atlas">
+    <svg viewBox="0 0 600 240" role="img" aria-label="Region map: North America, Europe, Asia">
+      <g class="grat"><path d="M0 60H600M0 120H600M0 180H600M100 0V240M200 0V240M300 0V240M400 0V240M500 0V240"/></g>
+      <g class="cont" data-pr="NA" data-c="NA" tabindex="0" role="button" aria-label="North America"><path d="M20,40 L40,30 L62,34 L72,24 L108,26 L128,20 L160,22 L178,30 L200,28 L214,44 L206,56 L196,56 L184,52 L176,64 L184,76 L190,84 L178,92 L180,106 L166,116 L158,132 L164,148 L158,152 L148,138 L142,146 L148,162 L156,176 L146,184 L132,176 L120,160 L108,146 L92,128 L80,108 L64,92 L50,78 L40,64 L30,56 Z"/><path d="M232,14 L258,12 L262,32 L248,46 L236,34 Z"/><text x="120" y="222">NORTH AMERICA</text></g>
+      <g class="cont" data-pr="EU" data-c="EU" tabindex="0" role="button" aria-label="Europe"><path d="M276,112 L280,100 L274,90 L286,82 L292,70 L304,66 L300,52 L310,36 L322,28 L330,40 L324,52 L334,60 L346,54 L352,70 L342,78 L350,92 L344,106 L332,112 L336,124 L326,128 L318,116 L312,130 L304,118 L296,122 L292,134 L278,130 Z"/><path d="M266,64 L276,60 L278,74 L270,78 Z"/><text x="312" y="156">EUROPE</text></g>
+      <g class="cont" data-pr="AS" data-c="AS" tabindex="0" role="button" aria-label="Asia"><path d="M358,64 L374,46 L404,36 L444,30 L486,32 L526,38 L552,50 L570,64 L560,78 L548,84 L552,96 L540,104 L528,108 L516,124 L508,138 L500,150 L494,168 L486,182 L478,168 L470,148 L458,134 L448,146 L440,164 L432,176 L424,160 L414,140 L402,128 L394,132 L398,146 L386,156 L376,142 L368,122 L358,108 L364,92 L356,78 Z"/><path d="M566,86 L576,80 L574,106 L564,110 Z"/><text x="450" y="206">ASIA</text></g>
+      <g id="dots"></g>
+    </svg>
+  </div>
+  <div class="regs" id="regs"></div>
+  <div class="rstats" id="rstats"></div>
+  <div class="bar" style="margin-top:20px"><div class="sl" id="plabel" style="padding-bottom:12px"></div><input id="pq" placeholder="Search players…" autocomplete="off" style="max-width:240px;margin-bottom:10px"></div>
+  <div class="pgrid" id="pgrid"></div>
+</section>
+
 <section class="view" id="v_host" hidden style="margin-top:26px">
+  <div class="rbox" id="rbox" hidden>
+    <div class="sl" style="margin-bottom:8px">Roles &amp; permissions</div>
+    <div id="rlist"></div>
+    <div class="radd"><input id="rn" maxlength="20" placeholder="New role name…" autocomplete="off"><button class="solid" id="radd">Add role</button></div>
+    <div class="sub" style="margin-top:10px">Tick what each role may do. Hosts always can do everything. Give a role to a player from their profile.</div>
+    <div class="err" id="rerr"></div>
+  </div>
   <div class="bar"><div style="padding-bottom:10px"><h2>Host panel</h2><div class="sub" id="hstat"></div></div><input id="hq" placeholder="Search name, Roblox, Discord ID…" autocomplete="off"></div>
   <div class="list" id="hlist"></div>
 </section>
@@ -185,7 +311,14 @@ const REG={NA:"North America",EU:"Europe",AS:"Asia"};
 const GRADES={G1:"Grade 1",SG1:"Special Grade 1",SG:"Special Grade"},GKEYS=["G1","SG1","SG"];
 const SUBS=["Low","Mid","High"],SSUBS=["Weak","Stable","Strong"];
 const score=p=>Math.max(0,GKEYS.indexOf(p.grade))*9+Math.max(0,SUBS.indexOf(p.sub))*3+Math.max(0,SSUBS.indexOf(p.subsub));
-const tags=p=>(p.banned?'<span class="host bn">Banned</span>':"")+p.roles.map(r=>`<span class="host">${esc(r)}</span>`).join("");
+const PERMS={ban:"Ban / unban players",grades:"Edit grades & board",changelog:"Edit change log"};
+let roleDefs={};
+const roleTip=r=>(roleDefs[r]||[]).map(k=>PERMS[k]).filter(Boolean).join(" · ");
+const badge=r=>`<span class="host" title="${esc(roleTip(r))}">${esc(r)}</span>`;
+const myRoles=()=>{const p=profiles.find(p=>p.id===uid);return p&&!p.banned?p.roles:[]};
+const can=k=>isOwner||(!!uid&&myRoles().some(r=>(roleDefs[r]||[]).includes(k)));
+const staff=()=>isOwner||can("ban")||can("grades");
+const tags=p=>(p.banned?'<span class="host bn">Banned</span>':"")+p.roles.map(badge).join("");
 const gl=p=>(GRADES[p.grade]||GRADES.G1)+" · "+(p.sub||"Low")+" "+(p.subsub||"Weak");
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -211,7 +344,7 @@ function setCloud(){
 }
 function renderAuth(){
   $("#authbox").innerHTML=uid&&me
-    ?`<button class="chip" id="meBtn">${av({name:me.name,avatar:me.avatar})}<span>${esc(me.name)}</span>${isOwner?`<span class="host">Host</span>`:""}</button><button class="ghost" id="logout">Sign out</button>`
+    ?`<button class="chip" id="meBtn">${av({name:me.name,avatar:me.avatar})}<span>${esc(me.name)}</span>${isOwner?`<span class="host">Host</span>`:""}${myRoles().map(badge).join("")}</button><button class="ghost" id="logout">Sign out</button>`
     :`<button class="solid" id="login">Continue with Discord</button>`;
   if($("#login"))$("#login").disabled=!sb;
 }
@@ -222,56 +355,120 @@ function row(p,i){const on=p.ranked&&!p.banned;
 }
 function hrow(p,i){
   return `<div class="card hrow" data-id="${esc(p.id)}" style="--i:${Math.min(i||0,14)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${esc(p.name)}${tags(p)}</div><div class="pt">${esc(gl(p))} · @${esc(p.roblox)} · ${p.region}${p.ranked?" · on board":""} · ${esc(p.discord)}</div></div></div>
-  <button class="ghost" data-ban="${esc(p.id)}">${p.banned?"Unban":"Ban"}</button></div>`;
+  ${can("ban")?`<button class="ghost" data-ban="${esc(p.id)}">${p.banned?"Unban":"Ban"}</button>`:""}</div>`;
 }
 function go(v){
-  if(v==="host"&&!isOwner)v="home";pg=v;
-  const show=v==="board"||v==="players"?"list":v;
-  ["home","list","host"].forEach(k=>{const el=$("#v_"+k),on=k===show;el.hidden=!on;if(on){el.classList.remove("view");void el.offsetWidth;el.classList.add("view")}});
-  $("#vt").textContent=v==="players"?"All players":"Leaderboard";$("#side").hidden=v!=="board";
-  render();window.scrollTo(0,0);
+  if(v==="host"&&!staff())v="home";pg=v;
+  const show=v==="board"?"list":v;
+  ["home","list","players","host"].forEach(k=>{const el=$("#v_"+k),on=k===show;el.hidden=!on;if(on){el.classList.remove("view");void el.offsetWidth;el.classList.add("view")}});
+    render();window.scrollTo(0,0);
 }
 function render(){
-  if(pg==="host"&&!isOwner)return go("home");
-  const board=ranked(),t=$("#q").value.trim().toLowerCase(),inR=p=>filter==="ALL"||p.region===filter,all=pg==="players";
+  if(pg==="host"&&!staff())return go("home");
+  const board=ranked(),t=$("#q").value.trim().toLowerCase(),inR=p=>filter==="ALL"||p.region===filter;
   num("#cnt",Math.max(regN||0,profiles.length));num("#comp",board.length);
-  $("#nav").innerHTML=[["home","Home"],["board","Leaderboard"],["players","Players"]].concat(isOwner?[["host","Host panel"]]:[]).map(([k,v])=>`<button class="tab ${k===pg?"on":""}" data-go="${k}">${v}</button>`).join("");
-  const src=all?profiles.slice().sort((a,b)=>(a.banned-b.banned)||(b.ranked-a.ranked)||score(b)-score(a)):board;
+  $("#nav").innerHTML=[["home","Home"],["board","Leaderboard"],["players","Players"]].concat(staff()?[["host",isOwner?"Host panel":"Staff panel"]]:[]).map(([k,v])=>`<button class="tab ${k===pg?"on":""}" data-go="${k}">${v}</button>`).join("");
+  const src=board;
   $("#tabs").innerHTML=["ALL","NA","EU","AS"].map(r=>`<button class="tab ${r===filter?"on":""}" data-r="${r}">${r==="ALL"?"Overall":r}<small>${src.filter(p=>r==="ALL"||p.region===r).length}</small></button>`).join("");
   const list=src.filter(p=>inR(p)&&(!t||(p.name+" "+p.roblox).toLowerCase().includes(t)));
   $("#head").textContent=t?`${list.length} result${list.length===1?"":"s"} for “${$("#q").value.trim()}”`:"";
-  $("#list").innerHTML=list.length?list.map(row).join(""):`<div class="empty">${t?"No players found.":all?"Nobody has registered yet.":"No competitive players yet."}</div>`;
+  $("#list").innerHTML=list.length?list.map(row).join(""):`<div class="empty">${t?"No players found.":"No competitive players yet."}</div>`;
   $("#strip").innerHTML=profiles.length?profiles.map((p,i)=>`<button class="pill" data-id="${esc(p.id)}" style="--i:${Math.min(i,24)}">${av(p)}<span>${esc(p.name)}</span></button>`).join(""):`<div class="empty">Nobody has registered yet.</div>`;
   if(pg==="host"){
     const h=$("#hq").value.trim().toLowerCase();
     $("#hstat").textContent=`${profiles.length} profiles · ${board.length} on the board · ${profiles.filter(p=>p.banned).length} banned`;
     const hl=profiles.filter(p=>!h||(p.name+" "+p.roblox+" "+p.discord).toLowerCase().includes(h));
     $("#hlist").innerHTML=hl.length?hl.map(hrow).join(""):`<div class="empty">No users found.</div>`;
+    renderRoles();
   }
-  setCloud();
+  if(pg==="players")renderPlayers(board);
+  renderLog();setCloud();
+}
+
+/* ---- players page ---- */
+let pf="ALL";
+const SLOTS={NA:[[90,50],[120,45],[150,45],[75,70],[105,70],[135,70],[160,80],[95,95],[125,100],[150,110],[110,125],[140,130]],
+EU:[[318,45],[320,66],[296,92],[318,90],[338,86],[306,106],[330,104],[286,116]],
+AS:[[380,70],[415,52],[450,48],[485,52],[520,58],[420,82],[455,80],[490,84],[525,88],[400,108],[445,110],[480,112]]};
+const onB=p=>p.ranked&&!p.banned;
+function avgLabel(b){
+  if(!b.length)return "—";
+  const s=Math.round(b.reduce((n,p)=>n+score(p),0)/b.length);
+  return GRADES[GKEYS[Math.min(2,Math.floor(s/9))]]+" · "+SUBS[Math.floor(s%9/3)]+" "+SSUBS[s%3];
+}
+function pcard(p,i){
+  const on=onB(p),sc=on?score(p):0;
+  return `<div class="pc" data-c="${p.region}" data-id="${esc(p.id)}" style="--i:${Math.min(i,14)}">
+  <div class="pc-top">${av(p)}<div><div class="nm">${esc(p.name)}${tags(p)}</div><div class="pt">@${esc(p.roblox)}</div></div><div class="rg ${p.region}">${p.region}</div></div>
+  <div class="pc-grade">${on?esc(GRADES[p.grade]||GRADES.G1):p.banned?"Banned":"Not competitive"}</div>
+  <div class="pc-bar"><i style="width:${on?Math.max(6,Math.round(sc/26*100)):0}%"></i></div>
+  <div class="pc-stats"><div><span>Rank</span><b>${on?"#"+p.rank:"—"}</b></div><div><span>Tier</span><b>${on?esc(p.sub):"—"}</b></div><div><span>Stability</span><b>${on?esc(p.subsub):"—"}</b></div><div><span>Power</span><b>${on?sc+"/26":"—"}</b></div></div></div>`;
+}
+function renderPlayers(board){
+  const t=$("#pq").value.trim().toLowerCase();
+  const of=r=>profiles.filter(p=>r==="ALL"||p.region===r),bo=r=>board.filter(p=>r==="ALL"||p.region===r);
+  $("#regs").innerHTML=["ALL","NA","EU","AS"].map(r=>`<button class="reg ${r===pf?"on":""}" data-pr="${r}" data-c="${r}"><span class="rc">${r==="ALL"?"ALL":r}</span><span class="rn">${r==="ALL"?"Worldwide":REG[r]}</span><span class="rm"><b>${of(r).length}</b> players · <b>${bo(r).length}</b> ranked</span></button>`).join("");
+  document.querySelectorAll("#atlas .cont").forEach(g=>g.classList.toggle("on",g.dataset.pr===pf));
+  $("#atlas").classList.toggle("sel",pf!=="ALL");
+  $("#dots").innerHTML=Object.keys(SLOTS).map(r=>of(r).slice().sort((a,b)=>onB(b)-onB(a)).slice(0,36).map((p,i)=>{
+    const sl=SLOTS[r],[x,y]=sl[i%sl.length],k=Math.floor(i/sl.length)*4;
+    return `<circle class="dot ${onB(p)?"rk":""}" data-id="${esc(p.id)}" cx="${x+k}" cy="${y+k}" r="${onB(p)?4:3}"><title>${esc(p.name)}</title></circle>`}).join("")).join("");
+  const L=of(pf),b=bo(pf),top=b[0],dist=GKEYS.slice().reverse().map(k=>[GRADES[k],b.filter(p=>p.grade===k).length]),mx=Math.max(1,...dist.map(d=>d[1]));
+  $("#rstats").setAttribute("data-c",pf);
+  $("#rstats").innerHTML=`<div class="rs-head"><span class="rc">${pf==="ALL"?"ALL":pf}</span><h3>${pf==="ALL"?"Worldwide":REG[pf]}</h3></div>
+  <div class="tiles"><div class="tile"><span>Players</span><b>${L.length}</b></div><div class="tile"><span>On the board</span><b>${b.length}</b></div>
+  <div class="tile"><span>Top player</span><b class="sm">${top?esc(top.name):"—"}</b><em>${top?esc(gl(top)):"Nobody ranked yet"}</em></div>
+  <div class="tile"><span>Average grade</span><b class="sm">${avgLabel(b)}</b></div></div>
+  <div class="dist">${dist.map(([n,c])=>`<div class="dr"><span>${n}</span><div class="db"><i style="width:${c/mx*100}%"></i></div><b>${c}</b></div>`).join("")}</div>`;
+  const pl=L.filter(p=>!t||(p.name+" "+p.roblox).toLowerCase().includes(t)).sort((a,b)=>(a.banned-b.banned)||(onB(b)-onB(a))||score(b)-score(a));
+  $("#plabel").textContent=`${pl.length} player${pl.length===1?"":"s"}${pf==="ALL"?"":" · "+REG[pf]}`;
+  $("#pgrid").innerHTML=pl.length?pl.map(pcard).join(""):`<div class="empty" style="grid-column:1/-1">${t?"No players found.":"Nobody has registered in this region yet."}</div>`;
+}
+
+/* ---- change log (hosts can edit) ---- */
+let logText="",logAt=null,logErr="",editingLog=false;
+async function loadLog(){
+  if(!sb)return;
+  const {data,error}=await sb.from("site_content").select("body,updated_at").eq("key","changelog").maybeSingle();
+  if(error)logErr=error.message;else{logErr="";if(data){logText=data.body||"";logAt=data.updated_at}}
+  renderLog();
+}
+function renderLog(){
+  $("#logBody").hidden=editingLog;$("#logEditor").hidden=!editingLog;$("#logEdit").hidden=!can("changelog")||editingLog;
+  $("#logBody").innerHTML=logText.trim()?esc(logText):`<span class="dim">No updates posted yet.</span>`;
+  $("#logMeta").textContent=!editingLog&&logAt?"Last updated "+new Date(logAt).toLocaleString([], {dateStyle:"medium",timeStyle:"short"}):"";
+}
+async function saveLog(){
+  const body=$("#logTa").value.slice(0,4000);
+  if(!sb||!can("changelog"))return $("#logErr").textContent="You don’t have permission to edit the change log.";
+  const at=new Date().toISOString();
+  const {error}=await sb.from("site_content").upsert({key:"changelog",body,updated_at:at});
+  if(error)return $("#logErr").textContent="Couldn’t save: "+error.message+" (has the site_content table been created? see site_content.sql)";
+  logText=body;logAt=at;editingLog=false;$("#logErr").textContent="";renderLog();
 }
 function openModal(h){$("#panel").innerHTML=h;$("#modal").classList.add("open")}
 function closeModal(){lock=false;$("#modal").classList.remove("open")}
 function tryClose(){if(!lock)closeModal()}
 function editor(p,isNew){
-  const adm=isOwner&&!isNew;
-  return `<label>Roblox username</label><input id="f_rb" maxlength="20" value="${esc(p.roblox)}" placeholder="e.g. Builderman">
-  <label>Region</label><select id="f_r">${isNew?`<option value="" disabled selected>Choose a region</option>`:""}${Object.entries(REG).map(([k,v])=>`<option value="${k}" ${k===p.region?"selected":""}>${k} · ${v}</option>`).join("")}</select>
-  ${adm?`<label>Grade</label><select id="f_g">${Object.entries(GRADES).map(([k,v])=>`<option value="${k}" ${k===(p.grade||"G1")?"selected":""}>${v}</option>`).join("")}</select>
+  const base=isNew||isOwner||(p.id===uid&&!p.banned),og=!isNew&&can("grades"),ob=!isNew&&can("ban"),orl=!isNew&&isOwner;
+  const all=[...new Set([...Object.keys(roleDefs),...(p.roles||[])])];
+  return `${base?`<label>Roblox username</label><input id="f_rb" maxlength="20" value="${esc(p.roblox)}" placeholder="e.g. Builderman">
+  <label>Region</label><select id="f_r">${isNew?`<option value="" disabled selected>Choose a region</option>`:""}${Object.entries(REG).map(([k,v])=>`<option value="${k}" ${k===p.region?"selected":""}>${k} · ${v}</option>`).join("")}</select>`:""}
+  ${og?`<label>Grade</label><select id="f_g">${Object.entries(GRADES).map(([k,v])=>`<option value="${k}" ${k===(p.grade||"G1")?"selected":""}>${v}</option>`).join("")}</select>
   <label>Sub-grade</label><select id="f_s">${SUBS.slice().reverse().map(s=>`<option ${s===(p.sub||"Low")?"selected":""}>${s}</option>`).join("")}</select>
   <label>Sub-sub-grade</label><select id="f_ss">${SSUBS.slice().reverse().map(s=>`<option ${s===(p.subsub||"Weak")?"selected":""}>${s}</option>`).join("")}</select>
-  <div class="chk"><input type="checkbox" id="f_k" ${p.ranked?"checked":""}><span>On the competitive board</span></div>
-  <div class="chk"><input type="checkbox" id="f_b" ${p.banned?"checked":""}><span>Banned</span></div>
-  <label>Ban reason</label><input id="f_br" maxlength="80" value="${esc(p.reason||"")}">
-  <label>Special roles (comma separated)</label><input id="f_rl" maxlength="100" value="${esc((p.roles||[]).join(", "))}" placeholder="e.g. Event Winner, Tester">`:""}`;
+  <div class="chk"><input type="checkbox" id="f_k" ${p.ranked?"checked":""}><span>On the competitive board</span></div>`:""}
+  ${ob?`<div class="chk"><input type="checkbox" id="f_b" ${p.banned?"checked":""}><span>Banned</span></div>
+  <label>Ban reason</label><input id="f_br" maxlength="80" value="${esc(p.reason||"")}">`:""}
+  ${orl?`<label>Special roles</label><div class="rchips" id="f_rl">${all.map(n=>`<button type="button" class="rchip ${(p.roles||[]).includes(n)?"on":""}" data-role="${esc(n)}">${esc(n)}</button>`).join("")||`<span class="sub">No roles yet — create them in the Host panel.</span>`}</div>`:""}`;
 }
 function view(p){
-  editId=p.id;const can=(p.id===uid&&!p.banned)||isOwner;
+  editId=p.id;const self=(p.id===uid&&!p.banned)||isOwner,canEdit=self||can("grades")||can("ban");
   openModal(`<div style="display:flex;gap:14px;align-items:center">${av(p)}<div><h3>${esc(p.name)}</h3><div class="sub">@${esc(p.roblox)}</div></div></div>
-  ${can?"":`<span class="badge">◈ Roblox name is self-reported</span>`}
-  <div class="kv"><span>Status</span><span>${p.banned?"Banned"+(p.reason?" — "+esc(p.reason):""):p.ranked?"Competitive #"+p.rank:"Not competitive"}</span><span>Grade</span><span>${p.ranked?esc(gl(p)):"—"}</span><span>Region</span><span>${REG[p.region]}</span><span>Roles</span><span>${p.roles.length?p.roles.map(esc).join(", "):"—"}</span></div>
-  ${can?editor(p,false):""}<div class="err" id="err"></div>
-  <div class="acts">${can?`<button class="solid" id="save">Save</button>`:""}${isOwner?`<button class="ghost" id="del">Remove</button>`:""}<button class="ghost" id="x">Close</button></div>`);
+  ${self?"":`<span class="badge">◈ Roblox name is self-reported</span>`}
+  <div class="kv"><span>Status</span><span>${p.banned?"Banned"+(p.reason?" — "+esc(p.reason):""):p.ranked?"Competitive #"+p.rank:"Not competitive"}</span><span>Grade</span><span>${p.ranked?esc(gl(p)):"—"}</span><span>Region</span><span>${REG[p.region]}</span><span>Roles</span><span>${p.roles.length?`<span class="rchips">${p.roles.map(badge).join("")}</span>`:"—"}</span></div>
+  ${canEdit?editor(p,false):""}<div class="err" id="err"></div>
+  <div class="acts">${canEdit?`<button class="solid" id="save">Save</button>`:""}${isOwner?`<button class="ghost" id="del">Remove</button>`:""}<button class="ghost" id="x">Close</button></div>`);
 }
 function onboard(){
   lock=true;editId=uid;
@@ -283,18 +480,29 @@ function maybeOnboard(){
   if(uid&&loaded&&!lock&&!skipped&&!profiles.some(p=>p.id===uid)&&!$("#modal").classList.contains("open"))onboard();
 }
 async function save(){
-  const v=id=>$("#"+id).value.trim(),old=profiles.find(p=>p.id===editId);
-  const rb=v("f_rb").replace(/^@/,""),rg=$("#f_r").value;
-  if(!/^[A-Za-z0-9_]{3,20}$/.test(rb))return $("#err").textContent="Roblox usernames are 3–20 letters, numbers or underscores.";
-  if(!REG[rg])return $("#err").textContent="Choose your region.";
-  if(!sb||!uid)return $("#err").textContent="Sign in to save.";
+  const has=id=>!!$("#"+id),v=id=>has(id)?$(("#"+id)).value.trim():"",old=profiles.find(p=>p.id===editId),err=m=>($("#err").textContent=m);
+  if(!sb||!uid)return err("Sign in to save.");
+  let rb="",rg="";
+  if(has("f_rb")){
+    rb=v("f_rb").replace(/^@/,"");rg=$("#f_r").value;
+    if(!/^[A-Za-z0-9_]{3,20}$/.test(rb))return err("Roblox usernames are 3–20 letters, numbers or underscores.");
+    if(!REG[rg])return err("Choose your region.");
+  }
+  const g=has("f_g")?$("#f_g").value:"",sg=has("f_s")?$("#f_s").value:"",ss=has("f_ss")?$("#f_ss").value:"",rk=has("f_k")&&$("#f_k").checked;
+  if(rk&&g==="G1"&&sg==="Low")return err("The leaderboard needs Grade 1 Mid or above.");
   try{
     let r;
-    if(!old)r=await sb.from("profiles").insert({user_id:uid,roblox:rb,region:rg});
-    else if(isOwner){const g=$("#f_g").value,sg=$("#f_s").value,rk=$("#f_k").checked;if(rk&&g==="G1"&&sg==="Low")return $("#err").textContent="The leaderboard needs Grade 1 Mid or above.";
-      r=await sb.rpc("admin_update",{target:editId,rb,rg,g,s:sg,ss:$("#f_ss").value,rk,bn:$("#f_b").checked,br:$("#f_br").value.trim(),rl:v("f_rl").split(",").map(x=>x.trim().slice(0,20)).filter(Boolean).slice(0,5).join(",")})}
-    else r=await sb.from("profiles").update({roblox:rb,region:rg}).eq("user_id",editId);
-    if(r.error)throw r.error;
+    if(!old){
+      if(!has("f_rb"))return err("Enter your Roblox username.");
+      r=await sb.from("profiles").insert({user_id:uid,roblox:rb,region:rg});if(r.error)throw r.error;
+    }else if(isOwner&&has("f_g")){
+      r=await sb.rpc("admin_update",{target:editId,rb,rg,g,s:sg,ss,rk,bn:has("f_b")?$("#f_b").checked:!!old.banned,br:has("f_br")?v("f_br"):(old.reason||""),rl:[...document.querySelectorAll("#panel .rchip.on")].map(x=>x.dataset.role.slice(0,20)).slice(0,5).join(",")});
+      if(r.error)throw r.error;
+    }else{
+      if(has("f_rb")){r=await sb.from("profiles").update({roblox:rb,region:rg}).eq("user_id",editId);if(r.error)throw r.error}
+      if(has("f_g")){r=await sb.rpc("role_update",{target:editId,g,s:sg,ss,rk});if(r.error)throw r.error}
+      if(has("f_b")){r=await sb.rpc("role_ban",{target:editId,bn:$("#f_b").checked,br:v("f_br")});if(r.error)throw r.error}
+    }
     closeModal();await loadProfiles();
   }catch(e){$("#err").textContent=e.code==="23505"?"That Roblox username is already taken.":"Couldn’t save: "+(e.message||"permission denied")}
 }
@@ -302,10 +510,28 @@ async function loadProfiles(){
   const {data,error}=await sb.from("profiles").select("*");
   if(error){demo=true;reason="Couldn’t load profiles: "+error.message;render();return}
   demo=false;reason="";loaded=true;
+  const rr=await sb.from("roles").select("name,perms");
+  if(!rr.error)roleDefs=Object.fromEntries(rr.data.map(r=>[r.name,(r.perms||"").split(",").map(x=>x.trim()).filter(x=>PERMS[x])]));
   const rc=await sb.rpc("registered_count");regN=(!rc.error&&typeof rc.data==="number")?rc.data:null;
   profiles=data.filter(p=>REG[p.region]).map(p=>({id:p.user_id,name:p.name,roblox:p.roblox,region:p.region,grade:p.grade,sub:SUBS.includes(p.sub)?p.sub:"Low",subsub:SSUBS.includes(p.subsub)?p.subsub:"Weak",ranked:!!p.ranked,banned:!!p.banned,reason:p.ban_reason||"",roles:(p.roles||"").split(",").map(x=>x.trim()).filter(Boolean),discord:p.discord_id||"",avatar:p.avatar_url,created:Date.parse(p.created_at)||0}));
-  render();maybeOnboard();
+  renderAuth();render();maybeOnboard();
 }
+function renderRoles(){
+  $("#rbox").hidden=!isOwner;if(!isOwner)return;
+  const names=[...new Set([...Object.keys(roleDefs),...profiles.flatMap(p=>p.roles)])].sort();
+  $("#rlist").innerHTML=names.length?names.map(n=>`<div class="rrow"><span class="host">${esc(n)}</span><div class="perms">${Object.entries(PERMS).map(([k,l])=>`<label><input type="checkbox" data-rp="${esc(n)}" data-k="${k}" ${(roleDefs[n]||[]).includes(k)?"checked":""}>${l}</label>`).join("")}</div>${n in roleDefs?`<button class="ghost" data-rdel="${esc(n)}">Remove</button>`:""}</div>`).join(""):`<div class="sub">No roles yet. Add one below.</div>`;
+}
+async function saveRole(name,perms){
+  const r=await sb.from("roles").upsert({name,perms:perms.join(",")});
+  if(r.error){$("#rerr").textContent="Couldn’t save role: "+r.error.message+" (run roles.sql in Supabase first)";return false}
+  $("#rerr").textContent="";roleDefs[name]=perms;return true;
+}
+document.addEventListener("change",async e=>{
+  const c=e.target.closest&&e.target.closest("[data-rp]");if(!c||!isOwner)return;
+  const n=c.dataset.rp,s=new Set(roleDefs[n]||[]);c.checked?s.add(c.dataset.k):s.delete(c.dataset.k);
+  if(!await saveRole(n,[...s]))c.checked=!c.checked;
+  renderAuth();render();
+});
 async function refreshAuth(){
   const {data:{session}}=await sb.auth.getSession();
   uid=session?session.user.id:null;isOwner=false;me=null;
@@ -320,9 +546,22 @@ async function refreshAuth(){
 document.addEventListener("click",async e=>{
   const t=e.target;
   const gb=t.closest("[data-go]");if(gb)return go(gb.dataset.go);
+  const pr=t.closest("[data-pr]");if(pr){pf=pr.dataset.pr;return render()}
+  if(t.closest("#logEdit")){editingLog=true;$("#logTa").value=logText;renderLog();return $("#logTa").focus()}
+  if(t.closest("#logCancel")){editingLog=false;$("#logErr").textContent="";return renderLog()}
+  if(t.closest("#logSave"))return saveLog();
+  const rc=t.closest(".rchip");if(rc)return rc.classList.toggle("on");
+  if(t.closest("#radd")){
+    const n=$("#rn").value.trim().replace(/,/g,"").slice(0,20);
+    if(!n||!isOwner)return;if(n in roleDefs){$("#rerr").textContent="That role already exists.";return}
+    if(await saveRole(n,[])){$("#rn").value="";render()}return}
+  const rd=t.closest("[data-rdel]");
+  if(rd){if(!isOwner||!confirm("Remove the role \u201c"+rd.dataset.rdel+"\u201d and its permissions?"))return;
+    const x=await sb.from("roles").delete().eq("name",rd.dataset.rdel);
+    if(x.error)$("#rerr").textContent="Couldn\u2019t remove: "+x.error.message;else{delete roleDefs[rd.dataset.rdel];renderAuth();render()}return}
   const bb=t.closest("[data-ban]");
-  if(bb){const p=profiles.find(p=>p.id===bb.dataset.ban);if(!p||!isOwner)return;let r="";if(!p.banned){r=prompt("Ban reason (optional)");if(r===null)return}
-    const x=await sb.rpc("admin_ban",{target:p.id,bn:!p.banned,br:(r||"").slice(0,80)});if(x.error)alert(x.error.message);else loadProfiles();return}
+  if(bb){const p=profiles.find(p=>p.id===bb.dataset.ban);if(!p||!can("ban"))return;let r="";if(!p.banned){r=prompt("Ban reason (optional)");if(r===null)return}
+    const x=await sb.rpc(isOwner?"admin_ban":"role_ban",{target:p.id,bn:!p.banned,br:(r||"").slice(0,80)});if(x.error)alert(x.error.message);else loadProfiles();return}
   if(t.id==="modal"||t.id==="x")return tryClose();
   if(t.closest("#login")&&sb)return sb.auth.signInWithOAuth({provider:"discord",options:{redirectTo:location.origin+location.pathname}});
   if(t.closest("#logout")){await sb.auth.signOut();return}
@@ -333,15 +572,17 @@ document.addEventListener("click",async e=>{
   const tab=t.closest(".tab");if(tab){filter=tab.dataset.r;return render()}
   const c=t.closest("[data-id]");if(c){ranked();const p=profiles.find(p=>p.id===c.dataset.id);if(p)view(p)}
 });
-$("#q").addEventListener("input",render);$("#hq").addEventListener("input",render);
-document.addEventListener("keydown",e=>e.key==="Escape"&&tryClose());
+$("#q").addEventListener("input",render);$("#pq").addEventListener("input",render);$("#hq").addEventListener("input",render);
+document.addEventListener("keydown",e=>{if(e.key==="Escape")tryClose();if(e.key==="Enter"&&e.target.matches&&e.target.matches(".cont")){pf=e.target.dataset.pr;render()}});
 (async()=>{
   try{
     if(!window.supabase){reason="Couldn’t load the Supabase library. Check your connection or turn off ad blockers, then reload.";renderAuth();render();return}
     if(!CFG.url||CFG.url.includes("YOUR-")){reason="Cloud not set up yet. Add your Supabase URL and key to config.js (see README).";renderAuth();render();return}
     sb=supabase.createClient(CFG.url,CFG.key);
     sb.auth.onAuthStateChange(()=>{setTimeout(refreshAuth,0)});
-    await loadProfiles();await refreshAuth();
+    await loadProfiles();await refreshAuth();loadLog();
+    sb.channel("site_content").on("postgres_changes",{event:"*",schema:"public",table:"site_content"},loadLog).subscribe();
+    sb.channel("roles").on("postgres_changes",{event:"*",schema:"public",table:"roles"},loadProfiles).subscribe();
     sb.channel("profiles").on("postgres_changes",{event:"*",schema:"public",table:"profiles"},loadProfiles).subscribe();
   }finally{hideBoot()}
 })();
