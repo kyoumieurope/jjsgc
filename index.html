@@ -130,7 +130,7 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 .icon{width:150px;height:150px;margin:0 auto 20px;border-radius:28px;overflow:hidden;border:1px solid var(--line);box-shadow:0 0 50px rgba(160,140,255,.22);animation:rise .8s both}
 .icon img{display:block;width:100%;height:100%;object-fit:cover}
 .hero .lead{max-width:600px}
-.banner{max-width:620px;margin:26px auto 0;animation:rise 1s .5s both}
+.banner{max-width:620px;margin:26px auto 0;animation:none!important;transform:translateZ(0)}
 .banner img{display:block;width:100%;height:auto}
 .how{max-width:780px;margin:30px auto 0;text-align:left;animation:rise 1s .55s both}
 .path{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;position:relative}
@@ -304,6 +304,25 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 .ogrip{color:#4a4a55;cursor:grab;user-select:none;letter-spacing:-2px}
 .ork{width:28px;text-align:right;color:var(--dim);font-variant-numeric:tabular-nums;font-weight:600}
 .obtn{display:flex;gap:6px}.obtn button{padding:6px 10px}
+
+/* ---- spacious leaderboard ---- */
+.cols{grid-template-columns:56px 1fr 64px;padding:0 24px 12px 8px}
+.lrow{grid-template-columns:56px 1fr 64px;gap:18px;padding:18px 24px 18px 8px}
+.lrow .l{gap:16px}
+.lrow .av{width:42px;height:42px}
+.lrow .nm{font-size:16px;letter-spacing:.01em}
+.lrow .pt{font-size:13px;margin-top:5px}
+.lrk{font-size:17px}
+.layout{gap:32px}
+#v_list .bar{margin-bottom:22px}
+#v_list .tab{padding:14px 22px}
+.lrow.edit{grid-template-columns:22px 48px 1fr auto;gap:14px;padding:14px 16px 14px 8px;cursor:default}
+.lrow.edit.dragging{opacity:.4}
+.lbtools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 18px}
+.rl{color:inherit;text-decoration:none}.rl:hover{color:var(--fg);text-decoration:underline}
+.logo{cursor:pointer;user-select:none;transition:opacity .15s}.logo:hover{opacity:.8}.logo:focus-visible{outline:1px solid #888;outline-offset:6px;border-radius:6px}
+#pgrid{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--line)}
+.lrow.np{grid-template-columns:1fr 64px;padding:14px 24px 14px 8px}
 </style>
 </head>
 <body>
@@ -311,7 +330,7 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 <div class="fog"></div><div class="stars"></div>
 <div class="wrap">
 <header>
-  <div class="logo">✦ JJSGC<small>COMPETITIVE</small></div>
+  <div class="logo" data-go="home" role="button" tabindex="0" title="Home" aria-label="JJSGC home">✦ JJSGC<small>COMPETITIVE</small></div>
   <nav id="nav"></nav>
   <div id="authbox" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"></div>
 </header>
@@ -324,7 +343,7 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
   <div class="sub"><b id="cnt">0</b> registered people · Hosted by Kyoumiv &amp; Tooj</div>
   <div class="cta"><button class="solid" data-go="board">Enter the list</button><button data-go="players">See all players</button></div>
   <div class="cloud" id="cloud"><i></i><span>Connecting…</span></div>
-  <div class="banner"><img src="JJSGC_banner_transparent.webp" alt="JJSGC"></div>
+  <div class="banner"><img src="JJSGC_banner_transparent.gif" alt="JJSGC"></div>
 
   <div class="how"><div class="sl">How to get on the leaderboard</div>
     <div class="path">
@@ -345,7 +364,7 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
     </div>
     <div class="sub" id="logMeta"></div>
   </div>
-  <p class="credit">Yes, this side was in fact been build foundationally by me, but ai had to carry the rest 😭</p>
+  <p class="credit">Yes, this side was in fact been build foundationally by me, but ai had to carry the rest :sob:</p>
 </section>
 
 <section class="view" id="v_list" hidden style="margin-top:26px">
@@ -353,7 +372,8 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
   <div class="layout">
     <main>
       <div class="bar"><div class="tabs" id="tabs"></div><input id="q" placeholder="Search players…" autocomplete="off"></div>
-      <div class="cols"><span>#</span><span>PLAYER</span><span>REGION</span></div>
+      <div class="lbtools" id="lbtools" hidden></div>
+      <div class="cols" id="lbcols"><span>#</span><span>PLAYER</span><span>REGION</span></div>
       <div class="sub" id="head" style="margin:0 20px 8px"></div>
       <div class="list simple" id="list"></div>
     </main>
@@ -449,6 +469,8 @@ const rkStyle=r=>{
   const L=Math.round(100*(20-r)/18);
   return`background:hsl(0 0% ${L}%);color:${L>50?"#000":"#cfcfd6"}`;
 };
+const rbUrl=p=>"https://www.roblox.com/user.aspx?username="+encodeURIComponent(p.roblox||"");
+const rbA=p=>`<a class="rl" href="${esc(rbUrl(p))}" target="_blank" rel="noopener noreferrer" title="Open Roblox profile">@${esc(p.roblox)}</a>`;
 const gtxt=(g,s,ss)=>(GRADES[g]||GRADES.G1)+(g==="SG"?"":" · "+(s||"Low")+" "+(ss||"Weak"));
 const gl=p=>gtxt(p.grade,p.sub,p.subsub);
 const $=s=>document.querySelector(s);
@@ -483,7 +505,7 @@ function renderAuth(){
   if($("#login"))$("#login").disabled=!sb;
 }
 function row(p,i,rk){const on=p.ranked&&!p.banned;
-  return `<div class="lrow ${on&&rk<=3?"t3":""}" data-id="${esc(p.id)}"><span class="lrk">${on?rk:"—"}</span><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${on?esc(gl(p)):"Not competitive"} · @${esc(p.roblox)}</div></div></div><span class="lrg">${p.region}</span></div>`;
+  return `<div class="lrow ${on&&rk<=3?"t3":""}" data-id="${esc(p.id)}"><span class="lrk">${on?rk:"—"}</span><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${on?esc(gl(p)):"Not competitive"} · ${rbA(p)}</div></div></div><span class="lrg">${p.region}</span></div>`;
 }
 function hrow(p,i){
   return `<div class="card hrow" data-id="${esc(p.id)}" style="--i:${Math.min(i||0,14)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${esc(gl(p))} · @${esc(p.roblox)} · ${p.region}${p.ranked?" · on board":""} · ${esc(p.discord)} · joined ${ago(p.created)}</div></div></div>
@@ -499,13 +521,14 @@ function render(){
   if(pg==="host"&&!staff())return go("home");
   const board=ranked(),t=$("#q").value.trim().toLowerCase(),inR=p=>filter==="ALL"||p.region===filter;
   num("#cnt",Math.max(regN||0,profiles.length));num("#comp",board.length);
-  $("#nav").innerHTML=[["home","Home"],["board","Leaderboard"],["players","Players"]].concat(staff()?[["host","Panel"]]:[]).map(([k,v])=>`<button class="tab ${k===pg?"on":""}" data-go="${k}">${v}</button>`).join("");
+  $("#nav").innerHTML=[["board","Leaderboard"],["players","Players"]].concat(staff()?[["host","Panel"]]:[]).map(([k,v])=>`<button class="tab ${k===pg?"on":""}" data-go="${k}">${v}</button>`).join("");
   const src=board;
   $("#tabs").innerHTML=["ALL","NA","EU","AS"].map(r=>`<button class="tab ${r===filter?"on":""}" data-r="${r}">${r==="ALL"?"Overall":r}<small>${src.filter(p=>r==="ALL"||p.region===r).length}</small></button>`).join("");
   const base=src.filter(inR),shown=filter==="ALL"?base:base.slice(0,10),place=new Map(shown.map((p,k)=>[p.id,k+1]));
   const list=shown.filter(p=>!t||(p.name+" "+p.roblox).toLowerCase().includes(t));
   $("#head").textContent=t?`${list.length} result${list.length===1?"":"s"} for “${$("#q").value.trim()}”`:(filter!=="ALL"&&base.length>10?`Top 10 of ${base.length} in ${REG[filter]}`:"");
   $("#list").innerHTML=list.length?list.map((p,k)=>row(p,k,place.get(p.id))).join(""):`<div class="empty">${t?"No players found.":"No competitive players yet."}</div>`;
+  renderLbTools(board);
   if(pg==="host"){
     const h=$("#hq").value.trim().toLowerCase();
     $("#hstat").textContent=`${profiles.length} profiles · ${board.length} on the board · ${profiles.filter(p=>p.banned).length} banned`;
@@ -524,10 +547,7 @@ let pf="ALL";
 const onB=p=>p.ranked&&!p.banned;
 function pcard(p,i){
   const on=onB(p);
-  return `<div class="pc" data-c="${p.region}" data-id="${esc(p.id)}" style="--i:${Math.min(i,14)}">
-  <div class="pc-top">${av(p)}<div><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">@${esc(p.roblox)}</div></div><div class="rg ${p.region}">${p.region}</div></div>
-  <div class="pc-grade">${on?esc(GRADES[p.grade]||GRADES.G1):p.banned?"Banned":"Not competitive"}</div>
-  <div class="pc-stats"><b>${on?"#"+p.rank:"—"}</b><b>${on&&p.grade!=="SG"?esc(p.sub):"—"}</b><b>${on&&p.grade!=="SG"?esc(p.subsub):"—"}</b></div></div>`;
+  return `<div class="lrow np" data-id="${esc(p.id)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${on?esc(gl(p))+" · #"+p.rank:p.banned?"Banned":"Not competitive"} · ${rbA(p)}</div></div></div><span class="lrg">${p.region}</span></div>`;
 }
 function scard(p,i){
   const rl=(isHost(p)?'<span class="host">Host</span>':"")+p.roles.filter(r=>!/^hosts?$/i.test(r)).map(badge).join("");
@@ -663,19 +683,32 @@ function renderOverview(board){
     <div><div class="rbox"><div class="sl">Evaluation queue · ${waiting.length}</div>${q}</div><div class="rbox" style="margin-top:14px"><div class="sl">Newest members</div>${newest}</div>${roleRows?`<div class="rbox" style="margin-top:14px"><div class="sl">Roles</div>${roleRows}</div>`:""}</div></div>`;
 }
 /* ---- leaderboard order (needs the "Reorder leaderboard" permission) ---- */
-let orderDraft=null,ordMsg="",dragId=null;
+let orderDraft=null,ordMsg="",dragId=null,lbEdit=false;
+function syncDraft(board){const ids=board.map(p=>p.id);if(!orderDraft)orderDraft=ids.slice();else{orderDraft=orderDraft.filter(id=>ids.includes(id));ids.forEach(id=>{if(!orderDraft.includes(id))orderDraft.push(id)})}return ids}
+const ordBtns=(id,k,n)=>`<div class="obtn"><button class="ghost" data-mv="${esc(id)}" data-to="0" title="Move to top" ${k===0?"disabled":""}>⤒</button><button class="ghost" data-mv="${esc(id)}" data-to="${k-1}" ${k===0?"disabled":""}>▲</button><button class="ghost" data-mv="${esc(id)}" data-to="${k+1}" ${k===n-1?"disabled":""}>▼</button></div>`;
+function renderLbTools(board){
+  const el=$("#lbtools"),ok=can("reorder")&&filter==="ALL";
+  el.hidden=!ok;$("#lbcols").hidden=false;
+  if(!ok){lbEdit=false;return}
+  const manual=board.some(p=>p.pos!=null);
+  if(!lbEdit){el.innerHTML=`<button class="ghost" id="lbEdit">Edit order</button><span class="sub" style="margin:0">${manual?"Manual order":"Automatic order by grade"}</span>`;return}
+  const ids=syncDraft(board),byId=Object.fromEntries(profiles.map(p=>[p.id,p])),dirty=orderDraft.join()!==ids.join();
+  el.innerHTML=`<button class="solid" id="ordSave" ${dirty?"":"disabled"}>Save order</button><button class="ghost" id="ordDiscard">Cancel</button><button class="ghost" id="ordAuto" ${manual||dirty?"":"disabled"}>Back to automatic</button><span class="sub" style="margin:0 0 0 6px">Drag rows or use the arrows, then save.</span><span class="err" style="margin:0">${esc(ordMsg)}</span>`;
+  $("#lbcols").hidden=true;$("#head").textContent="";
+  $("#list").innerHTML=orderDraft.map((id,k)=>{const p=byId[id];if(!p)return"";
+    return `<div class="lrow edit ${k<3?"t3":""}" draggable="true" data-ord="${esc(id)}"><span class="ogrip">⋮⋮</span><span class="lrk">${k+1}</span><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${esc(gl(p))} · @${esc(p.roblox)}</div></div></div>${ordBtns(id,k,orderDraft.length)}</div>`}).join("")||`<div class="empty">No competitive players yet.</div>`;
+}
 function moveOrd(id,to){const k=orderDraft.indexOf(id);if(k<0)return;orderDraft.splice(k,1);orderDraft.splice(Math.max(0,Math.min(orderDraft.length,to)),0,id)}
 async function saveOrder(ids){
   if(!sb||!can("reorder"))return;
   const r=await sb.rpc("set_board_order",{ids});
   if(r.error){ordMsg="Couldn’t save: "+r.error.message+" (run jjsgc_update.sql in Supabase first)";return render()}
-  ordMsg=ids.length?"Order saved.":"Back to automatic order.";orderDraft=null;
+  ordMsg=ids.length?"Order saved.":"Back to automatic order.";orderDraft=null;lbEdit=false;
   logEvent(ids.length?"leaderboard reordered":"leaderboard order reset","placement",null,"",ids.length?ids.length+" players":"automatic");
   await loadProfiles();render();
 }
 function renderOrder(board){
-  const ids=board.map(p=>p.id);
-  if(!orderDraft)orderDraft=ids.slice();else{orderDraft=orderDraft.filter(id=>ids.includes(id));ids.forEach(id=>{if(!orderDraft.includes(id))orderDraft.push(id)})}
+  const ids=syncDraft(board);
   const byId=Object.fromEntries(profiles.map(p=>[p.id,p])),dirty=orderDraft.join()!==ids.join(),manual=board.some(p=>p.pos!=null);
   const rows=orderDraft.map((id,k)=>{const p=byId[id];if(!p)return"";const last=k===orderDraft.length-1;
     return `<div class="orow" draggable="true" data-ord="${esc(id)}"><span class="ogrip">⋮⋮</span><span class="ork">${k+1}</span>${av(p)}<div style="min-width:0;flex:1"><div class="nm" style="font-size:15px">${esc(p.name)}</div><div class="pt">${esc(gl(p))} · ${p.region}</div></div><div class="obtn"><button class="ghost" data-mv="${esc(id)}" data-to="0" title="Move to top" ${k===0?"disabled":""}>⤒</button><button class="ghost" data-mv="${esc(id)}" data-to="${k-1}" ${k===0?"disabled":""}>▲</button><button class="ghost" data-mv="${esc(id)}" data-to="${k+1}" ${last?"disabled":""}>▼</button></div></div>`}).join("");
@@ -821,11 +854,30 @@ async function saveLog(){
 function openModal(h){$("#panel").innerHTML=h;$("#modal").classList.add("open")}
 function closeModal(){lock=false;onboarding=false;$("#modal").classList.remove("open")}
 function tryClose(){if(!lock)closeModal()}
+let linkedRoblox=null,lnkErr="",reopen=false;
+function linkHtml(){
+  if(!sb)return"";
+  const has=Array.isArray(linkedRoblox);
+  const chips=has&&linkedRoblox.length?`<div class="trow" style="margin-top:8px">${linkedRoblox.map(a=>`<button type="button" class="hchip" data-rbx="${esc(a.name)}">${esc(a.name)}${a.verified?" ✓":""}</button>`).join("")}</div>`:"";
+  const msg=!has?`Discord will ask to view your connected accounts. Nothing is stored.`:linkedRoblox.length?`Roblox accounts linked to your Discord — tap one to use it.`:`No Roblox account is linked to your Discord. Add one in Discord → Settings → Connections, then refresh.`;
+  return `<div style="margin-top:8px"><button type="button" class="ghost" id="lnkDisc" style="padding:8px 12px">${has?"Refresh from Discord":"Use a Roblox account linked to Discord"}</button><div class="sub" style="margin-top:6px">${msg}</div>${chips}${lnkErr?`<div class="err">${esc(lnkErr)}</div>`:""}</div>`;
+}
+async function grabLinked(tok){
+  try{sessionStorage.removeItem("jj_link")}catch(e){}
+  try{
+    const r=await fetch("https://discord.com/api/v10/users/@me/connections",{headers:{Authorization:"Bearer "+tok}});
+    if(!r.ok)throw new Error("Discord answered "+r.status);
+    const a=await r.json();
+    linkedRoblox=(Array.isArray(a)?a:[]).filter(c=>c.type==="roblox"&&/^[A-Za-z0-9_]{3,20}$/.test(c.name||"")).map(c=>({name:c.name,verified:!!c.verified}));lnkErr="";
+  }catch(e){linkedRoblox=[];lnkErr="Couldn’t read your Discord connections: "+(e.message||"failed")}
+  if(loaded&&uid)openOwn();else reopen=true;
+}
+function openOwn(){ranked();const p=profiles.find(x=>x.id===uid);return p?view(p):onboard()}
 function editor(p,isNew){
   const base=isNew||isOwner||(p.id===uid&&!p.banned),og=!isNew&&can("grades"),ob=!isNew&&can("ban"),orl=!isNew&&isOwner;
   const all=[...new Set([...Object.keys(roleDefs),...(p.roles||[])])];
   return `${base&&!isNew?`<label>Profile picture</label><div class="avrow"><span id="avprev">${av(p)}</span><div class="avbtn"><button type="button" class="ghost" id="avpick">Change picture</button><button type="button" class="ghost" id="avreset">Use Discord picture</button></div><input type="file" id="avfile" accept="image/*" hidden></div><div class="sub" id="avmsg" style="margin-top:8px"></div>`:""}
-  ${base?`<label>Roblox username</label><input id="f_rb" maxlength="20" value="${esc(p.roblox)}" placeholder="e.g. Builderman">
+  ${base?`<label>Roblox account</label><input id="f_rb" maxlength="20" value="${esc(p.roblox)}" placeholder="Your Roblox username">${isNew||p.id===uid?linkHtml()+(isNew?"":`<div class="sub" style="margin-top:8px">You can change your Roblox account any time — press Save afterwards. Hosts can see changes in the activity log.</div>`):""}
   <label>Region</label><select id="f_r">${isNew?`<option value="" disabled selected>Choose a region</option>`:""}${Object.entries(REG).map(([k,v])=>`<option value="${k}" ${k===p.region?"selected":""}>${k} · ${v}</option>`).join("")}</select>`:""}
   ${og?`<label>Grade</label><select id="f_g">${Object.entries(GRADES).map(([k,v])=>`<option value="${k}" ${k===(p.grade||"G1")?"selected":""}>${v}</option>`).join("")}</select>
   <div id="subwrap" ${(p.grade||"G1")==="SG"?"hidden":""}><label>Sub-grade</label><select id="f_s">${SUBS.slice().reverse().map(s=>`<option ${s===(p.sub||"Low")?"selected":""}>${s}</option>`).join("")}</select>
@@ -837,7 +889,7 @@ function editor(p,isNew){
 }
 function view(p){
   editId=p.id;const self=(p.id===uid&&!p.banned)||isOwner,canEdit=self||can("grades")||can("ban");
-  openModal(`<div style="display:flex;gap:14px;align-items:center"><span id="avtop">${av(p)}</span><div><h3>${nmx(p)}</h3><div class="sub">@${esc(p.roblox)}</div></div></div>
+  openModal(`<div style="display:flex;gap:14px;align-items:center"><span id="avtop">${av(p)}</span><div><h3>${nmx(p)}</h3><div class="sub">${rbA(p)} ↗</div></div></div>
   ${self?"":`<span class="badge">◈ Roblox name is self-reported</span>`}
   <div class="kv"><span>Status</span><span>${p.banned?"Banned"+(p.reason?" — "+esc(p.reason):""):p.ranked?"Competitive #"+p.rank:"Not competitive"}</span><span>Grade</span><span>${p.ranked?esc(gl(p)):"—"}</span><span>Region</span><span>${REG[p.region]}</span><span>Roles</span><span>${p.roles.length?`<span class="rchips">${p.roles.map(badge).join("")}</span>`:"—"}</span></div>
   ${histHtml(p)}${canEdit?editor(p,false):""}<div class="err" id="err"></div>
@@ -922,6 +974,7 @@ async function loadProfiles(){
   loaded=true;
   if(onboarding&&uid&&profiles.some(p=>p.id===uid))closeModal();
   renderAuth();render();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();
+  if(reopen&&uid){reopen=false;openOwn()}
 }
 /* ---- site profile pictures (stored in Supabase Storage bucket "avatars", see avatars.sql) ---- */
 const avMsg=m=>{const e=$("#avmsg");if(e)e.textContent=m};
@@ -981,6 +1034,8 @@ async function refreshAuth(){
   const {data:{session}}=await sb.auth.getSession();
   uid=session?session.user.id:null;isOwner=false;me=null;
   if(session){
+    let fl=null;try{fl=sessionStorage.getItem("jj_link")}catch(e){}
+    if(fl&&session.provider_token)grabLinked(session.provider_token);
     const m=session.user.user_metadata||{};
     me={name:(m.custom_claims&&m.custom_claims.global_name)||m.full_name||m.name||"You",avatar:m.avatar_url};
     const r=await sb.rpc("is_admin");isOwner=r.data===true;
@@ -990,6 +1045,10 @@ async function refreshAuth(){
 }
 document.addEventListener("click",async e=>{
   const t=e.target;
+  if(t.closest&&t.closest("a[href]"))return;
+  const rx=t.closest("[data-rbx]");if(rx){const f=$("#f_rb");if(f)f.value=rx.dataset.rbx;return}
+  if(t.closest("#lnkDisc")){try{sessionStorage.setItem("jj_link","1")}catch(_){}return sb.auth.signInWithOAuth({provider:"discord",options:{scopes:"identify email connections",redirectTo:location.origin+location.pathname}})}
+  if(t.closest("#lbEdit")){lbEdit=true;orderDraft=null;ordMsg="";return render()}
   const gb=t.closest("[data-go]");if(gb)return go(gb.dataset.go);
   const ht=t.closest("[data-ht]");if(ht){hostTab=ht.dataset.ht;if(hostTab==="over"||hostTab==="logs"||hostTab==="place"||hostTab==="stats"||hostTab==="tools")loadAudit();return render()}
   if(t.closest("#avpick"))return $("#avfile").click();
@@ -999,7 +1058,7 @@ document.addEventListener("click",async e=>{
   if(t.closest("#exC"))return copyBoard(t.closest("#exC"));
   const mv=t.closest("[data-mv]");if(mv){moveOrd(mv.dataset.mv,+mv.dataset.to);ordMsg="";return render()}
   if(t.closest("#ordSave"))return saveOrder(orderDraft.slice());
-  if(t.closest("#ordDiscard")){orderDraft=null;ordMsg="";return render()}
+  if(t.closest("#ordDiscard")){orderDraft=null;ordMsg="";lbEdit=false;return render()}
   if(t.closest("#ordAuto")){if(!confirm("Go back to the automatic grade order for everyone?"))return;return saveOrder([])}
   const cb=t.closest("[data-cb]");if(cb)return copyBoard(cb,cb.dataset.cb);
   const hsb=t.closest("[data-hs]");if(hsb){hs=hsb.dataset.hs;return render()}
@@ -1028,7 +1087,7 @@ document.addEventListener("click",async e=>{
     const x=await sb.rpc(isOwner?"admin_ban":"role_ban",{target:p.id,bn:!p.banned,br:(r||"").slice(0,80)});if(x.error)alert(x.error.message);else{logEvent(p.banned?"unbanned":"banned","general",p.id,p.name,(r||"").slice(0,80));loadProfiles()}return}
   if(t.id==="modal"||t.id==="x")return tryClose();
   if(t.closest("#login")&&sb)return sb.auth.signInWithOAuth({provider:"discord",options:{redirectTo:location.origin+location.pathname}});
-  if(t.closest("#logout")){await sb.auth.signOut();return}
+  if(t.closest("#logout")){linkedRoblox=null;lnkErr="";await sb.auth.signOut();return}
   if(t.closest("#meBtn")){ranked();const p=profiles.find(p=>p.id===uid);return p?view(p):onboard()}
   if(t.id==="skip"){skipped=true;return closeModal()}
   if(t.id==="save")return save();
@@ -1056,6 +1115,7 @@ document.addEventListener("keydown",e=>{
   if(e.key==="ArrowUp"){e.preventDefault();cmdSel=Math.max(0,cmdSel-1);return cmdBuild()}
   if(e.key==="Enter"){e.preventDefault();cmdRun(cmdSel)}
 });
+document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target&&e.target.classList&&e.target.classList.contains("logo")){e.preventDefault();go("home")}});
 $("#cmdq").addEventListener("input",()=>{cmdSel=0;cmdBuild()});
 $("#cmd").addEventListener("click",e=>{const ci=e.target.closest("[data-ci]");if(ci)return cmdRun(+ci.dataset.ci);if(e.target.id==="cmd")closeCmd()});
 (async()=>{
