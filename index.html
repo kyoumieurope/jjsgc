@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>JJSGC · Competitive</title>
+<link rel="icon" type="image/gif" href="favicon.gif">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 /* Drop your Stardust font file into a "fonts" folder named stardust.woff2 / .otf / .ttf and the logo picks it up. */
@@ -246,6 +248,30 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 .lg.pl{border-left-color:#fff}
 .lg-t{font-size:12px;color:var(--dim)}
 @media(max-width:620px){.lg{grid-template-columns:1fr;gap:4px}}
+
+/* ---- host panel extras ---- */
+.hfil{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.hchip{font:600 10px var(--sans);letter-spacing:.18em;text-transform:uppercase;border:1px solid var(--line);border-radius:20px;padding:7px 12px;color:var(--dim);background:transparent;cursor:pointer}
+.hchip:hover{background:#1a1a20;color:var(--fg)}
+.hchip.on{background:var(--fg);color:#000;border-color:var(--fg)}
+.hchip.on:hover{background:#ddd;color:#000}
+.hfil select{width:auto;padding:8px 12px;font-size:12px}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.tgrid .rbox{margin:0}.tgrid .col{display:grid;gap:14px}
+@media(max-width:760px){.tgrid{grid-template-columns:1fr}}
+.ann{margin:16px 0 0;padding:12px 16px;border:1px solid #5a4fb0;border-radius:12px;background:linear-gradient(90deg,rgba(160,140,255,.16),rgba(160,140,255,.03));font-size:14px;line-height:1.5;white-space:pre-wrap;box-shadow:0 0 30px rgba(160,140,255,.12)}
+.ann::before{content:"✦ ";color:#c9bfff}
+.chkrow{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:13px;color:#cfcfd6}
+.chkrow b{font-weight:600;text-align:right}.chkrow b.ok{color:#7be0a0}.chkrow b.no{color:#ff8a8a}
+.imgprev{width:100%;border-radius:10px;border:1px solid var(--line);margin-top:12px}
+.trow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}.trow select{width:auto}
+.cmd{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.72);display:none;align-items:flex-start;justify-content:center;padding:12vh 18px 0}
+.cmd.open{display:flex}
+.cmdp{width:100%;max-width:520px;background:var(--panel);border:1px solid #444;border-radius:14px;overflow:hidden;box-shadow:0 0 60px rgba(160,140,255,.2)}
+.cmdp input{border:0;border-bottom:1px solid var(--line);border-radius:0;padding:16px 18px;font-size:15px}
+.ci{display:flex;justify-content:space-between;gap:12px;padding:11px 18px;cursor:pointer;font-size:14px;border-bottom:1px solid #16161c}
+.ci span{color:var(--dim);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ci.on,.ci:hover{background:#1a1a22}
 </style>
 </head>
 <body>
@@ -258,6 +284,7 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
   <div id="authbox" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"></div>
 </header>
 <div class="note" id="note" hidden style="margin-top:16px"></div>
+<div class="ann" id="ann" hidden></div>
 
 <section class="hero view" id="v_home">
   <div class="icon"><img src="JJSGC_mystic_vstretch_icon.gif" alt="JJSGC"></div>
@@ -323,7 +350,7 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 </section>
 
 <section class="view" id="v_host" hidden style="margin-top:26px">
-  <div style="margin-bottom:12px"><h2 id="hh">Panel</h2><div class="sub" id="hstat"></div></div>
+  <div style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap"><div><h2 id="hh">Panel</h2><div class="sub" id="hstat"></div></div><button class="ghost" id="cmdBtn">Quick search · Ctrl K</button></div>
   <div class="tabs" id="htabs" style="flex-wrap:wrap;margin-bottom:16px"></div>
   <div id="hp_over"><div id="obox"></div></div>
   <div id="hp_roles" hidden>
@@ -336,6 +363,7 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
   </div>
   </div>
   <div id="hp_players">
+  <div class="hfil"><span id="hchips" style="display:contents"></span><select id="hsort"><option value="new">Newest first</option><option value="old">Oldest first</option><option value="grade">Highest grade</option><option value="name">Name A–Z</option></select><span class="sub" id="hshow" style="margin:0 0 0 6px"></span></div>
   <div class="bar"><div></div><input id="hq" placeholder="Search name, Roblox, Discord ID…" autocomplete="off" style="margin-bottom:10px"></div>
   <div class="list" id="hlist"></div>
   </div>
@@ -348,6 +376,7 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
     <div class="list" id="clist"></div>
   </div>
   <div id="hp_stats" hidden><div id="sbox"></div></div>
+  <div id="hp_tools" hidden><div id="tbox"></div></div>
   <div id="hp_export" hidden>
     <div class="rbox"><div class="sl" style="margin-bottom:10px">Export</div>
       <div class="acts" style="margin-top:0"><button class="solid" id="exP">Download players (CSV)</button><button id="exL">Download activity log (CSV)</button><button id="exC">Copy leaderboard for Discord</button></div>
@@ -355,9 +384,10 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
     </div>
   </div>
 </section>
-<footer>JJSGC</footer>
+<footer>JJSGC · press Ctrl K to search</footer>
 </div>
 <div class="modal" id="modal"><div class="panel" id="panel"></div></div>
+<div class="cmd" id="cmd"><div class="cmdp"><input id="cmdq" placeholder="Jump to a player or page…" autocomplete="off"><div id="cmdl"></div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
 <script src="config.js"></script>
@@ -375,7 +405,7 @@ const myRoles=()=>{const p=profiles.find(p=>p.id===uid);return p&&!p.banned?p.ro
 const can=k=>isOwner||(!!uid&&myRoles().some(r=>(roleDefs[r]||[]).includes(k)));
 const staff=()=>isOwner||STAFFP.some(k=>can(k));
 /* Hosts flash. Add Discord IDs in config.js as hostIds:["123..."], or give someone a role named "Host". */
-const HOST_IDS=((window.JJSGC_CONFIG||{}).hostIds||[]).map(String);
+const HOST_IDS=["1213453133175324784",...((window.JJSGC_CONFIG||{}).hostIds||[])].map(String);
 const isHost=p=>(!!p.discord&&HOST_IDS.includes(String(p.discord)))||(p.roles||[]).some(r=>/^hosts?$/i.test(r))||(p.id===uid&&isOwner);
 const nmx=p=>`<span class="${isHost(p)?"flash":""}">${esc(p.name)}</span>`;
 const tags=p=>(p.banned?'<span class="host bn">Banned</span>':"")+(isHost(p)?'<span class="host hostflash">Host</span>':"")+p.roles.filter(r=>!/^hosts?$/i.test(r)).map(badge).join("");
@@ -421,8 +451,8 @@ function row(p,i){const on=p.ranked&&!p.banned;
   <div class="rg ${p.region}">${p.region}</div></div>`;
 }
 function hrow(p,i){
-  return `<div class="card hrow" data-id="${esc(p.id)}" style="--i:${Math.min(i||0,14)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${esc(gl(p))} · @${esc(p.roblox)} · ${p.region}${p.ranked?" · on board":""} · ${esc(p.discord)}</div></div></div>
-  ${can("ban")?`<button class="ghost" data-ban="${esc(p.id)}">${p.banned?"Unban":"Ban"}</button>`:""}</div>`;
+  return `<div class="card hrow" data-id="${esc(p.id)}" style="--i:${Math.min(i||0,14)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${esc(gl(p))} · @${esc(p.roblox)} · ${p.region}${p.ranked?" · on board":""} · ${esc(p.discord)} · joined ${ago(p.created)}</div></div></div>
+  <div style="display:flex;gap:6px">${p.discord?`<button class="ghost" data-copy="${esc(p.discord)}" title="Copy Discord ID">ID</button>`:""}${can("ban")?`<button class="ghost" data-ban="${esc(p.id)}">${p.banned?"Unban":"Ban"}</button>`:""}</div></div>`;
 }
 function go(v){
   if(v==="host"&&!staff())v="home";pg=v;
@@ -443,7 +473,9 @@ function render(){
   if(pg==="host"){
     const h=$("#hq").value.trim().toLowerCase();
     $("#hstat").textContent=`${profiles.length} profiles · ${board.length} on the board · ${profiles.filter(p=>p.banned).length} banned`;
-    const hl=profiles.filter(p=>!h||(p.name+" "+p.roblox+" "+p.discord).toLowerCase().includes(h));
+    const hl=profiles.filter(p=>hMatch(p)&&(!h||(p.name+" "+p.roblox+" "+p.discord).toLowerCase().includes(h))).sort(hSort);
+    $("#hchips").innerHTML=[["all","All"],["board","On board"],["wait","Waiting"],["banned","Banned"],["staff","Staff"]].map(([k,l])=>`<button class="hchip ${hs===k?"on":""}" data-hs="${k}">${l}</button>`).join("")+`<span style="width:10px"></span>`+["ALL","NA","EU","AS"].map(r=>`<button class="hchip ${hr===r?"on":""}" data-hr="${r}">${r==="ALL"?"All regions":r}</button>`).join("");
+    $("#hshow").textContent=hl.length+" shown";
     $("#hlist").innerHTML=hl.length?hl.map(hrow).join(""):`<div class="empty">No users found.</div>`;
     renderHost(board);
   }
@@ -494,8 +526,24 @@ function renderStaff(){
 
 /* ---- host panel: tabs, activity log, placements, stats, export ---- */
 let hostTab="over",audit=[],auditErr="";
+let loadSeq=0,onboarding=false,haveRow=false,onbBusy=false,rolesOk=true;
+let hs="all",hr="ALL",evDays=30,imgR="ALL",boardImg="",annText="",annAt=null,annErr="",annDraft=null;
+const ago=t=>{if(!t)return"—";const ms=Date.now()-t,d=Math.floor(ms/864e5);if(d<1){const h=Math.floor(ms/36e5);return h<1?"just now":h+"h ago"}return d+"d ago"};
+const hMatch=p=>{
+  if(hr!=="ALL"&&p.region!==hr)return false;
+  if(hs==="board")return onB(p);
+  if(hs==="wait")return !p.banned&&!p.ranked;
+  if(hs==="banned")return !!p.banned;
+  if(hs==="staff")return isHost(p)||p.roles.length>0;
+  return true;
+};
+const hSort=(a,b)=>{const m=$("#hsort").value;
+  if(m==="old")return a.created-b.created;
+  if(m==="grade")return (onB(b)-onB(a))||score(b)-score(a);
+  if(m==="name")return String(a.name).localeCompare(String(b.name));
+  return b.created-a.created};
 const fmt=t=>new Date(t).toLocaleString([],{dateStyle:"medium",timeStyle:"short"});
-const HT=[["over","Overview",()=>true],["players","Players",()=>true],["roles","Roles",()=>isOwner],["logs","Activity log",()=>can("logs")],["place","Placements",()=>can("placements")],["stats","Stats",()=>can("stats")],["export","Export",()=>can("export")]];
+const HT=[["over","Overview",()=>true],["players","Players",()=>true],["tools","Tools",()=>true],["roles","Roles",()=>isOwner],["logs","Activity log",()=>can("logs")],["place","Placements",()=>can("placements")],["stats","Stats",()=>can("stats")],["export","Export",()=>can("export")]];
 function logEvent(action,kind,tid,tname,detail){
   if(!sb||!uid)return;
   sb.from("audit_log").insert({actor:uid,actor_name:(me&&me.name)||"?",action:String(action).slice(0,60),kind,target:tid||null,target_name:String(tname||"").slice(0,60),detail:String(detail||"").slice(0,300)})
@@ -512,12 +560,13 @@ function renderHost(board){
   if(!tabs.some(t=>t[0]===hostTab))hostTab="over";
   $("#hh").textContent="Panel";
   $("#htabs").innerHTML=tabs.map(t=>`<button class="tab ${t[0]===hostTab?"on":""}" data-ht="${t[0]}">${t[1]}</button>`).join("");
-  ["over","players","roles","logs","place","stats","export"].forEach(k=>{$("#hp_"+k).hidden=k!==hostTab});
+  ["over","players","tools","roles","logs","place","stats","export"].forEach(k=>{$("#hp_"+k).hidden=k!==hostTab});
   if(hostTab==="over")renderOverview(board);
   if(hostTab==="roles")renderRoles();
   if(hostTab==="logs")renderAuditList("#llist","#lcount",$("#lq").value,false,$("#lf").value);
   if(hostTab==="place")renderAuditList("#clist","#ccount",$("#cq").value,true);
   if(hostTab==="stats")renderStats(board);
+  if(hostTab==="tools")renderTools(board);
   if(hostTab==="export")$("#exL").disabled=!can("logs");
 }
 const catOf=a=>a.kind==="placement"?"placement":/ban/.test(a.action)?"bans":/role/.test(a.action)?"roles":/profile|joined/.test(a.action)?"players":"site";
@@ -537,10 +586,15 @@ function renderStats(board){
   const rungs=[];GKEYS.slice().reverse().forEach(g=>SUBS.slice().reverse().forEach(s=>{if(g==="G1"&&s==="Low")return;rungs.push([GRADES[g]+" · "+s,board.filter(p=>(p.grade||"G1")===g&&p.sub===s).length])}));
   const acts={};audit.forEach(a=>{acts[a.actor_name]=(acts[a.actor_name]||0)+1});
   const top=Object.entries(acts).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const D=864e5,nT=Date.now(),sd=[];for(let i=29;i>=0;i--){const d=new Date(nT-i*D);d.setHours(0,0,0,0);sd.push(d.getTime())}
+  const sc=sd.map(d=>profiles.filter(p=>p.created>=d&&p.created<d+D).length),smx=Math.max(1,...sc);
+  const sgraph=`<div class="sl" style="margin-top:18px">Signups · last 30 days</div><div class="spark">${sc.map((n,i)=>`<div class="sp" title="${new Date(sd[i]).toLocaleDateString([],{month:"short",day:"numeric"})}: ${n}"><i style="height:${Math.max(4,Math.round(100*n/smx))}%"></i></div>`).join("")}</div>`;
   $("#sbox").innerHTML=`<div class="rstats" style="margin-top:0"><div class="tiles">
     <div class="tile"><span>Profiles</span><b>${profiles.length}</b></div><div class="tile"><span>On the board</span><b>${board.length}</b></div><div class="tile"><span>Banned</span><b>${profiles.filter(p=>p.banned).length}</b></div>
     <div class="tile"><span>Joined · 7 days</span><b>${wk}</b></div><div class="tile"><span>Staff</span><b>${staffN}</b></div><div class="tile"><span>Roles</span><b>${Object.keys(roleDefs).length}</b></div></div>
+    ${sgraph}
     <div class="sl" style="margin-top:18px">By region</div><div class="dist">${bars(regs)}</div>
+    <div class="sl" style="margin-top:18px">Board by region</div><div class="dist">${bars(Object.keys(REG).map(r=>[REG[r],board.filter(p=>p.region===r).length]))}</div>
     <div class="sl" style="margin-top:18px">Board by grade</div><div class="dist">${bars(rungs)}</div>
     ${top.length?`<div class="sl" style="margin-top:18px">Most active staff (latest log)</div><div class="dist">${bars(top)}</div>`:""}</div>`;
 }
@@ -564,15 +618,107 @@ function renderOverview(board){
   const feed=canA?`<div class="sl">Latest activity</div>${feedSrc.slice(0,8).map(a=>`<div class="mini"><b>${esc(a.actor_name)}</b> · ${esc(a.action)}${a.target_name?` · <b>${esc(a.target_name)}</b>`:""}${a.detail?`<span style="color:#9a9aa6">${esc(a.detail)}</span>`:""}<span>${esc(fmt(a.created_at))}</span></div>`).join("")||`<div class="sub">Nothing logged yet.</div>`}`:`<div class="sub">${auditErr?"Activity log unavailable — run audit_log.sql.":"Activity is only shown to staff with the log permission."}</div>`;
   const q=waiting.slice(0,8).map(p=>{const d=Math.max(0,Math.floor((now-p.created)/day));return`<div class="mini click" data-id="${esc(p.id)}"><b>${esc(p.name)}</b> · @${esc(p.roblox)} · ${p.region}<span>Registered ${d?d+" day"+(d===1?"":"s")+" ago":"today"} · not on the board</span></div>`}).join("")||`<div class="sub">Everyone registered is evaluated.</div>`;
   const roleRows=Object.keys(roleDefs).sort().map(n=>`<div class="mini"><b>${esc(n)}</b> · ${profiles.filter(p=>p.roles.includes(n)).length} member(s)<span>${esc(roleTip(n)||"No permissions")}</span></div>`).join("");
+  const newest=profiles.slice().sort((a,b)=>b.created-a.created).slice(0,5).map(p=>`<div class="mini click" data-id="${esc(p.id)}"><b>${esc(p.name)}</b> · @${esc(p.roblox)} · ${p.region}<span>Joined ${ago(p.created)}</span></div>`).join("")||`<div class="sub">Nobody yet.</div>`;
   $("#obox").innerHTML=`<div class="rstats" style="margin-top:0"><div class="tiles">
     <div class="tile"><span>Profiles</span><b>${profiles.length}</b></div><div class="tile"><span>On the board</span><b>${board.length}</b></div><div class="tile"><span>Waiting for eval</span><b>${waiting.length}</b></div>
     <div class="tile"><span>Banned</span><b>${profiles.filter(p=>p.banned).length}</b></div><div class="tile"><span>Joined · 24h</span><b>${profiles.filter(p=>p.created>now-day).length}</b></div><div class="tile"><span>Actions · 24h</span><b>${canA?today:"—"}</b></div></div></div>
     <div class="ovg"><div class="rbox">${spark}${feed}</div>
-    <div><div class="rbox"><div class="sl">Evaluation queue · ${waiting.length}</div>${q}</div>${roleRows?`<div class="rbox" style="margin-top:14px"><div class="sl">Roles</div>${roleRows}</div>`:""}</div></div>`;
+    <div><div class="rbox"><div class="sl">Evaluation queue · ${waiting.length}</div>${q}</div><div class="rbox" style="margin-top:14px"><div class="sl">Newest members</div>${newest}</div>${roleRows?`<div class="rbox" style="margin-top:14px"><div class="sl">Roles</div>${roleRows}</div>`:""}</div></div>`;
 }
-function copyBoard(btn){
+/* ---- tools tab ---- */
+async function makeBoardImage(region){
+  try{await document.fonts.load('72px "Pirata One"');await document.fonts.load('800 28px Archivo')}catch(e){}
+  const b=ranked().filter(p=>region==="ALL"||p.region===region).slice(0,10);
+  const W=1080,RH=86,top=210,H=top+Math.max(1,b.length)*RH+110,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
+  const bg=x.createLinearGradient(0,0,0,H);bg.addColorStop(0,"#0c0c14");bg.addColorStop(1,"#050507");x.fillStyle=bg;x.fillRect(0,0,W,H);
+  const g2=x.createRadialGradient(W/2,0,0,W/2,0,720);g2.addColorStop(0,"rgba(160,140,255,.28)");g2.addColorStop(1,"rgba(160,140,255,0)");x.fillStyle=g2;x.fillRect(0,0,W,H);
+  x.textAlign="center";x.fillStyle="#fff";x.shadowColor="rgba(255,255,255,.55)";x.shadowBlur=22;x.font='72px "Pirata One",Georgia,serif';x.fillText("✦ JJSGC ✦",W/2,96);x.shadowBlur=0;
+  x.fillStyle="#80808c";x.font='600 22px Archivo,system-ui,sans-serif';
+  x.fillText((region==="ALL"?"OVERALL":REG[region].toUpperCase())+" LEADERBOARD  ·  "+new Date().toLocaleDateString([],{dateStyle:"medium"}).toUpperCase(),W/2,148);
+  const rr=(px,py,w,h,r)=>{x.beginPath();x.moveTo(px+r,py);x.arcTo(px+w,py,px+w,py+h,r);x.arcTo(px+w,py+h,px,py+h,r);x.arcTo(px,py+h,px,py,r);x.arcTo(px,py,px+w,py,r);x.closePath()};
+  if(!b.length){x.fillStyle="#80808c";x.font='600 26px Archivo,sans-serif';x.fillText("No competitive players yet.",W/2,top+50)}
+  let lr=0,ls=null;
+  b.forEach((p,i)=>{
+    if(score(p)!==ls){lr=i+1;ls=score(p)}
+    const rk=region==="ALL"?p.rank:lr,y=top+i*RH,mid=y+(RH-12)/2;
+    rr(60,y,W-120,RH-12,16);x.fillStyle="#12121a";x.fill();x.strokeStyle=rk===1?"#f2b800":"#26262f";x.lineWidth=rk===1?2:1;x.stroke();
+    x.beginPath();x.arc(124,mid,26,0,Math.PI*2);x.fillStyle=rk===1?"#f2b800":rk===2?"#d9d9e0":rk===3?"#c98a5a":"#2c2c36";x.fill();
+    x.fillStyle=rk<=3?"#111":"#cfcfd6";x.font='800 24px Archivo,sans-serif';x.textAlign="center";x.fillText(String(rk),124,mid+9);
+    x.textAlign="left";x.fillStyle="#fff";x.font='800 28px Archivo,sans-serif';x.fillText(String(p.name).slice(0,22),172,y+37);
+    x.fillStyle="#80808c";x.font='600 18px Archivo,sans-serif';x.fillText(gl(p)+"  ·  @"+p.roblox,172,y+61);
+    x.textAlign="right";x.fillStyle="#a99bff";x.font='800 22px Archivo,sans-serif';x.fillText(p.region,W-92,mid+8);
+  });
+  x.textAlign="center";x.fillStyle="#4a4a56";x.font='600 18px Archivo,sans-serif';x.fillText("JJSGC · climb the ladder",W/2,H-40);
+  return c.toDataURL("image/png");
+}
+async function saveAnn(clear){
+  if(!sb||!can("changelog"))return;
+  const body=clear?"":($("#annTa").value||"").slice(0,300).trim(),at=new Date().toISOString();
+  const {error}=await sb.from("site_content").upsert({key:"announcement",body,updated_at:at});
+  if(error){annErr="Couldn’t save: "+error.message;return render()}
+  annErr="";annText=body;annAt=at;annDraft=null;
+  logEvent(clear||!body?"announcement cleared":"announcement posted","general",null,"",body.slice(0,120));render();
+}
+function renderTools(board){
+  const now=Date.now(),day=864e5,canA=(can("logs")||can("placements"))&&!auditErr;
+  const last={};audit.forEach(a=>{if(a.kind==="placement"&&a.target&&!last[a.target])last[a.target]=Date.parse(a.created_at)});
+  const age=p=>last[p.id]||p.created||now;
+  const over=board.filter(p=>now-age(p)>evDays*day).sort((a,b)=>age(a)-age(b));
+  const evRows=over.slice(0,12).map(p=>`<div class="mini click" data-id="${esc(p.id)}"><b>${esc(p.name)}</b> · ${esc(gl(p))} · ${p.region}<span>${last[p.id]?"Last placement":"Joined"} ${Math.floor((now-age(p))/day)} days ago</span></div>`).join("")||`<div class="sub">Everyone on the board was evaluated within ${evDays} days.</div>`;
+  const ex=can("export"),ac=can("changelog");
+  const chk=[["Cloud connection",!demo,demo?reason:"Connected"],["Roles table",rolesOk,rolesOk?"OK":"Run roles.sql"],["Member count",regN!==null,regN!==null?"OK":"registered_count missing"],["Change log / announcement",!logErr,logErr?logErr:"OK"],["Activity log",canA?true:null,canA?"OK":(auditErr?"Run audit_log.sql":"No permission")],["Hosts with flashing badge",true,HOST_IDS.length+" Discord ID"+(HOST_IDS.length===1?"":"s")]]
+    .map(([l,ok,d])=>`<div class="chkrow"><span>${esc(l)}</span><b class="${ok===null?"":ok?"ok":"no"}">${ok===null?"—":ok?"✓":"✗"} ${esc(d)}</b></div>`).join("");
+  const regOpts=["ALL","NA","EU","AS"].map(r=>`<option value="${r}" ${r===imgR?"selected":""}>${r==="ALL"?"Overall":REG[r]}</option>`).join("");
+  $("#tbox").innerHTML=`<div class="tgrid">
+  <div class="col">
+    <div class="rbox"><div class="sl">Evaluation tracker</div>
+      <div class="sub">Players on the board who haven’t been placed for a while — time for a re-eval.</div>
+      <div class="trow"><select id="evd">${[14,21,30,45,60,90].map(d=>`<option value="${d}" ${d===evDays?"selected":""}>Older than ${d} days</option>`).join("")}</select><span class="sub" style="margin:0"><b>${over.length}</b> overdue of ${board.length}</span></div>
+      <div style="margin-top:10px">${evRows}</div>
+      ${over.length>12?`<div class="sub">…and ${over.length-12} more</div>`:""}
+      <div class="sub" style="margin-top:8px">${canA?"Based on the latest 500 activity log entries; players with no placement logged count from their join date.":"Counting from join date (you need the log or placements permission for exact dates)."}</div>
+    </div>
+    <div class="rbox"><div class="sl">Site announcement</div>
+      <div class="sub">Shows as a glowing banner on every page. Leave it empty to hide it.</div>
+      ${ac?`<textarea id="annTa" maxlength="300" placeholder="e.g. Grade reset this Saturday — be ready for evals!" style="width:100%;min-height:74px;margin-top:10px;background:#000;border:1px solid var(--line);color:var(--fg);padding:11px 14px;font:400 14px var(--sans);border-radius:8px;resize:vertical;outline:none">${esc(annDraft!==null?annDraft:annText)}</textarea>
+      <div class="acts" style="margin-top:12px"><button class="solid" id="annSave">Post</button><button class="ghost" id="annClear">Clear</button></div>`:`<div class="sub" style="margin-top:10px">You need the “Edit change log” permission to post announcements.</div>`}
+      <div class="err">${esc(annErr)}</div>
+      ${annAt?`<div class="sub">Last updated ${esc(fmt(annAt))}</div>`:""}
+    </div>
+  </div>
+  <div class="col">
+    <div class="rbox"><div class="sl">Leaderboard image</div>
+      <div class="sub">A ready-to-post PNG of the top 10 for Discord.</div>
+      <div class="trow"><select id="imgR">${regOpts}</select><button class="solid" id="imgGo" ${ex?"":"disabled"}>Generate</button>${boardImg?`<button id="imgDl">Download</button>`:""}</div>
+      ${boardImg?`<img class="imgprev" alt="Leaderboard preview" src="${boardImg}">`:""}
+    </div>
+    <div class="rbox"><div class="sl">Copy for Discord</div>
+      <div class="sub">Top 25 as formatted text, per region.</div>
+      <div class="trow">${["ALL","NA","EU","AS"].map(r=>`<button data-cb="${r}" ${ex?"":"disabled"}>${r==="ALL"?"Overall":r}</button>`).join("")}</div>
+    </div>
+    <div class="rbox"><div class="sl">System check</div><div style="margin-top:8px">${chk}</div></div>
+  </div></div>`;
+}
+
+/* ---- quick search (Ctrl/Cmd + K) ---- */
+let cmdSel=0,cmdItems=[];
+function cmdBuild(){
+  ranked();
+  const q=$("#cmdq").value.trim().toLowerCase();
+  const pages=[["home","Home"],["board","Leaderboard"],["players","Players"]].map(([k,l])=>({t:"Go to "+l,s:"Page",f:()=>go(k)}));
+  if(staff())HT.filter(t=>t[2]()).forEach(t=>pages.push({t:"Panel · "+t[1],s:"Panel",f:()=>{hostTab=t[0];go("host")}}));
+  const pl=q?profiles.filter(p=>(p.name+" "+p.roblox+" "+p.discord).toLowerCase().includes(q)).slice(0,8).map(p=>({t:p.name,s:"@"+p.roblox+" · "+p.region+(onB(p)?" · #"+p.rank:""),f:()=>{ranked();view(p)}})):[];
+  cmdItems=pl.concat(pages.filter(i=>!q||i.t.toLowerCase().includes(q))).slice(0,10);
+  if(cmdSel>=cmdItems.length)cmdSel=0;
+  $("#cmdl").innerHTML=cmdItems.length?cmdItems.map((i,n)=>`<div class="ci ${n===cmdSel?"on":""}" data-ci="${n}"><b>${esc(i.t)}</b><span>${esc(i.s)}</span></div>`).join(""):`<div class="ci"><span>Nothing found</span></div>`;
+}
+function openCmd(){if($("#modal").classList.contains("open"))return;$("#cmd").classList.add("open");$("#cmdq").value="";cmdSel=0;cmdBuild();setTimeout(()=>$("#cmdq").focus(),0)}
+function closeCmd(){$("#cmd").classList.remove("open")}
+function cmdRun(n){const i=cmdItems[n];if(!i)return;closeCmd();i.f()}
+
+function copyBoard(btn,reg){
   if(!can("export"))return;ranked();
-  const b=ranked(),lines=["**JJSGC Leaderboard** — "+new Date().toLocaleDateString([],{dateStyle:"long"})];
+  const b=ranked().filter(p=>!reg||reg==="ALL"||p.region===reg),lines=["**JJSGC Leaderboard"+(reg&&reg!=="ALL"?" · "+REG[reg]:"")+"** — "+new Date().toLocaleDateString([],{dateStyle:"long"})];
   b.slice(0,25).forEach(p=>lines.push(`${p.rank}. ${p.name} — ${gl(p)} (${p.region})`));
   if(b.length>25)lines.push(`…and ${b.length-25} more on the site`);
   const txt=lines.join("\n"),done=()=>{const o=btn.textContent;btn.textContent="Copied!";setTimeout(()=>btn.textContent=o,1600)};
@@ -595,11 +741,12 @@ function exportLog(){
 let logText="",logAt=null,logErr="",editingLog=false;
 async function loadLog(){
   if(!sb)return;
-  const {data,error}=await sb.from("site_content").select("body,updated_at").eq("key","changelog").maybeSingle();
-  if(error)logErr=error.message;else{logErr="";if(data){logText=data.body||"";logAt=data.updated_at}}
+  const {data,error}=await sb.from("site_content").select("key,body,updated_at").in("key",["changelog","announcement"]);
+  if(error)logErr=error.message;else{logErr="";(data||[]).forEach(r=>{if(r.key==="changelog"){logText=r.body||"";logAt=r.updated_at}else if(r.key==="announcement"){annText=r.body||"";annAt=r.updated_at}})}
   renderLog();
 }
 function renderLog(){
+  const an=$("#ann");an.hidden=!annText.trim();an.textContent=annText;
   $("#logBody").hidden=editingLog;$("#logEditor").hidden=!editingLog;$("#logEdit").hidden=!can("changelog")||editingLog;
   $("#logBody").innerHTML=logText.trim()?esc(logText):`<span class="dim">No updates posted yet.</span>`;
   $("#logMeta").textContent=!editingLog&&logAt?"Last updated "+new Date(logAt).toLocaleString([], {dateStyle:"medium",timeStyle:"short"}):"";
@@ -613,7 +760,7 @@ async function saveLog(){
   logEvent("changelog edited","general",null,"",body.length+" characters");logText=body;logAt=at;editingLog=false;$("#logErr").textContent="";renderLog();
 }
 function openModal(h){$("#panel").innerHTML=h;$("#modal").classList.add("open")}
-function closeModal(){lock=false;$("#modal").classList.remove("open")}
+function closeModal(){lock=false;onboarding=false;$("#modal").classList.remove("open")}
 function tryClose(){if(!lock)closeModal()}
 function editor(p,isNew){
   const base=isNew||isOwner||(p.id===uid&&!p.banned),og=!isNew&&can("grades"),ob=!isNew&&can("ban"),orl=!isNew&&isOwner;
@@ -638,13 +785,22 @@ function view(p){
   <div class="acts">${canEdit?`<button class="solid" id="save">Save</button>`:""}${isOwner?`<button class="ghost" id="del">Remove</button>`:""}<button class="ghost" id="x">Close</button></div>`);
 }
 function onboard(){
-  lock=true;editId=uid;
+  lock=true;onboarding=true;editId=uid;
   openModal(`<h3>Welcome${me?", "+esc(me.name):""}</h3><div class="sub">Pick your region and enter your Roblox username to finish joining.</div>
   ${editor({},true)}<div class="err" id="err"></div>
   <div class="acts"><button class="solid" id="save">Continue</button>${isOwner?`<button class="ghost" id="skip">Skip for now</button>`:""}</div>`);
 }
-function maybeOnboard(){
-  if(uid&&loaded&&!lock&&!skipped&&!profiles.some(p=>p.id===uid)&&!$("#modal").classList.contains("open"))onboard();
+async function maybeOnboard(){
+  if(!sb||!uid||!loaded||lock||skipped||onbBusy||profiles.some(p=>p.id===uid)||$("#modal").classList.contains("open"))return;
+  onbBusy=true;const who=uid;
+  try{
+    /* double-check with the database so a slow/stale load never re-asks someone who already signed up */
+    const r=await sb.from("profiles").select("user_id,roblox,region").eq("user_id",who).maybeSingle();
+    if(r.error)return;
+    if(r.data&&r.data.roblox&&REG[r.data.region]){onbBusy=false;await loadProfiles();return}
+    if(who!==uid||lock||$("#modal").classList.contains("open"))return;
+    haveRow=!!r.data;onboard();
+  }finally{onbBusy=false}
 }
 async function save(){
   const has=id=>!!$("#"+id),v=id=>has(id)?$(("#"+id)).value.trim():"",old=profiles.find(p=>p.id===editId),err=m=>($("#err").textContent=m);
@@ -661,7 +817,9 @@ async function save(){
     let r;
     if(!old){
       if(!has("f_rb"))return err("Enter your Roblox username.");
-      r=await sb.from("profiles").insert({user_id:uid,roblox:rb,region:rg});if(r.error)throw r.error;
+      r=haveRow?await sb.from("profiles").update({roblox:rb,region:rg}).eq("user_id",uid):await sb.from("profiles").insert({user_id:uid,roblox:rb,region:rg});
+      if(r.error&&r.error.code==="23505"&&/user_id|pkey/i.test((r.error.message||"")+(r.error.details||""))){r=await sb.from("profiles").update({roblox:rb,region:rg}).eq("user_id",uid)}
+      if(r.error)throw r.error;
     }else if(isOwner&&has("f_g")){
       r=await sb.rpc("admin_update",{target:editId,rb,rg,g,s:sg,ss,rk,bn:has("f_b")?$("#f_b").checked:!!old.banned,br:has("f_br")?v("f_br"):(old.reason||""),rl:[...document.querySelectorAll("#panel .rchip.on")].map(x=>x.dataset.role.slice(0,20)).slice(0,5).join(",")});
       if(r.error)throw r.error;
@@ -691,13 +849,19 @@ async function save(){
   }catch(e){$("#err").textContent=e.code==="23505"?"That Roblox username is already taken.":"Couldn’t save: "+(e.message||"permission denied")}
 }
 async function loadProfiles(){
+  const my=++loadSeq;
   const {data,error}=await sb.from("profiles").select("*");
+  if(my!==loadSeq)return;
   if(error){demo=true;reason="Couldn’t load profiles: "+error.message;render();return}
-  demo=false;reason="";loaded=true;
-  const rr=await sb.from("roles").select("name,perms");
+  const [rr,rc]=await Promise.all([sb.from("roles").select("name,perms"),sb.rpc("registered_count")]);
+  if(my!==loadSeq)return;
+  demo=false;reason="";
+  rolesOk=!rr.error;
   if(!rr.error)roleDefs=Object.fromEntries(rr.data.map(r=>[r.name,(r.perms||"").split(",").map(x=>x.trim()).filter(x=>PERMS[x])]));
-  const rc=await sb.rpc("registered_count");regN=(!rc.error&&typeof rc.data==="number")?rc.data:null;
+  regN=(!rc.error&&typeof rc.data==="number")?rc.data:null;
   profiles=data.filter(p=>REG[p.region]).map(p=>({id:p.user_id,name:p.name,roblox:p.roblox,region:p.region,grade:p.grade,sub:SUBS.includes(p.sub)?p.sub:"Low",subsub:SSUBS.includes(p.subsub)?p.subsub:"Weak",ranked:!!p.ranked,banned:!!p.banned,reason:p.ban_reason||"",roles:(p.roles||"").split(",").map(x=>x.trim()).filter(Boolean),discord:p.discord_id||"",avatar:p.custom_avatar||p.avatar_url,custom:p.custom_avatar||"",created:Date.parse(p.created_at)||0}));
+  loaded=true;
+  if(onboarding&&uid&&profiles.some(p=>p.id===uid))closeModal();
   renderAuth();render();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();
 }
 /* ---- site profile pictures (stored in Supabase Storage bucket "avatars", see avatars.sql) ---- */
@@ -768,12 +932,21 @@ async function refreshAuth(){
 document.addEventListener("click",async e=>{
   const t=e.target;
   const gb=t.closest("[data-go]");if(gb)return go(gb.dataset.go);
-  const ht=t.closest("[data-ht]");if(ht){hostTab=ht.dataset.ht;if(hostTab==="over"||hostTab==="logs"||hostTab==="place"||hostTab==="stats")loadAudit();return render()}
+  const ht=t.closest("[data-ht]");if(ht){hostTab=ht.dataset.ht;if(hostTab==="over"||hostTab==="logs"||hostTab==="place"||hostTab==="stats"||hostTab==="tools")loadAudit();return render()}
   if(t.closest("#avpick"))return $("#avfile").click();
   if(t.closest("#avreset"))return resetAvatar();
   if(t.closest("#exP"))return exportPlayers();
   if(t.closest("#exL"))return exportLog();
   if(t.closest("#exC"))return copyBoard(t.closest("#exC"));
+  const cb=t.closest("[data-cb]");if(cb)return copyBoard(cb,cb.dataset.cb);
+  const hsb=t.closest("[data-hs]");if(hsb){hs=hsb.dataset.hs;return render()}
+  const hrb=t.closest("[data-hr]");if(hrb){hr=hrb.dataset.hr;return render()}
+  const cp=t.closest("[data-copy]");if(cp){const v=cp.dataset.copy,o=cp.textContent;const ok=()=>{cp.textContent="✓";setTimeout(()=>cp.textContent=o,1200)};(navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(ok).catch(()=>{const ta=document.createElement("textarea");ta.value=v;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");ok()}catch(e){}ta.remove()});return}
+  if(t.closest("#imgGo")){if(!can("export"))return;boardImg=await makeBoardImage(imgR);logEvent("generated leaderboard image","general",null,"",imgR);return render()}
+  if(t.closest("#imgDl")&&boardImg){const a=document.createElement("a");a.href=boardImg;a.download="jjsgc-leaderboard-"+imgR.toLowerCase()+".png";document.body.appendChild(a);a.click();a.remove();return}
+  if(t.closest("#annSave"))return saveAnn(false);
+  if(t.closest("#annClear"))return saveAnn(true);
+  if(t.closest("#cmdBtn"))return openCmd();
   const pr=t.closest("[data-pr]");if(pr){pf=pr.dataset.pr;return render()}
   if(t.closest("#logEdit")){editingLog=true;$("#logTa").value=logText;renderLog();return $("#logTa").focus()}
   if(t.closest("#logCancel")){editingLog=false;$("#logErr").textContent="";return renderLog()}
@@ -802,6 +975,21 @@ document.addEventListener("click",async e=>{
 });
 $("#q").addEventListener("input",render);$("#pq").addEventListener("input",render);$("#hq").addEventListener("input",render);$("#lq").addEventListener("input",render);$("#lf").addEventListener("change",render);$("#cq").addEventListener("input",render);
 document.addEventListener("keydown",e=>{if(e.key==="Escape")tryClose();if(e.key==="Enter"&&e.target.matches&&e.target.matches(".cont")){pf=e.target.dataset.pr;render()}});
+document.addEventListener("input",e=>{if(e.target&&e.target.id==="annTa")annDraft=e.target.value});
+document.addEventListener("change",e=>{const t=e.target;if(!t)return;
+  if(t.id==="hsort")render();
+  if(t.id==="evd"){evDays=+t.value||30;render()}
+  if(t.id==="imgR"){imgR=t.value;render()}});
+document.addEventListener("keydown",e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();return $("#cmd").classList.contains("open")?closeCmd():openCmd()}
+  if(!$("#cmd").classList.contains("open"))return;
+  if(e.key==="Escape")return closeCmd();
+  if(e.key==="ArrowDown"){e.preventDefault();cmdSel=Math.min(cmdItems.length-1,cmdSel+1);return cmdBuild()}
+  if(e.key==="ArrowUp"){e.preventDefault();cmdSel=Math.max(0,cmdSel-1);return cmdBuild()}
+  if(e.key==="Enter"){e.preventDefault();cmdRun(cmdSel)}
+});
+$("#cmdq").addEventListener("input",()=>{cmdSel=0;cmdBuild()});
+$("#cmd").addEventListener("click",e=>{const ci=e.target.closest("[data-ci]");if(ci)return cmdRun(+ci.dataset.ci);if(e.target.id==="cmd")closeCmd()});
 (async()=>{
   try{
     if(!window.supabase){reason="Couldn’t load the Supabase library. Check your connection or turn off ad blockers, then reload.";renderAuth();render();return}
