@@ -6,15 +6,17 @@
 <title>JJSGC · Rankings</title>
 <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
+/* Drop your Stardust font file into a "fonts" folder named stardust.woff2 / .otf / .ttf and the logo picks it up. */
+@font-face{font-family:'Stardust';src:url(fonts/stardust.woff2) format('woff2'),url(fonts/stardust.otf) format('opentype'),url(fonts/stardust.ttf) format('truetype');font-display:swap}
 :root{--bg:#07070a;--panel:#0e0e12;--row:#121217;--fg:#f2f2f2;--dim:#80808c;--line:#23232b;--glow:0 0 14px rgba(255,255,255,.45);
---serif:'Pirata One',Georgia,serif;--sans:'Archivo',system-ui,-apple-system,Segoe UI,sans-serif;
+--logo:'Stardust','Pirata One',Georgia,serif;--serif:'Pirata One',Georgia,serif;--sans:'Archivo',system-ui,-apple-system,Segoe UI,sans-serif;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:inherit}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);overflow-x:hidden}
 .wrap{max-width:900px;margin:0 auto;padding:0 18px 60px}
 header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:22px 0;padding:14px 20px;background:var(--panel);border:1px solid var(--line);border-radius:14px}
-.logo{font:400 30px var(--serif);text-shadow:var(--glow);letter-spacing:.04em}
+.logo{font:400 32px var(--logo);text-shadow:var(--glow);letter-spacing:.04em}
 .logo small{font:600 10px var(--sans);letter-spacing:.35em;color:var(--dim);margin-left:12px;text-shadow:none}
 input,select{background:#000;border:1px solid var(--line);color:var(--fg);padding:11px 14px;font:400 14px var(--sans);outline:none;border-radius:8px;width:100%}
 input:focus,select:focus{border-color:#888}
@@ -23,6 +25,9 @@ button{font:600 12px var(--sans);letter-spacing:.12em;text-transform:uppercase;c
 button:hover{background:var(--fg);color:#000}
 button.solid{background:var(--fg);color:#000}button.solid:hover{background:#000;color:var(--fg)}
 button.ghost{border-color:var(--line);color:var(--dim)}
+button:disabled{opacity:.35;cursor:not-allowed;pointer-events:none}
+.chip{display:flex;align-items:center;gap:10px;padding:5px 14px 5px 5px;text-transform:none;letter-spacing:.02em;font-size:14px}
+.host{font-size:9px;letter-spacing:.2em;border:1px solid #666;border-radius:10px;padding:2px 7px;color:var(--dim);text-transform:uppercase}
 .top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:16px}
 h1{margin:0;font-size:24px;font-weight:800}
 .sub{color:var(--dim);font-size:13px;margin-top:4px}.sub b{color:var(--fg);font-weight:600}
@@ -41,44 +46,55 @@ h1{margin:0;font-size:24px;font-weight:800}
 .rk.r1{background:linear-gradient(120deg,#f6c445,#c88a12);color:#fff}
 .rk.r2{background:linear-gradient(120deg,#c3c8d0,#7d8592);color:#fff}
 .rk.r3{background:linear-gradient(120deg,#d98a4a,#9a5424);color:#fff}
-.av{width:38px;height:38px;border-radius:8px;border:1px solid #444;display:grid;place-items:center;font:22px var(--serif);flex:none;background:#000}
+.rk.no{color:#4a4a55}
+.av{position:relative;overflow:hidden;width:38px;height:38px;border-radius:8px;border:1px solid #444;display:grid;place-items:center;font:22px var(--serif);flex:none;background:#000}
+.av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.chip .av{width:32px;height:32px;border-radius:50%}
 .nm{font-weight:800;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pt{color:var(--dim);font-size:13px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rg{justify-self:center;width:52px;text-align:center;padding:10px 0;border-radius:8px;font-weight:800;font-size:15px}
 .NA{background:#3a1717;color:#ff6b6b}.EU{background:#13301c;color:#5ee07e}.AS{background:#15263f;color:#6db4ff}
-button:disabled{opacity:.35;cursor:not-allowed;pointer-events:none}
 .cloud{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--dim)}
 .cloud i{width:7px;height:7px;border-radius:50%;background:#555}.cloud.ok i{background:#5ee07e;box-shadow:0 0 8px #5ee07e}.cloud.bad i{background:#ff6b6b}
 .empty{border:1px dashed var(--line);border-radius:10px;padding:46px 20px;text-align:center;color:var(--dim)}
 .note{font-size:12px;color:var(--dim);margin:0 0 12px;border-left:2px solid #555;padding:6px 12px}
 .modal{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;padding:20px}
 .modal.open{display:flex}
-.panel{width:100%;max-width:400px;background:var(--panel);border:1px solid #444;border-radius:14px;padding:26px}
+.panel{width:100%;max-width:400px;max-height:92vh;overflow-y:auto;background:var(--panel);border:1px solid #444;border-radius:14px;padding:26px}
 .panel h3{margin:0;font-size:22px;font-weight:800}
 label{display:block;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--dim);margin:16px 0 6px}
+.chk{display:flex;align-items:center;gap:10px;margin-top:18px;font-size:13px}.chk input{width:auto}
 .acts{display:flex;gap:8px;margin-top:22px;flex-wrap:wrap}
 .kv{display:grid;grid-template-columns:90px 1fr;gap:10px;font-size:14px;margin-top:16px}.kv span:nth-child(odd){color:var(--dim);font-size:10px;letter-spacing:.25em;text-transform:uppercase;padding-top:3px}
 .badge{display:inline-block;border:1px solid #666;border-radius:20px;padding:4px 10px;font-size:10px;letter-spacing:.15em;margin-top:10px;color:var(--dim)}
 .err{color:#ff8a8a;font-size:12px;margin-top:10px}
 footer{margin-top:40px;text-align:center;font-size:10px;letter-spacing:.35em;color:#4a4a55}
+#boot{position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-content:center;justify-items:center;gap:22px;transition:opacity .5s}
+#boot.hide{opacity:0;pointer-events:none}
+.bootlogo{font:400 46px var(--logo);text-shadow:var(--glow);animation:breathe 2.4s ease-in-out infinite}
+.bootbar{width:120px;height:1px;background:var(--line);overflow:hidden}
+.bootbar i{display:block;width:40%;height:100%;background:#aaa;animation:slide 1.5s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.55}}@keyframes slide{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
 @media(max-width:560px){.rk{width:64px;font-size:20px}.nm{font-size:15px}#q{max-width:none}}
 </style>
 </head>
 <body>
+<div id="boot"><div class="bootlogo">✦ JJSGC</div><div class="bootbar"><i></i></div></div>
 <div class="wrap">
 <header>
   <div class="logo">✦ JJSGC<small>RANKINGS</small></div>
-  <input id="q" placeholder="Search player…" autocomplete="off">
+  <input id="q" placeholder="Search players…" autocomplete="off">
 </header>
 
 <div class="top">
-  <div><h1>Jujutsu Shenanigans Rankings</h1><div class="sub"><b id="cnt">0</b> players ranked by grade · Hosted by Kyoumiv &amp; Tooj</div><div class="cloud" id="cloud" style="margin-top:8px"><i></i><span>Connecting…</span></div></div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap"><button id="auth">Sign in with Discord</button><button class="solid" id="mine">Create profile</button></div>
+  <div><h1>Jujutsu Shenanigans Rankings</h1><div class="sub"><b id="cnt">0</b> ranked players · Hosted by Kyoumiv &amp; Tooj</div><div class="cloud" id="cloud" style="margin-top:8px"><i></i><span>Connecting…</span></div></div>
+  <div id="authbox" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"></div>
 </div>
 
 <div class="tabs" id="tabs"></div>
 <div class="note" id="note" hidden></div>
 <div class="cols"><span>PLAYER</span><span>REGION</span></div>
+<div class="sub" id="head" style="margin:0 20px 8px"></div>
 <div class="list" id="list"></div>
 <footer>JJSGC</footer>
 </div>
@@ -94,10 +110,15 @@ const score=p=>Math.max(0,GKEYS.indexOf(p.grade))*6+Math.max(0,SUBS.indexOf(p.su
 const gl=p=>(GRADES[p.grade]||GRADES.G1)+" · "+(p.sub||"Weak");
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let sb=null,uid=null,isOwner=false,profiles=[],filter="ALL",demo=true,reason="Connecting…",editId=null;
+const av=p=>`<div class="av">${esc((p.name||"?")[0].toUpperCase())}${p.avatar?`<img src="${esc(p.avatar)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:""}</div>`;
+const CFG=window.JJSGC_CONFIG||{},t0=Date.now();
+let sb=null,uid=null,me=null,isOwner=false,profiles=[],filter="ALL",demo=true,reason="Connecting…",editId=null,lock=false,skipped=false,loaded=false,syncedFor=null;
+
+function hideBoot(){setTimeout(()=>$("#boot").classList.add("hide"),Math.max(0,600-(Date.now()-t0)))}
+setTimeout(hideBoot,8000);
 
 function ranked(){
-  const s=[...profiles].sort((a,b)=>score(b)-score(a)||(a.created||0)-(b.created||0));
+  const s=profiles.filter(p=>p.ranked).sort((a,b)=>score(b)-score(a)||(a.created||0)-(b.created||0));
   let last=null,rank=0;
   s.forEach((p,i)=>{if(score(p)!==last){rank=i+1;last=score(p)}p.rank=rank});
   return s;
@@ -107,89 +128,113 @@ function setCloud(){
   $("#cloud").className="cloud "+(ok?"ok":"bad");
   $("#cloud").lastChild.textContent=ok?"Cloud synced":"Cloud offline";
   $("#note").hidden=ok;$("#note").textContent=reason;
-  $("#mine").disabled=!ok||!uid;
+}
+function renderAuth(){
+  $("#authbox").innerHTML=uid&&me
+    ?`<button class="chip" id="meBtn">${av({name:me.name,avatar:me.avatar})}<span>${esc(me.name)}</span>${isOwner?`<span class="host">Host</span>`:""}</button><button class="ghost" id="logout">Sign out</button>`
+    :`<button class="solid" id="login">Continue with Discord</button>`;
+  if($("#login"))$("#login").disabled=!sb;
+}
+function row(p){
+  return `<div class="card" data-id="${esc(p.id)}"><div class="l"><div class="rk ${p.ranked?(p.rank<=3?"r"+p.rank:""):"no"}">${p.ranked?p.rank+".":"—"}</div>${av(p)}
+  <div style="min-width:0"><div class="nm">${esc(p.name)}</div><div class="pt">${p.ranked?esc(gl(p)):"Unranked"} · @${esc(p.roblox)}</div></div></div>
+  <div class="rg ${p.region}">${p.region}</div></div>`;
 }
 function render(){
-  const all=ranked(),t=$("#q").value.trim().toLowerCase();
-  const n=r=>r==="ALL"?all.length:all.filter(p=>p.region===r).length;
-  $("#cnt").textContent=all.length;
-  $("#tabs").innerHTML=["ALL","NA","EU","AS"].map(r=>`<button class="tab ${r===filter?"on":""}" data-r="${r}">${r==="ALL"?"Overall":r}<small>${n(r)}</small></button>`).join("");
-  const list=all.filter(p=>(filter==="ALL"||p.region===filter)&&(!t||(p.name+" "+p.roblox).toLowerCase().includes(t)));
-  $("#list").innerHTML=list.length?list.map(p=>`<div class="card" data-id="${esc(p.id)}">
-    <div class="l"><div class="rk ${p.rank<=3?"r"+p.rank:""}">${p.rank}.</div><div class="av">${esc((p.name||"?")[0].toUpperCase())}</div>
-    <div style="min-width:0"><div class="nm">${esc(p.name)}</div><div class="pt">${esc(gl(p))} · @${esc(p.roblox)}</div></div></div>
-    <div class="rg ${p.region}">${p.region}</div></div>`).join("")
-    :`<div class="empty">No players yet. Create the first profile.</div>`;
+  const board=ranked(),t=$("#q").value.trim().toLowerCase(),inR=p=>filter==="ALL"||p.region===filter;
+  $("#cnt").textContent=board.length;
+  $("#tabs").innerHTML=["ALL","NA","EU","AS"].map(r=>`<button class="tab ${r===filter?"on":""}" data-r="${r}">${r==="ALL"?"Overall":r}<small>${board.filter(p=>r==="ALL"||p.region===r).length}</small></button>`).join("");
+  const list=t?profiles.filter(p=>inR(p)&&(p.name+" "+p.roblox).toLowerCase().includes(t)).sort((a,b)=>(b.ranked-a.ranked)||score(b)-score(a)):board.filter(inR);
+  $("#head").textContent=t?`${list.length} result${list.length===1?"":"s"} for “${$("#q").value.trim()}”`:"";
+  $("#list").innerHTML=list.length?list.map(row).join(""):`<div class="empty">${t?"No players found.":"No ranked players yet."}</div>`;
   setCloud();
 }
 function openModal(h){$("#panel").innerHTML=h;$("#modal").classList.add("open")}
-function closeModal(){$("#modal").classList.remove("open")}
+function closeModal(){lock=false;$("#modal").classList.remove("open")}
+function tryClose(){if(!lock)closeModal()}
+function editor(p,isNew){
+  const adm=isOwner&&!isNew;
+  return `<label>Roblox username</label><input id="f_rb" maxlength="20" value="${esc(p.roblox)}" placeholder="e.g. Builderman">
+  <label>Region</label><select id="f_r">${isNew?`<option value="" disabled selected>Choose a region</option>`:""}${Object.entries(REG).map(([k,v])=>`<option value="${k}" ${k===p.region?"selected":""}>${k} · ${v}</option>`).join("")}</select>
+  ${adm?`<label>Grade</label><select id="f_g">${Object.entries(GRADES).map(([k,v])=>`<option value="${k}" ${k===(p.grade||"G1")?"selected":""}>${v}</option>`).join("")}</select>
+  <label>Sub-grade</label><select id="f_s">${SUBS.slice().reverse().map(s=>`<option ${s===(p.sub||"Weak")?"selected":""}>${s}</option>`).join("")}</select>
+  <div class="chk"><input type="checkbox" id="f_k" ${p.ranked?"checked":""}><span>On the leaderboard</span></div>`:""}`;
+}
 function view(p){
-  const mine=p.id===uid;
-  openModal(`<h3>${esc(p.name)}</h3><div class="sub">@${esc(p.roblox)}</div><span class="badge">◈ Roblox linked · self-reported</span>
-  <div class="kv"><span>Rank</span><span>#${p.rank}</span><span>Grade</span><span>${esc(GRADES[p.grade]||GRADES.G1)}</span><span>Sub-grade</span><span>${esc(p.sub||"Weak")}</span><span>Region</span><span>${REG[p.region]}</span></div>
-  <div class="acts">${mine||isOwner?`<button class="solid" id="edit" data-id="${esc(p.id)}">Edit</button>`:""}${(mine||isOwner)&&!demo?`<button class="ghost" id="del" data-id="${esc(p.id)}">Remove</button>`:""}<button class="ghost" id="x">Close</button></div>`);
+  editId=p.id;const can=p.id===uid||isOwner;
+  openModal(`<div style="display:flex;gap:14px;align-items:center">${av(p)}<div><h3>${esc(p.name)}</h3><div class="sub">@${esc(p.roblox)}</div></div></div>
+  ${can?"":`<span class="badge">◈ Roblox name is self-reported</span>`}
+  <div class="kv"><span>Status</span><span>${p.ranked?"Rank #"+p.rank:"Unranked"}</span><span>Grade</span><span>${p.ranked?esc(gl(p)):"—"}</span><span>Region</span><span>${REG[p.region]}</span></div>
+  ${can?editor(p,false):""}<div class="err" id="err"></div>
+  <div class="acts">${can?`<button class="solid" id="save">Save</button><button class="ghost" id="del">Remove</button>`:""}<button class="ghost" id="x">Close</button></div>`);
 }
-function form(p){
-  p=p||{};editId=p.id||uid;
-  openModal(`<h3>${p.name?"Edit profile":"Create profile"}</h3>
-  <label>Display name</label><input id="f_name" maxlength="24" value="${esc(p.name)}">
-  <label>Roblox username</label><input id="f_rb" maxlength="20" value="${esc(p.roblox)}" placeholder="e.g. Builderman">
-  <label>Region</label><select id="f_r">${Object.entries(REG).map(([k,v])=>`<option value="${k}" ${k===p.region?"selected":""}>${k} · ${v}</option>`).join("")}</select>
-  ${isOwner?`<label>Grade (host only)</label><select id="f_g">${Object.entries(GRADES).map(([k,v])=>`<option value="${k}" ${k===(p.grade||"G1")?"selected":""}>${v}</option>`).join("")}</select><label>Sub-grade (host only)</label><select id="f_s">${SUBS.slice().reverse().map(s=>`<option ${s===(p.sub||"Weak")?"selected":""}>${s}</option>`).join("")}</select>`:""}
-  <div class="err" id="err"></div>
-  <div class="acts"><button class="solid" id="save">Save</button><button class="ghost" id="x">Cancel</button></div>`);
+function onboard(){
+  lock=true;editId=uid;
+  openModal(`<h3>Welcome${me?", "+esc(me.name):""}</h3><div class="sub">Pick your region and enter your Roblox username to finish joining.</div>
+  ${editor({},true)}<div class="err" id="err"></div>
+  <div class="acts"><button class="solid" id="save">Continue</button>${isOwner?`<button class="ghost" id="skip">Skip for now</button>`:""}</div>`);
 }
-const CFG=window.JJSGC_CONFIG||{};
+function maybeOnboard(){
+  if(uid&&loaded&&!lock&&!skipped&&!profiles.some(p=>p.id===uid)&&!$("#modal").classList.contains("open"))onboard();
+}
 async function save(){
-  const v=id=>$("#"+id).value.trim(),old=profiles.find(p=>p.id===editId)||{};
-  const d={name:v("f_name"),roblox:v("f_rb").replace(/^@/,""),region:$("#f_r").value};
-  if(!d.name)return $("#err").textContent="Add a display name.";
-  if(!/^[A-Za-z0-9_]{3,20}$/.test(d.roblox))return $("#err").textContent="Roblox usernames are 3–20 letters, numbers or underscores.";
+  const v=id=>$("#"+id).value.trim(),old=profiles.find(p=>p.id===editId);
+  const rb=v("f_rb").replace(/^@/,""),rg=$("#f_r").value;
+  if(!/^[A-Za-z0-9_]{3,20}$/.test(rb))return $("#err").textContent="Roblox usernames are 3–20 letters, numbers or underscores.";
+  if(!REG[rg])return $("#err").textContent="Choose your region.";
   if(!sb||!uid)return $("#err").textContent="Sign in to save.";
   try{
-    let r=old.id?await sb.from("profiles").update(d).eq("user_id",editId):await sb.from("profiles").insert({user_id:uid,...d});
+    let r;
+    if(!old)r=await sb.from("profiles").insert({user_id:uid,roblox:rb,region:rg});
+    else if(isOwner)r=await sb.rpc("admin_update",{target:editId,rb,rg,g:$("#f_g").value,s:$("#f_s").value,rk:$("#f_k").checked});
+    else r=await sb.from("profiles").update({roblox:rb,region:rg}).eq("user_id",editId);
     if(r.error)throw r.error;
-    if(isOwner&&$("#f_g")){r=await sb.rpc("set_grade",{target:editId||uid,g:$("#f_g").value,s:$("#f_s").value});if(r.error)throw r.error}
     closeModal();await loadProfiles();
   }catch(e){$("#err").textContent=e.code==="23505"?"That Roblox username is already taken.":"Couldn’t save: "+(e.message||"permission denied")}
 }
 async function loadProfiles(){
   const {data,error}=await sb.from("profiles").select("*");
   if(error){demo=true;reason="Couldn’t load profiles: "+error.message;render();return}
-  demo=false;reason="";
-  profiles=data.filter(p=>REG[p.region]).map(p=>({id:p.user_id,name:p.name,roblox:p.roblox,region:p.region,grade:p.grade,sub:p.sub,created:Date.parse(p.created_at)||0}));
-  render();
+  demo=false;reason="";loaded=true;
+  profiles=data.filter(p=>REG[p.region]).map(p=>({id:p.user_id,name:p.name,roblox:p.roblox,region:p.region,grade:p.grade,sub:p.sub,ranked:!!p.ranked,avatar:p.avatar_url,created:Date.parse(p.created_at)||0}));
+  render();maybeOnboard();
 }
 async function refreshAuth(){
   const {data:{session}}=await sb.auth.getSession();
-  uid=session?session.user.id:null;isOwner=false;
-  if(uid){const r=await sb.rpc("is_admin");isOwner=r.data===true}
-  $("#auth").textContent=uid?"Sign out":"Sign in with Discord";
-  render();
+  uid=session?session.user.id:null;isOwner=false;me=null;
+  if(session){
+    const m=session.user.user_metadata||{};
+    me={name:(m.custom_claims&&m.custom_claims.global_name)||m.full_name||m.name||"You",avatar:m.avatar_url};
+    const r=await sb.rpc("is_admin");isOwner=r.data===true;
+    if(syncedFor!==uid){syncedFor=uid;sb.rpc("sync_discord").then(()=>loaded&&loadProfiles())}
+  }
+  renderAuth();render();maybeOnboard();
 }
 document.addEventListener("click",async e=>{
   const t=e.target;
-  if(t.id==="modal"||t.id==="x")return closeModal();
-  if(t.id==="auth"){if(!sb)return;return uid?(await sb.auth.signOut()):sb.auth.signInWithOAuth({provider:"discord",options:{redirectTo:location.origin+location.pathname}})}
-  if(t.id==="mine")return form(profiles.find(p=>p.id===uid));
+  if(t.id==="modal"||t.id==="x")return tryClose();
+  if(t.closest("#login")&&sb)return sb.auth.signInWithOAuth({provider:"discord",options:{redirectTo:location.origin+location.pathname}});
+  if(t.closest("#logout")){await sb.auth.signOut();return}
+  if(t.closest("#meBtn")){ranked();const p=profiles.find(p=>p.id===uid);return p?view(p):onboard()}
+  if(t.id==="skip"){skipped=true;return closeModal()}
   if(t.id==="save")return save();
-  if(t.id==="edit")return form(profiles.find(p=>p.id===t.dataset.id));
-  if(t.id==="del"){await sb.from("profiles").delete().eq("user_id",t.dataset.id);closeModal();return loadProfiles()}
+  if(t.id==="del"){if(confirm("Remove this profile?")){await sb.from("profiles").delete().eq("user_id",editId);closeModal();loadProfiles()}return}
   const tab=t.closest(".tab");if(tab){filter=tab.dataset.r;return render()}
   const c=t.closest(".card");if(c){ranked();const p=profiles.find(p=>p.id===c.dataset.id);if(p)view(p)}
 });
 $("#q").addEventListener("input",render);
-document.addEventListener("keydown",e=>e.key==="Escape"&&closeModal());
+document.addEventListener("keydown",e=>e.key==="Escape"&&tryClose());
 (async()=>{
-  if(!window.supabase){reason="Couldn’t load the Supabase library. Check your connection or turn off ad blockers, then reload.";render();return}
-  if(!CFG.url||CFG.url.includes("YOUR-")){reason="Cloud not set up yet. Add your Supabase URL and key to config.js (see README).";render();return}
-  sb=supabase.createClient(CFG.url,CFG.key);
-  sb.auth.onAuthStateChange(()=>refreshAuth());
-  await refreshAuth();await loadProfiles();
-  sb.channel("profiles").on("postgres_changes",{event:"*",schema:"public",table:"profiles"},loadProfiles).subscribe();
+  try{
+    if(!window.supabase){reason="Couldn’t load the Supabase library. Check your connection or turn off ad blockers, then reload.";renderAuth();render();return}
+    if(!CFG.url||CFG.url.includes("YOUR-")){reason="Cloud not set up yet. Add your Supabase URL and key to config.js (see README).";renderAuth();render();return}
+    sb=supabase.createClient(CFG.url,CFG.key);
+    sb.auth.onAuthStateChange(()=>{setTimeout(refreshAuth,0)});
+    await loadProfiles();await refreshAuth();
+    sb.channel("profiles").on("postgres_changes",{event:"*",schema:"public",table:"profiles"},loadProfiles).subscribe();
+  }finally{hideBoot()}
 })();
-render();
+renderAuth();render();
 </script>
 </body>
 </html>
