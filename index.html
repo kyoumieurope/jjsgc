@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>JJSGC · Rankings</title>
+<title>JJSGC · Competitive</title>
 <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 /* Drop your Stardust font file into a "fonts" folder named stardust.woff2 / .otf / .ttf and the logo picks it up. */
-@font-face{font-family:'Stardust';src:url(fonts/stardust.woff2) format('woff2'),url(fonts/stardust.otf) format('opentype'),url(fonts/stardust.ttf) format('truetype');font-display:swap}
+@font-face{font-family:'Stardust';src:url(fonts/stardust.woff2) format('woff2'),url(fonts/Stardust.woff2) format('woff2'),url(fonts/stardust.otf) format('opentype'),url(fonts/Stardust.otf) format('opentype'),url(fonts/stardust.ttf) format('truetype'),url(fonts/Stardust.ttf) format('truetype');font-display:swap}
 :root{--bg:#07070a;--panel:#0e0e12;--row:#121217;--fg:#f2f2f2;--dim:#80808c;--line:#23232b;--glow:0 0 14px rgba(255,255,255,.45);
 --logo:'Stardust','Pirata One',Georgia,serif;--serif:'Pirata One',Georgia,serif;--sans:'Archivo',system-ui,-apple-system,Segoe UI,sans-serif;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
@@ -76,26 +76,57 @@ footer{margin-top:40px;text-align:center;font-size:10px;letter-spacing:.35em;col
 .bootbar i{display:block;width:40%;height:100%;background:#aaa;animation:slide 1.5s ease-in-out infinite}
 @keyframes breathe{50%{opacity:.55}}@keyframes slide{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
 @media(max-width:560px){.rk{width:64px;font-size:20px}.nm{font-size:15px}#q{max-width:none}}
+
+/* ---- mysterious layout ---- */
+.fog{position:fixed;inset:-20%;z-index:-2;background:radial-gradient(40% 35% at 20% 20%,rgba(120,90,200,.14),transparent 70%),radial-gradient(35% 30% at 80% 70%,rgba(200,60,90,.09),transparent 70%);animation:drift 28s ease-in-out infinite alternate}
+.stars{position:fixed;inset:0;z-index:-1;background-image:radial-gradient(1px 1px at 12% 22%,#fff9,transparent),radial-gradient(1px 1px at 68% 14%,#fff7,transparent),radial-gradient(1.5px 1.5px at 84% 52%,#fff9,transparent),radial-gradient(1px 1px at 30% 78%,#fff7,transparent),radial-gradient(1px 1px at 52% 46%,#fff6,transparent),radial-gradient(1px 1px at 92% 88%,#fff7,transparent);animation:twinkle 6s ease-in-out infinite}
+@keyframes drift{to{transform:translate(4%,3%) scale(1.08)}}@keyframes twinkle{50%{opacity:.35}}@keyframes rise{from{opacity:0;transform:translateY(12px)}}
+header{background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:14px 0;margin:10px 0 0}
+.hero{padding:56px 0 36px;text-align:center}
+.eyebrow{font:600 11px var(--sans);letter-spacing:.6em;color:var(--dim);text-transform:uppercase;animation:rise .8s both}
+.hero h1{font:400 clamp(54px,12vw,104px)/1 var(--logo);letter-spacing:.04em;margin:10px 0 12px;text-shadow:0 0 28px rgba(255,255,255,.35);animation:rise 1s .1s both}
+.hero .sub{animation:rise 1s .25s both}.hero .cloud{margin-top:10px;animation:rise 1s .35s both}
+.layout{display:grid;grid-template-columns:1fr 280px;gap:22px;align-items:start}
+aside{position:sticky;top:16px;display:flex;flex-direction:column;gap:12px}
+.side{background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;animation:rise .8s .3s both}
+.sl{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--dim)}
+.big{font:400 44px var(--logo);margin-top:6px;text-shadow:var(--glow)}
+.ladder{margin:10px 0;padding-left:20px;line-height:1.9;font-size:14px}
+.bar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px;border-bottom:1px solid var(--line)}
+.bar .tabs{border:0;margin:0}
+.card{animation:rise .5s calc(var(--i,0)*45ms) both}
+.card:hover{box-shadow:0 0 22px rgba(160,140,255,.14),inset 3px 0 0 #fff}
+@media(max-width:820px){.layout{grid-template-columns:1fr}aside{position:static;order:-1}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div id="boot"><div class="bootlogo">✦ JJSGC</div><div class="bootbar"><i></i></div></div>
+<div class="fog"></div><div class="stars"></div>
 <div class="wrap">
 <header>
-  <div class="logo">✦ JJSGC<small>RANKINGS</small></div>
-  <input id="q" placeholder="Search players…" autocomplete="off">
-</header>
-
-<div class="top">
-  <div><h1>Jujutsu Shenanigans Rankings</h1><div class="sub"><b id="cnt">0</b> ranked players · Hosted by Kyoumiv &amp; Tooj</div><div class="cloud" id="cloud" style="margin-top:8px"><i></i><span>Connecting…</span></div></div>
+  <div class="logo">✦ JJSGC<small>COMPETITIVE</small></div>
   <div id="authbox" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"></div>
-</div>
-
-<div class="tabs" id="tabs"></div>
+</header>
+<section class="hero">
+  <div class="eyebrow">Jujutsu Shenanigans</div>
+  <h1>Competitive</h1>
+  <div class="sub"><b id="cnt">0</b> registered people · Hosted by Kyoumiv &amp; Tooj</div>
+  <div class="cloud" id="cloud"><i></i><span>Connecting…</span></div>
+</section>
 <div class="note" id="note" hidden></div>
-<div class="cols"><span>PLAYER</span><span>REGION</span></div>
-<div class="sub" id="head" style="margin:0 20px 8px"></div>
-<div class="list" id="list"></div>
+<div class="layout">
+  <main>
+    <div class="bar"><div class="tabs" id="tabs"></div><input id="q" placeholder="Search players…" autocomplete="off"></div>
+    <div class="cols"><span>PLAYER</span><span>REGION</span></div>
+    <div class="sub" id="head" style="margin:0 20px 8px"></div>
+    <div class="list" id="list"></div>
+  </main>
+  <aside>
+    <div class="side"><div class="sl">On the board</div><div class="big" id="comp">0</div></div>
+    <div class="side"><div class="sl">The ladder</div><ol class="ladder"><li>Special Grade</li><li>Special Grade 1</li><li>Grade 1</li></ol><div class="sub">Every grade climbs Low · Mid · High, and each step climbs Weak · Stable · Strong.</div></div>
+  </aside>
+</div>
 <footer>JJSGC</footer>
 </div>
 <div class="modal" id="modal"><div class="panel" id="panel"></div></div>
@@ -105,14 +136,14 @@ footer{margin-top:40px;text-align:center;font-size:10px;letter-spacing:.35em;col
 <script>
 const REG={NA:"North America",EU:"Europe",AS:"Asia"};
 const GRADES={G1:"Grade 1",SG1:"Special Grade 1",SG:"Special Grade"},GKEYS=["G1","SG1","SG"];
-const SUBS=["Weak","Low","Stable","Mid","Strong","High"];
-const score=p=>Math.max(0,GKEYS.indexOf(p.grade))*6+Math.max(0,SUBS.indexOf(p.sub));
-const gl=p=>(GRADES[p.grade]||GRADES.G1)+" · "+(p.sub||"Weak");
+const SUBS=["Low","Mid","High"],SSUBS=["Weak","Stable","Strong"];
+const score=p=>Math.max(0,GKEYS.indexOf(p.grade))*9+Math.max(0,SUBS.indexOf(p.sub))*3+Math.max(0,SSUBS.indexOf(p.subsub));
+const gl=p=>(GRADES[p.grade]||GRADES.G1)+" · "+(p.sub||"Low")+" "+(p.subsub||"Weak");
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const av=p=>`<div class="av">${esc((p.name||"?")[0].toUpperCase())}${p.avatar?`<img src="${esc(p.avatar)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:""}</div>`;
 const CFG=window.JJSGC_CONFIG||{},t0=Date.now();
-let sb=null,uid=null,me=null,isOwner=false,profiles=[],filter="ALL",demo=true,reason="Connecting…",editId=null,lock=false,skipped=false,loaded=false,syncedFor=null;
+let regN=null,sb=null,uid=null,me=null,isOwner=false,profiles=[],filter="ALL",demo=true,reason="Connecting…",editId=null,lock=false,skipped=false,loaded=false,syncedFor=null;
 
 function hideBoot(){setTimeout(()=>$("#boot").classList.add("hide"),Math.max(0,600-(Date.now()-t0)))}
 setTimeout(hideBoot,8000);
@@ -123,6 +154,7 @@ function ranked(){
   s.forEach((p,i)=>{if(score(p)!==last){rank=i+1;last=score(p)}p.rank=rank});
   return s;
 }
+function num(sel,to){const el=$(sel),from=+el.textContent||0;if(from===to)return;const t=performance.now();(function f(n){const k=Math.min(1,(n-t)/700);el.textContent=Math.round(from+(to-from)*k);if(k<1)requestAnimationFrame(f)})(t)}
 function setCloud(){
   const ok=!demo;
   $("#cloud").className="cloud "+(ok?"ok":"bad");
@@ -135,18 +167,18 @@ function renderAuth(){
     :`<button class="solid" id="login">Continue with Discord</button>`;
   if($("#login"))$("#login").disabled=!sb;
 }
-function row(p){
-  return `<div class="card" data-id="${esc(p.id)}"><div class="l"><div class="rk ${p.ranked?(p.rank<=3?"r"+p.rank:""):"no"}">${p.ranked?p.rank+".":"—"}</div>${av(p)}
-  <div style="min-width:0"><div class="nm">${esc(p.name)}</div><div class="pt">${p.ranked?esc(gl(p)):"Unranked"} · @${esc(p.roblox)}</div></div></div>
+function row(p,i){
+  return `<div class="card" data-id="${esc(p.id)}" style="--i:${Math.min(i||0,14)}"><div class="l"><div class="rk ${p.ranked?(p.rank<=3?"r"+p.rank:""):"no"}">${p.ranked?p.rank+".":"—"}</div>${av(p)}
+  <div style="min-width:0"><div class="nm">${esc(p.name)}</div><div class="pt">${p.ranked?esc(gl(p)):"Not competitive"} · @${esc(p.roblox)}</div></div></div>
   <div class="rg ${p.region}">${p.region}</div></div>`;
 }
 function render(){
   const board=ranked(),t=$("#q").value.trim().toLowerCase(),inR=p=>filter==="ALL"||p.region===filter;
-  $("#cnt").textContent=board.length;
+  num("#cnt",Math.max(regN||0,profiles.length));num("#comp",board.length);
   $("#tabs").innerHTML=["ALL","NA","EU","AS"].map(r=>`<button class="tab ${r===filter?"on":""}" data-r="${r}">${r==="ALL"?"Overall":r}<small>${board.filter(p=>r==="ALL"||p.region===r).length}</small></button>`).join("");
   const list=t?profiles.filter(p=>inR(p)&&(p.name+" "+p.roblox).toLowerCase().includes(t)).sort((a,b)=>(b.ranked-a.ranked)||score(b)-score(a)):board.filter(inR);
   $("#head").textContent=t?`${list.length} result${list.length===1?"":"s"} for “${$("#q").value.trim()}”`:"";
-  $("#list").innerHTML=list.length?list.map(row).join(""):`<div class="empty">${t?"No players found.":"No ranked players yet."}</div>`;
+  $("#list").innerHTML=list.length?list.map(row).join(""):`<div class="empty">${t?"No players found.":"No competitive players yet."}</div>`;
   setCloud();
 }
 function openModal(h){$("#panel").innerHTML=h;$("#modal").classList.add("open")}
@@ -157,16 +189,17 @@ function editor(p,isNew){
   return `<label>Roblox username</label><input id="f_rb" maxlength="20" value="${esc(p.roblox)}" placeholder="e.g. Builderman">
   <label>Region</label><select id="f_r">${isNew?`<option value="" disabled selected>Choose a region</option>`:""}${Object.entries(REG).map(([k,v])=>`<option value="${k}" ${k===p.region?"selected":""}>${k} · ${v}</option>`).join("")}</select>
   ${adm?`<label>Grade</label><select id="f_g">${Object.entries(GRADES).map(([k,v])=>`<option value="${k}" ${k===(p.grade||"G1")?"selected":""}>${v}</option>`).join("")}</select>
-  <label>Sub-grade</label><select id="f_s">${SUBS.slice().reverse().map(s=>`<option ${s===(p.sub||"Weak")?"selected":""}>${s}</option>`).join("")}</select>
-  <div class="chk"><input type="checkbox" id="f_k" ${p.ranked?"checked":""}><span>On the leaderboard</span></div>`:""}`;
+  <label>Sub-grade</label><select id="f_s">${SUBS.slice().reverse().map(s=>`<option ${s===(p.sub||"Low")?"selected":""}>${s}</option>`).join("")}</select>
+  <label>Sub-sub-grade</label><select id="f_ss">${SSUBS.slice().reverse().map(s=>`<option ${s===(p.subsub||"Weak")?"selected":""}>${s}</option>`).join("")}</select>
+  <div class="chk"><input type="checkbox" id="f_k" ${p.ranked?"checked":""}><span>On the competitive board</span></div>`:""}`;
 }
 function view(p){
   editId=p.id;const can=p.id===uid||isOwner;
   openModal(`<div style="display:flex;gap:14px;align-items:center">${av(p)}<div><h3>${esc(p.name)}</h3><div class="sub">@${esc(p.roblox)}</div></div></div>
   ${can?"":`<span class="badge">◈ Roblox name is self-reported</span>`}
-  <div class="kv"><span>Status</span><span>${p.ranked?"Rank #"+p.rank:"Unranked"}</span><span>Grade</span><span>${p.ranked?esc(gl(p)):"—"}</span><span>Region</span><span>${REG[p.region]}</span></div>
+  <div class="kv"><span>Status</span><span>${p.ranked?"Competitive #"+p.rank:"Not competitive"}</span><span>Grade</span><span>${p.ranked?esc(gl(p)):"—"}</span><span>Region</span><span>${REG[p.region]}</span></div>
   ${can?editor(p,false):""}<div class="err" id="err"></div>
-  <div class="acts">${can?`<button class="solid" id="save">Save</button><button class="ghost" id="del">Remove</button>`:""}<button class="ghost" id="x">Close</button></div>`);
+  <div class="acts">${can?`<button class="solid" id="save">Save</button>`:""}${isOwner?`<button class="ghost" id="del">Remove</button>`:""}<button class="ghost" id="x">Close</button></div>`);
 }
 function onboard(){
   lock=true;editId=uid;
@@ -186,7 +219,7 @@ async function save(){
   try{
     let r;
     if(!old)r=await sb.from("profiles").insert({user_id:uid,roblox:rb,region:rg});
-    else if(isOwner)r=await sb.rpc("admin_update",{target:editId,rb,rg,g:$("#f_g").value,s:$("#f_s").value,rk:$("#f_k").checked});
+    else if(isOwner)r=await sb.rpc("admin_update",{target:editId,rb,rg,g:$("#f_g").value,s:$("#f_s").value,ss:$("#f_ss").value,rk:$("#f_k").checked});
     else r=await sb.from("profiles").update({roblox:rb,region:rg}).eq("user_id",editId);
     if(r.error)throw r.error;
     closeModal();await loadProfiles();
@@ -196,7 +229,8 @@ async function loadProfiles(){
   const {data,error}=await sb.from("profiles").select("*");
   if(error){demo=true;reason="Couldn’t load profiles: "+error.message;render();return}
   demo=false;reason="";loaded=true;
-  profiles=data.filter(p=>REG[p.region]).map(p=>({id:p.user_id,name:p.name,roblox:p.roblox,region:p.region,grade:p.grade,sub:p.sub,ranked:!!p.ranked,avatar:p.avatar_url,created:Date.parse(p.created_at)||0}));
+  const rc=await sb.rpc("registered_count");regN=(!rc.error&&typeof rc.data==="number")?rc.data:null;
+  profiles=data.filter(p=>REG[p.region]).map(p=>({id:p.user_id,name:p.name,roblox:p.roblox,region:p.region,grade:p.grade,sub:SUBS.includes(p.sub)?p.sub:"Low",subsub:SSUBS.includes(p.subsub)?p.subsub:"Weak",ranked:!!p.ranked,avatar:p.avatar_url,created:Date.parse(p.created_at)||0}));
   render();maybeOnboard();
 }
 async function refreshAuth(){
@@ -218,7 +252,7 @@ document.addEventListener("click",async e=>{
   if(t.closest("#meBtn")){ranked();const p=profiles.find(p=>p.id===uid);return p?view(p):onboard()}
   if(t.id==="skip"){skipped=true;return closeModal()}
   if(t.id==="save")return save();
-  if(t.id==="del"){if(confirm("Remove this profile?")){await sb.from("profiles").delete().eq("user_id",editId);closeModal();loadProfiles()}return}
+  if(t.id==="del"){if(isOwner&&confirm("Remove this profile?")){await sb.rpc("admin_delete",{target:editId});closeModal();loadProfiles()}return}
   const tab=t.closest(".tab");if(tab){filter=tab.dataset.r;return render()}
   const c=t.closest(".card");if(c){ranked();const p=profiles.find(p=>p.id===c.dataset.id);if(p)view(p)}
 });
