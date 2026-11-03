@@ -331,6 +331,14 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 .lrow.np{grid-template-columns:1fr 60px 64px;padding:10px 24px 12px 8px}
 .lrow.edit{grid-template-columns:22px 48px 1fr auto}
 .rbpic.big{width:64px;height:64px;margin-left:auto;flex:none}
+.rbpic{width:56px;height:56px}
+.rbpic.none{width:0;height:0;border:0;margin:0;overflow:hidden}
+.cols{grid-template-columns:56px 1fr auto 64px;gap:14px}
+.lrow{grid-template-columns:56px 1fr auto 64px;gap:14px}
+.lrow.np{grid-template-columns:1fr auto 64px}
+.lrow.edit{grid-template-columns:22px 48px 1fr auto}
+.lrow .nm,.lrow .pt{white-space:normal;overflow:visible;text-overflow:clip}
+.lrow .nm .host{margin-top:2px}
 </style>
 </head>
 <body>
@@ -483,8 +491,8 @@ let RB={};try{RB=JSON.parse(localStorage.getItem("jj_rb2")||"{}")}catch(e){}
 const rbKey=n=>String(n||"").toLowerCase();
 const rbA=p=>`<a class="rl rbn" href="${esc(rbUrl(p))}" target="_blank" rel="noopener noreferrer" title="Open Roblox profile">@${esc(p.roblox)}</a>`;
 const rbPic=p=>{const c=RB[rbKey(p.roblox)];
-  return c&&c.id?`<img class="rbpic" src="${esc(c.u||("https://www.roblox.com/headshot-thumbnail/image?userId="+c.id+"&width=150&height=150&format=png"))}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">`:`<span class="rbpic"></span>`};
-let rbBusy=false,rbCool=0,rbState="";
+  return c&&c.id?`<img class="rbpic" src="${esc(c.u||("https://www.roblox.com/headshot-thumbnail/image?userId="+c.id+"&width=150&height=150&format=png"))}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.className='rbpic none'">`:`<span class="rbpic none"></span>`};
+let rbBusy=false,rbCool=0,rbState="",rbErr="";
 const rbSave=()=>{try{localStorage.setItem("jj_rb2",JSON.stringify(RB))}catch(e){}};
 async function rbFind(n){
   /* username -> Roblox user id. Roblox blocks direct browser requests, so try a few public mirrors/proxies. */
@@ -510,7 +518,7 @@ async function rbLoad(){
       part.forEach(n=>{const x=r.data[rbKey(n)];if(x){RB[rbKey(n)]={id:x.id,u:x.url||"",t:Date.now()};got++}});
     }
     rbState="function";
-  }catch(e){console.warn("roblox edge function failed:",e.message||e)}}
+  }catch(e){rbErr=((e.context&&e.context.status)?"HTTP "+e.context.status+" - ":"")+(e.message||e);console.warn("roblox edge function failed:",rbErr)}}
   /* 2) public mirrors as a fallback */
   let left=need.filter(n=>stale(RB[rbKey(n)]));
   if(left.length){
@@ -827,7 +835,7 @@ function renderTools(board){
   const over=board.filter(p=>now-age(p)>evDays*day).sort((a,b)=>age(a)-age(b));
   const evRows=over.slice(0,12).map(p=>`<div class="mini click" data-id="${esc(p.id)}"><b>${esc(p.name)}</b> · ${esc(gl(p))} · ${p.region}<span>${last[p.id]?"Last placement":"Joined"} ${Math.floor((now-age(p))/day)} days ago</span></div>`).join("")||`<div class="sub">Everyone on the board was evaluated within ${evDays} days.</div>`;
   const ex=can("export"),ac=can("changelog");
-  const chk=[["Cloud connection",!demo,demo?reason:"Connected"],["Roles table",rolesOk,rolesOk?"OK":"Run roles.sql"],["Member count",regN!==null,regN!==null?"OK":"registered_count missing"],["Change log / announcement",!logErr,logErr?logErr:"OK"],["Activity log",canA?true:null,canA?"OK":(auditErr?"Run audit_log.sql":"No permission")],["Roblox avatars",rbState==="function"||rbState==="proxy",rbState==="function"?"Edge function OK":rbState==="proxy"?"Public proxy only - deploy the roblox function":rbState==="fail"?"Not loading - deploy the roblox function":"Not loaded yet"],["Hosts with flashing badge",true,HOST_IDS.length+" Discord ID"+(HOST_IDS.length===1?"":"s")]]
+  const chk=[["Cloud connection",!demo,demo?reason:"Connected"],["Roles table",rolesOk,rolesOk?"OK":"Run roles.sql"],["Member count",regN!==null,regN!==null?"OK":"registered_count missing"],["Change log / announcement",!logErr,logErr?logErr:"OK"],["Activity log",canA?true:null,canA?"OK":(auditErr?"Run audit_log.sql":"No permission")],["Roblox avatars",rbState==="function"||rbState==="proxy",rbState==="function"?"Edge function OK":rbState==="proxy"?"Public proxy only - deploy the roblox function":rbState==="fail"?"Not loading - deploy the roblox function"+(rbErr?" ("+rbErr+")":""):"Not loaded yet"],["Hosts with flashing badge",true,HOST_IDS.length+" Discord ID"+(HOST_IDS.length===1?"":"s")]]
     .map(([l,ok,d])=>`<div class="chkrow"><span>${esc(l)}</span><b class="${ok===null?"":ok?"ok":"no"}">${ok===null?"—":ok?"✓":"✗"} ${esc(d)}</b></div>`).join("");
   const regOpts=["ALL","NA","EU","AS"].map(r=>`<option value="${r}" ${r===imgR?"selected":""}>${r==="ALL"?"Overall":REG[r]}</option>`).join("");
   $("#tbox").innerHTML=`<div class="tgrid">
