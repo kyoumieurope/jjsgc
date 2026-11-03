@@ -212,6 +212,25 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 .rchip.on:hover{background:#ddd;color:#000}
 .rrow .host{font-size:10px;padding:4px 10px}
 
+/* ---- fight notes ---- */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+@media(max-width:820px){.fgrid{grid-template-columns:1fr}}
+.fgrid .rbox{margin:0}.fcol{display:grid;gap:14px}
+.frow{display:grid;gap:8px;margin-top:10px}
+.frow2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ftbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.ftbl th{font:600 9px var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--dim);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+.ftbl td{padding:9px 8px;border-top:1px solid var(--line);color:#cfcfd6;vertical-align:top}
+.ftbl td.n,.ftbl th.n{text-align:center;font-variant-numeric:tabular-nums}
+.ftbl .max{color:#ff8a8a;font-weight:700}.ftbl .cd{color:#ffd86b}
+.fscroll{overflow-x:auto}
+.fmsg{font-size:12px;margin-top:10px;color:#7be0a0}.fmsg.bad{color:#ff8a8a}
+.fok{font-size:13px;margin-top:10px}.fok.yes{color:#7be0a0}.fok.no{color:#ff8a8a}
+.fnote{font-size:13px;padding:10px 0;border-top:1px solid var(--line);color:#cfcfd6;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.fnote span{display:block;font-size:11px;color:var(--dim);margin-top:3px;white-space:normal}
+.fdel{float:right;margin-left:8px;padding:3px 9px;font-size:10px}
+.flog{background:rgba(255,255,255,.02)}
+
 /* ---- flashing host names ---- */
 .flash{background:linear-gradient(90deg,#fff 0%,#a99bff 25%,#fff 50%,#ffd86b 75%,#fff 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:flashtxt 2.4s linear infinite,flashglow 1.1s ease-in-out infinite alternate}
 @keyframes flashtxt{to{background-position:-250% 0}}
@@ -316,6 +335,9 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 .lrow .pt{font-size:13px;margin-top:5px}
 .lrk{font-size:17px}
 .layout{gap:32px}
+/* rank numbers: black digits on light chips */
+.lrk,.ork,.lrow.t3 .lrk{display:inline-grid;place-items:center;justify-self:end;min-width:30px;height:30px;padding:0 6px;border-radius:50%;background:#e4e4ea;color:#000;font-weight:800}
+.ork{width:auto}
 #v_list .bar{margin-bottom:22px}
 #v_list .tab{padding:14px 22px}
 .lrow.edit{grid-template-columns:22px 48px 1fr auto;gap:14px;padding:14px 16px 14px 8px;cursor:default}
@@ -366,9 +388,9 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
   <div class="how"><div class="sl">How to get on the leaderboard</div>
     <div class="path">
       <div class="step" style="--i:0"><div class="n">I</div><div><h4>Enter the gate</h4><p>Continue with <b>Discord</b>, then enter your <b>Roblox username</b> and <b>region</b>.</p></div></div>
-      <div class="step" style="--i:1"><div class="n">II</div><div><h4>Earn your rank</h4><p>You must be at least <b>Grade 1 · Mid</b>, anywhere up to <b>Special Grade</b>, to be listed.</p>
+      <div class="step" style="--i:1"><div class="n">II</div><div><h4>Entry validations</h4><p>You must be at least <b>Grade 1 · Mid</b>, anywhere up to <b>Special Grade</b>, to be listed.</p>
         <div class="climb"><span>Grade 1 Mid</span><i>›</i><span>Grade 1 High</span><i>›</i><span>Special Grade 1</span><i>›</i><span>Special Grade</span></div></div></div>
-      <div class="step" style="--i:2"><div class="n">III</div><div><h4>Prove it again</h4><p>You must be <b>evaluated every grade reset</b> to stay on the leaderboard.</p></div></div>
+      <div class="step" style="--i:2"><div class="n">III</div><div><h4>Evaluation &amp; regrade</h4><p>You must be <b>evaluated every grade reset</b> to stay on the leaderboard.</p></div></div>
       <div class="step" style="--i:3"><div class="n">IV</div><div><h4>Something off?</h4><p>If anything is wrong (grade, name, region), <b>message the hosts</b> on Discord.</p></div></div>
     </div></div>
 
@@ -448,6 +470,7 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
   <div id="hp_stats" hidden><div id="sbox"></div></div>
   <div id="hp_tools" hidden><div id="tbox"></div></div>
   <div id="hp_order" hidden><div id="ordbox"></div></div>
+  <div id="hp_fights" hidden><div id="fbox"></div></div>
   <div id="hp_export" hidden>
     <div class="rbox"><div class="sl" style="margin-bottom:10px">Export</div>
       <div class="acts" style="margin-top:0"><button class="solid" id="exP">Download players (CSV)</button><button id="exL">Download activity log (CSV)</button><button id="exC">Copy leaderboard for Discord</button></div>
@@ -467,8 +490,8 @@ const REG={NA:"North America",EU:"Europe",AS:"Asia"};
 const GRADES={G1:"Grade 1",SG1:"Special Grade 1",SG:"Special Grade"},GKEYS=["G1","SG1","SG"];
 const SUBS=["Low","Mid","High"],SSUBS=["Weak","Stable","Strong"];
 const score=p=>Math.max(0,GKEYS.indexOf(p.grade))*9+(p.grade==="SG"?0:Math.max(0,SUBS.indexOf(p.sub))*3+Math.max(0,SSUBS.indexOf(p.subsub)));
-const PERMS={roblox:"Edit Roblox names",ban:"Ban / unban players",grades:"Edit grades & board",reorder:"Reorder leaderboard",changelog:"Edit change log",logs:"View activity log",placements:"View placement history",stats:"View stats",export:"Export data (CSV)"};
-const STAFFP=["roblox","ban","grades","reorder","logs","placements","stats","export"];
+const PERMS={roblox:"Edit Roblox names",ban:"Ban / unban players",grades:"Edit grades & board",reorder:"Reorder leaderboard",changelog:"Edit change log",logs:"View activity log",placements:"View placement history",stats:"View stats",export:"Export data (CSV)",fights:"Edit fight notes & cooldowns"};
+const STAFFP=["roblox","ban","grades","reorder","logs","placements","stats","export","fights"];
 let roleDefs={};
 const roleTip=r=>(roleDefs[r]||[]).map(k=>PERMS[k]).filter(Boolean).join(" · ");
 const badge=r=>`<span class="host" title="${esc(roleTip(r))}">${esc(r)}</span>`;
@@ -499,12 +522,13 @@ function rbImgErr(img){const c=RB[img.dataset.k];img.className="rbpic none";
   if(c){c.rt=(c.rt||0)+1;c.u="";c.nt=c.rt>2?Date.now():0;rbSave();if(c.rt<=2)rbLoad()}}
 let rbBusy=false,rbCool=0,rbState="",rbErr="";
 const rbSave=()=>{try{localStorage.setItem("jj_rb3",JSON.stringify(RB))}catch(e){}};
+const fx=(u,o)=>fetch(u,Object.assign({},o||{},{signal:(typeof AbortSignal!=="undefined"&&AbortSignal.timeout)?AbortSignal.timeout(8000):undefined}));
 async function rbFind(n){
   /* username -> Roblox user id. Roblox blocks direct browser requests, so try a few public mirrors/proxies. */
   const t="https://users.roblox.com/v1/users/search?keyword="+encodeURIComponent(n)+"&limit=10";
   const urls=[t.replace("users.roblox.com","users.roproxy.com"),"https://api.allorigins.win/raw?url="+encodeURIComponent(t),"https://corsproxy.io/?url="+encodeURIComponent(t),"https://api.codetabs.com/v1/proxy/?quest="+encodeURIComponent(t)];
   for(const u of urls){
-    try{const r=await fetch(u);if(!r.ok)continue;const j=await r.json();if(!j||!Array.isArray(j.data))continue;
+    try{const r=await fx(u);if(!r.ok)continue;const j=await r.json();if(!j||!Array.isArray(j.data))continue;
       const m=j.data.find(x=>rbKey(x.name)===rbKey(n));return m?m.id:0}catch(e){}
   }
   return null;
@@ -516,7 +540,7 @@ async function rbThumbs(ids){
     const t="https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds="+ids.slice(i,i+50).join(",")+"&size=150x150&format=Png&isCircular=false";
     const urls=[t.replace("thumbnails.roblox.com","thumbnails.roproxy.com"),"https://api.allorigins.win/raw?url="+encodeURIComponent(t),"https://corsproxy.io/?url="+encodeURIComponent(t)];
     for(const u of urls){
-      try{const r=await fetch(u);if(!r.ok)continue;const j=await r.json();if(!j||!Array.isArray(j.data))continue;
+      try{const r=await fx(u);if(!r.ok)continue;const j=await r.json();if(!j||!Array.isArray(j.data))continue;
         j.data.forEach(x=>{if(x&&x.imageUrl&&/^https:\/\//.test(x.imageUrl))out[x.targetId]=x.imageUrl});break}catch(e){}
     }
   }
@@ -524,6 +548,9 @@ async function rbThumbs(ids){
 }
 async function rbLoad(){
   if(rbBusy||Date.now()<rbCool)return;
+  try{await rbLoadRun()}catch(e){rbErr=String(e&&e.message||e);console.warn("roblox avatars:",e)}finally{rbBusy=false}
+}
+async function rbLoadRun(){
   const names=[...new Set(profiles.map(p=>p.roblox).filter(Boolean))];
   const stale=c=>!c||(!c.id&&Date.now()-c.t>36e5);
   const need=names.filter(n=>stale(RB[rbKey(n)]));
@@ -534,8 +561,13 @@ async function rbLoad(){
   if(sb&&need.length){try{
     for(let i=0;i<need.length;i+=100){
       const part=need.slice(i,i+100);
-      const r=await sb.functions.invoke("smart-service",{body:{usernames:part}});
-      if(r.error||!r.data||r.data.error)throw new Error(r.error?r.error.message:((r.data&&r.data.error)||"no data"));
+      let r=null,fe="";
+      for(const fn of ["smart-service","roblox"]){
+        const q=await sb.functions.invoke(fn,{body:{usernames:part}});
+        if(!q.error&&q.data&&!q.data.error){r=q;break}
+        fe=fn+": "+(q.error?((q.error.context&&q.error.context.status?"HTTP "+q.error.context.status+" - ":"")+q.error.message):((q.data&&q.data.error)||"no data"));
+      }
+      if(!r)throw new Error(fe);
       part.forEach(n=>{const x=r.data[rbKey(n)];if(x){RB[rbKey(n)]={id:x.id,u:x.url||"",t:Date.now()};got++}});
     }
     rbState="function";rbErr="";
@@ -546,7 +578,7 @@ async function rbLoad(){
     try{
       for(let i=0;i<left.length;i+=100){
         const part=left.slice(i,i+100);
-        const r=await fetch("https://users.roproxy.com/v1/usernames/users",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({usernames:part,excludeBannedUsers:false})});
+        const r=await fx("https://users.roproxy.com/v1/usernames/users",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({usernames:part,excludeBannedUsers:false})});
         if(!r.ok)throw new Error("batch "+r.status);
         ((await r.json()).data||[]).forEach(u=>{RB[rbKey(u.requestedUsername)]={id:u.id,t:Date.now()};got++});
       }
@@ -719,7 +751,7 @@ const hSort=(a,b)=>{const m=$("#hsort").value;
   if(m==="name")return String(a.name).localeCompare(String(b.name));
   return b.created-a.created};
 const fmt=t=>new Date(t).toLocaleString([],{dateStyle:"medium",timeStyle:"short"});
-const HT=[["over","Overview",()=>true],["players","Players",()=>true],["order","Order",()=>can("reorder")],["tools","Tools",()=>true],["roles","Roles",()=>isOwner],["logs","Activity log",()=>can("logs")],["place","Placements",()=>can("placements")],["stats","Stats",()=>can("stats")],["export","Export",()=>can("export")]];
+const HT=[["over","Overview",()=>true],["players","Players",()=>true],["order","Order",()=>can("reorder")],["tools","Tools",()=>true],["roles","Roles",()=>isOwner],["logs","Activity log",()=>can("logs")],["place","Placements",()=>can("placements")],["stats","Stats",()=>can("stats")],["export","Export",()=>can("export")],["fights","Fight notes",()=>can("fights")]];
 function logEvent(action,kind,tid,tname,detail){
   if(!sb||!uid)return;
   sb.from("audit_log").insert({actor:uid,actor_name:(me&&me.name)||"?",action:String(action).slice(0,60),kind,target:tid||null,target_name:String(tname||"").slice(0,60),detail:String(detail||"").slice(0,300)})
@@ -736,7 +768,7 @@ function renderHost(board){
   if(!tabs.some(t=>t[0]===hostTab))hostTab="over";
   $("#hh").textContent="Panel";
   $("#htabs").innerHTML=tabs.map(t=>`<button class="tab ${t[0]===hostTab?"on":""}" data-ht="${t[0]}">${t[1]}</button>`).join("");
-  ["over","players","order","tools","roles","logs","place","stats","export"].forEach(k=>{$("#hp_"+k).hidden=k!==hostTab});
+  ["over","players","order","tools","roles","logs","place","stats","export","fights"].forEach(k=>{$("#hp_"+k).hidden=k!==hostTab});
   if(hostTab==="over")renderOverview(board);
   if(hostTab==="roles")renderRoles();
   if(hostTab==="logs")renderAuditList("#llist","#lcount",$("#lq").value,false,$("#lf").value);
@@ -745,6 +777,7 @@ function renderHost(board){
   if(hostTab==="tools")renderTools(board);
   if(hostTab==="order")renderOrder(board);
   if(hostTab==="export")$("#exL").disabled=!can("logs");
+  if(hostTab==="fights")renderFights();
 }
 const catOf=a=>a.kind==="placement"?"placement":/ban/.test(a.action)?"bans":/role/.test(a.action)?"roles":/profile|joined/.test(a.action)?"players":"site";
 function renderAuditList(listSel,cntSel,q,placeOnly,cat){
@@ -800,7 +833,7 @@ function renderOverview(board){
     <div class="tile"><span>Profiles</span><b>${profiles.length}</b></div><div class="tile"><span>On the board</span><b>${board.length}</b></div><div class="tile"><span>Waiting for eval</span><b>${waiting.length}</b></div>
     <div class="tile"><span>Banned</span><b>${profiles.filter(p=>p.banned).length}</b></div><div class="tile"><span>Joined · 24h</span><b>${profiles.filter(p=>p.created>now-day).length}</b></div><div class="tile"><span>Actions · 24h</span><b>${canA?today:"—"}</b></div></div></div>
     <div class="ovg"><div class="rbox">${spark}${feed}</div>
-    <div><div class="rbox"><div class="sl">Evaluation queue · ${waiting.length}</div>${q}</div><div class="rbox" style="margin-top:14px"><div class="sl">Newest members</div>${newest}</div>${roleRows?`<div class="rbox" style="margin-top:14px"><div class="sl">Roles</div>${roleRows}</div>`:""}</div></div>`;
+    <div><div class="rbox"><div class="sl">Entry validations · ${waiting.length}</div>${q}</div><div class="rbox" style="margin-top:14px"><div class="sl">Newest members</div>${newest}</div>${roleRows?`<div class="rbox" style="margin-top:14px"><div class="sl">Roles</div>${roleRows}</div>`:""}</div></div>`;
 }
 /* ---- leaderboard order (needs the "Reorder leaderboard" permission) ---- */
 let orderDraft=null,ordMsg="",dragId=null,lbEdit=false;
@@ -838,6 +871,152 @@ function renderOrder(board){
     <div class="err">${esc(ordMsg)}</div></div>
     <div class="olist">${rows||`<div class="empty">Nobody on the board yet.</div>`}</div>`;
 }
+
+/* ---- fight notes (Panel > Fight notes) ---- */
+const CD_DAYS=5,MAXDODGE=3,DAYMS=864e5;
+let fl=[],flErr="",fMsg="",fBad=false,fOpen="";
+const fd={a:"",b:"",w:"",note:"",dp:"",dq:"",dn:"",cp:"",c1:"",c2:"",nt:"",np:""};
+const pName=(id,fb)=>{const p=profiles.find(x=>x.id===id);return p?p.name:(fb||"?")};
+const left=ms=>{const d=Math.floor(ms/DAYMS),h=Math.floor(ms%DAYMS/36e5),m=Math.floor(ms%36e5/6e4);return d?d+"d "+h+"h":h?h+"h "+m+"m":Math.max(1,m)+"m"};
+async function loadFights(){
+  if(!sb||!can("fights"))return;
+  const r=await sb.from("fight_notes").select("*").order("created_at",{ascending:false}).limit(1000);
+  if(r.error){flErr=/fight_notes|relation|schema cache/i.test(r.error.message)?"Fight notes aren\u2019t set up yet \u2014 run fight_notes.sql in Supabase, then reload.":r.error.message;fl=[]}else{flErr="";fl=r.data||[]}
+  if(pg==="host"&&hostTab==="fights")renderFights();
+}
+function fightStats(){
+  const S={},get=id=>S[id]||(S[id]={w:0,l:0,d:0,cd:0,log:[]});
+  const first={5:null,10:null};
+  fl.slice().reverse().forEach(r=>{
+    const until=Date.parse(r.until)||0;
+    if(r.kind==="fight"){
+      const lo=r.winner===r.a?r.b:r.a,W=get(r.winner),L=get(lo);
+      W.w++;L.l++;W.log.push(r);L.log.push(r);
+      get(r.a).cd=until;get(r.b).cd=until;
+      [5,10].forEach(n=>{if(W.w===n&&!first[n])first[n]={id:r.winner,name:pName(r.winner,r.winner===r.a?r.a_name:r.b_name),at:r.created_at}});
+    }else if(r.kind==="dodge"&&r.a){get(r.a).d++;get(r.a).log.push(r)}
+    else if(r.kind==="cooldown"&&r.a){get(r.a).cd=until}
+  });
+  return{S,first,get};
+}
+const cdLeft=(S,id)=>{const c=S[id];return c&&c.cd>Date.now()?c.cd-Date.now():0};
+function logLine(r,pid){
+  if(r.kind==="fight"){const me_=r.a===pid,opp=pName(me_?r.b:r.a,me_?r.b_name:r.a_name),won=r.winner===pid;return `<b>${won?"Win":"Loss"}</b> vs ${esc(opp)}${r.detail?" \u2014 "+esc(r.detail):""}`}
+  if(r.kind==="dodge")return `<b>Dodge</b>${r.b||r.b_name?" vs "+esc(pName(r.b,r.b_name)):""}${r.detail?" \u2014 "+esc(r.detail):""}`;
+  return "";
+}
+function renderFights(){
+  const el=$("#fbox");if(!el)return;
+  if(flErr){el.innerHTML=`<div class="rbox"><div class="sl">Fight notes</div><div class="err" style="margin-top:0">${esc(flErr)}</div></div>`;return}
+  const {S,first}=fightStats();
+  const ps=profiles.filter(p=>!p.banned).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  const opts=(sel,ph)=>`<option value="">${ph}</option>`+ps.map(p=>`<option value="${esc(p.id)}" ${p.id===sel?"selected":""}>${esc(p.name)} \u00b7 @${esc(p.roblox)}</option>`).join("");
+  const nameOf=id=>pName(id);
+  const ms=n=>first[n]?`<b>${esc(first[n].name)}</b><span style="color:var(--dim)"> \u00b7 ${esc(fmt(first[n].at))}</span>`:`<span style="color:var(--dim)">Nobody yet</span>`;
+  const wOpts=`<option value="">Winner\u2026</option>`+[fd.a,fd.b].filter(Boolean).map(id=>`<option value="${esc(id)}" ${id===fd.w?"selected":""}>${esc(nameOf(id))}</option>`).join("");
+  const dN=fd.dp?(S[fd.dp]||{d:0}).d:0;
+  let chk="";
+  if(fd.c1&&fd.c2){
+    if(fd.c1===fd.c2)chk=`<div class="fok no">Pick two different players.</div>`;
+    else{const a=cdLeft(S,fd.c1),b=cdLeft(S,fd.c2);
+      chk=a||b?`<div class="fok no">\u2717 Not allowed yet \u2014 ${[a?esc(nameOf(fd.c1))+" is on cooldown ("+left(a)+" left)":"",b?esc(nameOf(fd.c2))+" is on cooldown ("+left(b)+" left)":""].filter(Boolean).join(" \u00b7 ")}</div>`:`<div class="fok yes">\u2713 Both are free \u2014 the challenge is allowed.</div>`}
+  }
+  const active=Object.keys(S).filter(id=>cdLeft(S,id)).sort((x,y)=>cdLeft(S,x)-cdLeft(S,y));
+  const ids=[...new Set([...profiles.filter(p=>onB(p)).map(p=>p.id),...Object.keys(S)])].filter(id=>profiles.some(p=>p.id===id));
+  const rows=ids.map(id=>({id,p:profiles.find(p=>p.id===id),s:S[id]||{w:0,l:0,d:0,cd:0,log:[]}})).sort((a,b)=>(b.s.w-a.s.w)||(a.s.l-b.s.l)||String(a.p.name).localeCompare(String(b.p.name)));
+  const tbl=rows.map(({id,p,s})=>{
+    const c=cdLeft(S,id),open=fOpen===id;
+    return `<tr><td><b>${esc(p.name)}</b><div class="pt" style="font-size:11px">@${esc(p.roblox)}</div></td><td class="n">${s.w}</td><td class="n">${s.l}</td><td class="n ${s.d>=MAXDODGE?"max":""}">${s.d}/${MAXDODGE}${s.d>=MAXDODGE?" MAX":""}</td><td class="${c?"cd":""}">${c?left(c):"\u2014"}</td><td><button class="ghost" data-fa="open" data-id="${esc(id)}" style="padding:4px 10px">${open?"Hide":"Log \u00b7 "+s.log.length}</button></td></tr>`
+      +(open?`<tr class="flog"><td colspan="6">${s.log.slice().reverse().map(r=>`<div class="mini" style="border-top:0;padding:4px 0">${logLine(r,id)}<span style="color:#7a7a86"> \u00b7 ${esc(fmt(r.created_at))}</span></div>`).join("")||`<div class="sub" style="margin:0">No fights or dodges recorded.</div>`}</td></tr>`:"");
+  }).join("");
+  const notes=fl.filter(r=>r.kind==="note");
+  const recent=fl.filter(r=>r.kind!=="note").slice(0,15);
+  const recLine=r=>{
+    if(r.kind==="fight")return `<b>${esc(pName(r.winner,r.winner===r.a?r.a_name:r.b_name))}</b> beat ${esc(pName(r.winner===r.a?r.b:r.a,r.winner===r.a?r.b_name:r.a_name))}${r.detail?" \u2014 "+esc(r.detail):""}`;
+    if(r.kind==="dodge")return `<b>${esc(pName(r.a,r.a_name))}</b> dodged${r.b||r.b_name?" "+esc(pName(r.b,r.b_name)):""}${r.detail?" \u2014 "+esc(r.detail):""}`;
+    const u=Date.parse(r.until)||0;return `<b>${esc(pName(r.a,r.a_name))}</b> \u00b7 ${u>Date.parse(r.created_at)+6e4?"cooldown started":"cooldown cleared"}`;
+  };
+  el.innerHTML=`
+  <div class="rbox"><div class="sl">First to the milestones</div>
+    <div class="mini" style="border-top:0">First to <b>5 wins</b> \u00b7 ${ms(5)}</div>
+    <div class="mini">First to <b>10 wins</b> \u00b7 ${ms(10)}</div>
+    <div class="sub" style="margin-top:8px">Counted from logged fights, in the order they were recorded.</div></div>
+  <div class="fgrid" style="margin-top:14px">
+   <div class="fcol">
+    <div class="rbox"><div class="sl">Log a fight</div>
+      <div class="frow"><div class="frow2"><select data-fd="a">${opts(fd.a,"Player A\u2026")}</select><select data-fd="b">${opts(fd.b,"Player B\u2026")}</select></div>
+      <select data-fd="w">${wOpts}</select>
+      <input data-fd="note" maxlength="200" placeholder="Note (optional) \u2014 score, proof link\u2026" value="${esc(fd.note)}" autocomplete="off">
+      <div><button class="solid" data-fa="fight">Log fight \u00b7 start ${CD_DAYS}-day cooldown</button></div></div></div>
+    <div class="rbox"><div class="sl">Record a dodge <span style="color:var(--dim)">\u00b7 max ${MAXDODGE}</span></div>
+      <div class="frow"><div class="frow2"><select data-fd="dp">${opts(fd.dp,"Who dodged\u2026")}</select><select data-fd="dq">${opts(fd.dq,"Dodged whom (optional)")}</select></div>
+      <input data-fd="dn" maxlength="200" placeholder="Note (optional)" value="${esc(fd.dn)}" autocomplete="off">
+      <div class="sub" style="margin:0">${fd.dp?esc(nameOf(fd.dp))+" has <b>"+dN+"/"+MAXDODGE+"</b> dodges"+(dN>=MAXDODGE?" \u2014 already at the maximum.":"."):"Pick a player to see their count."}</div>
+      <div><button class="solid" data-fa="dodge" ${dN>=MAXDODGE?"disabled":""}>Record dodge</button></div></div></div>
+    <div class="rbox"><div class="sl">Cooldown (${CD_DAYS} days)</div>
+      <div class="sub" style="margin:6px 0 0">After a fight neither player can challenge or be challenged until it ends. Logging a fight starts it automatically.</div>
+      <div class="frow"><select data-fd="cp">${opts(fd.cp,"Player\u2026")}</select>
+      <div class="trow" style="margin:0"><button class="solid" data-fa="cdstart">Start ${CD_DAYS}-day cooldown</button><button class="ghost" data-fa="cdclear">Clear cooldown</button></div></div>
+      <div class="sl" style="margin:16px 0 4px">Can they fight?</div>
+      <div class="frow2"><select data-fd="c1">${opts(fd.c1,"Challenger\u2026")}</select><select data-fd="c2">${opts(fd.c2,"Challenged\u2026")}</select></div>${chk}
+      <div class="sl" style="margin:16px 0 4px">On cooldown now \u00b7 ${active.length}</div>
+      ${active.map(id=>`<div class="mini"><b>${esc(nameOf(id))}</b><span style="float:right;color:#ffd86b">${left(cdLeft(S,id))} left</span></div>`).join("")||`<div class="sub" style="margin:0">Nobody.</div>`}</div>
+   </div>
+   <div class="fcol">
+    <div class="rbox"><div class="sl">Notes</div>
+      <div class="frow"><select data-fd="np">${opts(fd.np,"About a player (optional)")}</select>
+      <textarea data-fd="nt" maxlength="500" rows="3" placeholder="Write a note for the other editors\u2026" style="resize:vertical">${esc(fd.nt)}</textarea>
+      <div><button class="solid" data-fa="note">Post note</button></div></div>
+      <div style="margin-top:10px">${notes.map(r=>`<div class="fnote"><button class="ghost fdel" data-fa="del" data-id="${esc(r.id)}">Delete</button>${r.a||r.a_name?`<b>${esc(pName(r.a,r.a_name))}</b> \u2014 `:""}${esc(r.detail)}<span>${esc(r.actor_name||"?")} \u00b7 ${esc(fmt(r.created_at))}</span></div>`).join("")||`<div class="sub" style="margin:0">No notes yet.</div>`}</div></div>
+    <div class="rbox"><div class="sl">Recent activity</div>
+      ${recent.map(r=>`<div class="mini"><button class="ghost fdel" data-fa="del" data-id="${esc(r.id)}">Delete</button>${recLine(r)}<span style="display:block;font-size:11px;color:var(--dim)">${esc(r.actor_name||"?")} \u00b7 ${esc(fmt(r.created_at))}</span></div>`).join("")||`<div class="sub" style="margin:0">Nothing recorded yet.</div>`}</div>
+   </div>
+  </div>
+  <div class="rbox" style="margin-top:14px"><div class="sl">Players \u00b7 losses, dodges &amp; fight logs</div>
+    <div class="fscroll"><table class="ftbl"><thead><tr><th>Player</th><th class="n">Wins</th><th class="n">Losses</th><th class="n">Dodges</th><th>Cooldown</th><th></th></tr></thead><tbody>${tbl||`<tr><td colspan="6" class="sub">No players yet.</td></tr>`}</tbody></table></div></div>
+  ${fMsg?`<div class="fmsg ${fBad?"bad":""}">${esc(fMsg)}</div>`:""}`;
+}
+async function fightAct(act,id){
+  const say=(m,bad)=>{fMsg=m;fBad=!!bad;renderFights()};
+  if(act==="open"){fOpen=fOpen===id?"":id;return renderFights()}
+  if(!sb||!uid||!can("fights"))return say("You don\u2019t have permission.",true);
+  const {S}=fightStats(),nm=pName,iso=ms=>new Date(Date.now()+ms).toISOString();
+  const ins=async row=>{const r=await sb.from("fight_notes").insert(Object.assign({actor:uid,actor_name:(me&&me.name)||"?"},row));if(r.error){say("Couldn\u2019t save: "+r.error.message,true);return false}return true};
+  if(act==="del"){if(!confirm("Delete this entry?"))return;const r=await sb.from("fight_notes").delete().eq("id",id);if(r.error)return say("Couldn\u2019t delete: "+r.error.message,true);fMsg="";await loadFights();return}
+  if(act==="fight"){
+    if(!fd.a||!fd.b)return say("Pick both players.",true);
+    if(fd.a===fd.b)return say("A player can\u2019t fight themselves.",true);
+    if(fd.w!==fd.a&&fd.w!==fd.b)return say("Pick the winner.",true);
+    const cd=[fd.a,fd.b].filter(x=>cdLeft(S,x)).map(x=>nm(x)+" ("+left(cdLeft(S,x))+" left)");
+    if(cd.length&&!confirm("On cooldown: "+cd.join(", ")+".\nLog the fight anyway?"))return;
+    if(!await ins({kind:"fight",a:fd.a,a_name:nm(fd.a),b:fd.b,b_name:nm(fd.b),winner:fd.w,detail:fd.note.trim().slice(0,200),until:iso(CD_DAYS*DAYMS)}))return;
+    logEvent("fight logged","placement",fd.w,nm(fd.w),nm(fd.w)+" beat "+nm(fd.w===fd.a?fd.b:fd.a));
+    Object.assign(fd,{a:"",b:"",w:"",note:""});fMsg="Fight logged \u2014 "+CD_DAYS+"-day cooldown started for both.";fBad=false;return loadFights();
+  }
+  if(act==="dodge"){
+    if(!fd.dp)return say("Pick who dodged.",true);
+    if(fd.dp===fd.dq)return say("A player can\u2019t dodge themselves.",true);
+    if(((S[fd.dp]||{}).d||0)>=MAXDODGE)return say(nm(fd.dp)+" is already at "+MAXDODGE+" dodges.",true);
+    if(!await ins({kind:"dodge",a:fd.dp,a_name:nm(fd.dp),b:fd.dq||null,b_name:fd.dq?nm(fd.dq):null,detail:fd.dn.trim().slice(0,200)}))return;
+    logEvent("dodge recorded","general",fd.dp,nm(fd.dp),"dodge "+(((S[fd.dp]||{}).d||0)+1)+"/"+MAXDODGE);
+    Object.assign(fd,{dq:"",dn:""});fMsg="Dodge recorded.";fBad=false;return loadFights();
+  }
+  if(act==="cdstart"||act==="cdclear"){
+    if(!fd.cp)return say("Pick a player.",true);
+    const start=act==="cdstart";
+    if(!await ins({kind:"cooldown",a:fd.cp,a_name:nm(fd.cp),until:iso(start?CD_DAYS*DAYMS:0)}))return;
+    logEvent(start?"cooldown started":"cooldown cleared","general",fd.cp,nm(fd.cp),start?CD_DAYS+" days":"");
+    fMsg=start?"Cooldown started for "+nm(fd.cp)+".":"Cooldown cleared for "+nm(fd.cp)+".";fBad=false;return loadFights();
+  }
+  if(act==="note"){
+    const t=fd.nt.trim();if(!t)return say("Write something first.",true);
+    if(!await ins({kind:"note",a:fd.np||null,a_name:fd.np?nm(fd.np):null,detail:t.slice(0,500)}))return;
+    Object.assign(fd,{nt:"",np:""});fMsg="Note posted.";fBad=false;return loadFights();
+  }
+}
+document.addEventListener("input",e=>{const k=e.target&&e.target.dataset&&e.target.dataset.fd;if(k&&e.target.tagName!=="SELECT")fd[k]=e.target.value});
+document.addEventListener("change",e=>{const k=e.target&&e.target.dataset&&e.target.dataset.fd;if(k&&e.target.tagName==="SELECT"){fd[k]=e.target.value;if(k==="a"||k==="b"){if(fd.w!==fd.a&&fd.w!==fd.b)fd.w=""}fMsg="";renderFights()}});
+
 /* ---- tools tab ---- */
 async function makeBoardImage(region){
   try{await document.fonts.load('72px "Pirata One"');await document.fonts.load('800 28px Archivo')}catch(e){}
@@ -853,13 +1032,13 @@ async function makeBoardImage(region){
   b.forEach((p,i)=>{
     const rk=i+1,y=top+i*RH,mid=y+(RH-12)/2;
     rr(60,y,W-120,RH-12,16);x.fillStyle="#12121a";x.fill();x.strokeStyle=rk===1?"#f2b800":"#26262f";x.lineWidth=rk===1?2:1;x.stroke();
-    x.beginPath();x.arc(124,mid,26,0,Math.PI*2);x.fillStyle=rk===1?"#f2b800":rk===2?"#d9d9e0":rk===3?"#c98a5a":"#2c2c36";x.fill();
-    x.fillStyle=rk<=3?"#111":"#cfcfd6";x.font='800 24px Archivo,sans-serif';x.textAlign="center";x.fillText(String(rk),124,mid+9);
+    x.beginPath();x.arc(124,mid,26,0,Math.PI*2);x.fillStyle=rk===1?"#f2b800":rk===2?"#d9d9e0":rk===3?"#c98a5a":"#cfcfd6";x.fill();
+    x.fillStyle="#000";x.font='800 24px Archivo,sans-serif';x.textAlign="center";x.fillText(String(rk),124,mid+9);
     x.textAlign="left";x.fillStyle="#fff";x.font='800 28px Archivo,sans-serif';x.fillText(String(p.name).slice(0,22),172,y+37);
     x.fillStyle="#80808c";x.font='600 18px Archivo,sans-serif';x.fillText(gl(p)+"  ·  @"+p.roblox,172,y+61);
     x.textAlign="right";x.fillStyle="#a99bff";x.font='800 22px Archivo,sans-serif';x.fillText(p.region,W-92,mid+8);
   });
-  x.textAlign="center";x.fillStyle="#4a4a56";x.font='600 18px Archivo,sans-serif';x.fillText("JJSGC · climb the ladder",W/2,H-40);
+  x.textAlign="center";x.fillStyle="#4a4a56";x.font='600 18px Archivo,sans-serif';x.fillText("JJSGC",W/2,H-40);
   return c.toDataURL("image/png");
 }
 async function saveAnn(clear){
@@ -882,7 +1061,7 @@ function renderTools(board){
   const regOpts=["ALL","NA","EU","AS"].map(r=>`<option value="${r}" ${r===imgR?"selected":""}>${r==="ALL"?"Overall":REG[r]}</option>`).join("");
   $("#tbox").innerHTML=`<div class="tgrid">
   <div class="col">
-    <div class="rbox"><div class="sl">Evaluation tracker</div>
+    <div class="rbox"><div class="sl">Evaluation &amp; regrade</div>
       <div class="sub">Players on the board who haven’t been placed for a while — time for a re-eval.</div>
       <div class="trow"><select id="evd">${[14,21,30,45,60,90].map(d=>`<option value="${d}" ${d===evDays?"selected":""}>Older than ${d} days</option>`).join("")}</select><span class="sub" style="margin:0"><b>${over.length}</b> overdue of ${board.length}</span></div>
       <div style="margin-top:10px">${evRows}</div>
@@ -907,7 +1086,7 @@ function renderTools(board){
       <div class="sub">Top 25 overall, top 10 per region, as formatted text.</div>
       <div class="trow">${["ALL","NA","EU","AS"].map(r=>`<button data-cb="${r}" ${ex?"":"disabled"}>${r==="ALL"?"Overall":r}</button>`).join("")}</div>
     </div>
-    <div class="rbox"><div class="sl">System check</div><div style="margin-top:8px">${chk}</div></div>
+    <div class="rbox"><div class="sl">System check</div><div style="margin-top:8px">${chk}</div><div class="trow"><button class="ghost" id="rbRetry">Retry Roblox avatars</button></div></div>
   </div></div>`;
 }
 
@@ -1166,14 +1345,16 @@ async function refreshAuth(){
 document.addEventListener("click",async e=>{
   const t=e.target;
   if(t.closest&&t.closest("a[href]"))return;
+  const fa=t.closest("[data-fa]");if(fa)return fightAct(fa.dataset.fa,fa.dataset.id);
   const rx=t.closest("[data-rbx]");if(rx){const f=$("#f_rb");if(f)f.value=rx.dataset.rbx;return}
   if(t.closest("#lnkDisc")){try{sessionStorage.setItem("jj_link","1")}catch(_){}return sb.auth.signInWithOAuth({provider:"discord",options:{scopes:"identify email connections",redirectTo:location.origin+location.pathname}})}
   if(t.closest("#lbEdit")){lbEdit=true;orderDraft=null;ordMsg="";return render()}
   const gb=t.closest("[data-go]");if(gb)return go(gb.dataset.go);
-  const ht=t.closest("[data-ht]");if(ht){hostTab=ht.dataset.ht;if(hostTab==="over"||hostTab==="logs"||hostTab==="place"||hostTab==="stats"||hostTab==="tools")loadAudit();return render()}
+  const ht=t.closest("[data-ht]");if(ht){hostTab=ht.dataset.ht;if(hostTab==="fights")loadFights();if(hostTab==="over"||hostTab==="logs"||hostTab==="place"||hostTab==="stats"||hostTab==="tools")loadAudit();return render()}
   if(t.closest("#avpick"))return $("#avfile").click();
   if(t.closest("#avreset"))return resetAvatar();
   if(t.closest("#exP"))return exportPlayers();
+  if(t.closest("#rbRetry")){RB={};rbSave();rbCool=0;rbBusy=false;rbState="";rbErr="";render();rbLoad();return}
   if(t.closest("#exL"))return exportLog();
   if(t.closest("#exC"))return copyBoard(t.closest("#exC"));
   const mv=t.closest("[data-mv]");if(mv){moveOrd(mv.dataset.mv,+mv.dataset.to);ordMsg="";return render()}
