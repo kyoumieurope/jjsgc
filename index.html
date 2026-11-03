@@ -323,6 +323,10 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 .logo{cursor:pointer;user-select:none;transition:opacity .15s}.logo:hover{opacity:.8}.logo:focus-visible{outline:1px solid #888;outline-offset:6px;border-radius:6px}
 #pgrid{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--line)}
 .lrow.np{grid-template-columns:1fr 64px;padding:14px 24px 14px 8px}
+.rbw{display:inline-flex;align-items:center;gap:7px;vertical-align:middle;max-width:100%}
+.rbimg{width:22px;height:22px;flex:none;border-radius:50%;object-fit:cover;background:#1a1a20;border:1px solid #3a3a46}
+.rl.rbn,.rl.rbn:hover{color:#fff;font-weight:700;text-decoration:none;text-shadow:0 0 6px rgba(255,255,255,.95),0 0 14px rgba(255,255,255,.6),0 0 26px rgba(190,170,255,.45)}
+.pt{padding:2px 0}
 </style>
 </head>
 <body>
@@ -459,7 +463,8 @@ const can=k=>isOwner||(!!uid&&myRoles().some(r=>(roleDefs[r]||[]).includes(k)));
 const staff=()=>isOwner||STAFFP.some(k=>can(k));
 /* Hosts flash. Add Discord IDs in config.js as hostIds:["123..."], or give someone a role named "Host". */
 const HOST_IDS=["1213453133175324784",...((window.JJSGC_CONFIG||{}).hostIds||[])].map(String);
-const isHost=p=>(!!p.discord&&HOST_IDS.includes(String(p.discord)))||(p.roles||[]).some(r=>/^hosts?$/i.test(r))||(p.id===uid&&isOwner);
+const HOST_NAMES=["toojways","kyoum1i",...((window.JJSGC_CONFIG||{}).hostNames||[])].map(x=>String(x).toLowerCase());
+const isHost=p=>(!!p.discord&&HOST_IDS.includes(String(p.discord)))||(!!p.roblox&&HOST_NAMES.includes(String(p.roblox).toLowerCase()))||(p.roles||[]).some(r=>/^hosts?$/i.test(r))||(p.id===uid&&isOwner);
 const nmx=p=>`<span class="${isHost(p)?"flash":""}">${esc(p.name)}</span>`;
 const tags=p=>(p.banned?'<span class="host bn">Banned</span>':"")+(isHost(p)?'<span class="host hostflash">Host</span>':"")+p.roles.filter(r=>!/^hosts?$/i.test(r)).map(badge).join("");
 /* rank badge: #1 yellow, #2 white, fading to pure black at #20+ */
@@ -470,9 +475,36 @@ const rkStyle=r=>{
   return`background:hsl(0 0% ${L}%);color:${L>50?"#000":"#cfcfd6"}`;
 };
 const rbUrl=p=>"https://www.roblox.com/user.aspx?username="+encodeURIComponent(p.roblox||"");
-const rbA=p=>`<a class="rl" href="${esc(rbUrl(p))}" target="_blank" rel="noopener noreferrer" title="Open Roblox profile">@${esc(p.roblox)}</a>`;
+let RB={};try{RB=JSON.parse(localStorage.getItem("jj_rb")||"{}")}catch(e){}
+const rbKey=n=>String(n||"").toLowerCase();
+const rbA=p=>{const c=RB[rbKey(p.roblox)],src=c&&c.u?c.u:"";
+  return `<span class="rbw">${src?`<img class="rbimg" src="${esc(src)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">`:`<span class="rbimg"></span>`}<a class="rl rbn" href="${esc(rbUrl(p))}" target="_blank" rel="noopener noreferrer" title="Open Roblox profile">@${esc(p.roblox)}</a></span>`};
+let rbBusy=false;
+async function rbLoad(){
+  if(rbBusy)return;
+  const stale=c=>!c||Date.now()-c.t>(c.u?6048e5:36e5);
+  const need=[...new Set(profiles.map(p=>p.roblox).filter(Boolean))].filter(n=>stale(RB[rbKey(n)]));
+  if(!need.length)return;rbBusy=true;
+  try{
+    for(let i=0;i<need.length;i+=100){
+      const part=need.slice(i,i+100);
+      const r=await fetch("https://users.roproxy.com/v1/usernames/users",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({usernames:part,excludeBannedUsers:false})});
+      if(!r.ok)throw new Error("users "+r.status);
+      const ids={};((await r.json()).data||[]).forEach(u=>{ids[rbKey(u.requestedUsername)]=u.id});
+      const idl=Object.values(ids),urls={};
+      if(idl.length){
+        const t=await fetch("https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds="+idl.join(",")+"&size=150x150&format=Png&isCircular=false");
+        if(!t.ok)throw new Error("thumbs "+t.status);
+        ((await t.json()).data||[]).forEach(x=>{if(x.state==="Completed"&&x.imageUrl)urls[x.targetId]=x.imageUrl});
+      }
+      part.forEach(n=>{const id=ids[rbKey(n)];RB[rbKey(n)]={u:(id&&urls[id])||"",t:Date.now()}});
+    }
+    try{localStorage.setItem("jj_rb",JSON.stringify(RB))}catch(e){}
+  }catch(e){console.warn("roblox avatars:",e.message)}
+  rbBusy=false;render();
+}
 const gtxt=(g,s,ss)=>(GRADES[g]||GRADES.G1)+(g==="SG"?"":" · "+(s||"Low")+" "+(ss||"Weak"));
-const gl=p=>gtxt(p.grade,p.sub,p.subsub);
+const gl=p=>p.ranked?gtxt(p.grade,p.sub,p.subsub):"No grade";
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const av=p=>`<div class="av">${esc((p.name||"?")[0].toUpperCase())}${p.avatar?`<img src="${esc(p.avatar)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:""}</div>`;
@@ -508,7 +540,7 @@ function row(p,i,rk){const on=p.ranked&&!p.banned;
   return `<div class="lrow ${on&&rk<=3?"t3":""}" data-id="${esc(p.id)}"><span class="lrk">${on?rk:"—"}</span><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${on?esc(gl(p)):"Not competitive"} · ${rbA(p)}</div></div></div><span class="lrg">${p.region}</span></div>`;
 }
 function hrow(p,i){
-  return `<div class="card hrow" data-id="${esc(p.id)}" style="--i:${Math.min(i||0,14)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${esc(gl(p))} · @${esc(p.roblox)} · ${p.region}${p.ranked?" · on board":""} · ${esc(p.discord)} · joined ${ago(p.created)}</div></div></div>
+  return `<div class="card hrow" data-id="${esc(p.id)}" style="--i:${Math.min(i||0,14)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${esc(gl(p))} · ${rbA(p)} · ${p.region}${p.ranked?" · on board":""} · ${esc(p.discord)} · joined ${ago(p.created)}</div></div></div>
   <div style="display:flex;gap:6px">${p.discord?`<button class="ghost" data-copy="${esc(p.discord)}" title="Copy Discord ID">ID</button>`:""}${can("ban")?`<button class="ghost" data-ban="${esc(p.id)}">${p.banned?"Unban":"Ban"}</button>`:""}</div></div>`;
 }
 function go(v){
@@ -552,7 +584,7 @@ function pcard(p,i){
 function scard(p,i){
   const rl=(isHost(p)?'<span class="host">Host</span>':"")+p.roles.filter(r=>!/^hosts?$/i.test(r)).map(badge).join("");
   return `<div class="sc" data-id="${esc(p.id)}" style="--i:${Math.min(i,14)}">
-  <div class="sc-top">${av(p)}<div><div class="nm">${esc(p.name)}</div><div class="pt">@${esc(p.roblox)}</div></div><div class="rg ${p.region}">${p.region}</div></div>
+  <div class="sc-top">${av(p)}<div><div class="nm">${esc(p.name)}</div><div class="pt">${rbA(p)}</div></div><div class="rg ${p.region}">${p.region}</div></div>
   ${rl?`<div class="sc-roles">${rl}</div>`:""}</div>`;
 }
 function renderPlayers(board){
@@ -973,7 +1005,7 @@ async function loadProfiles(){
   profiles=data.filter(p=>REG[p.region]).map(p=>({id:p.user_id,name:p.name,roblox:p.roblox,region:p.region,grade:p.grade,sub:SUBS.includes(p.sub)?p.sub:"Low",subsub:SSUBS.includes(p.subsub)?p.subsub:"Weak",ranked:!!p.ranked,banned:!!p.banned,reason:p.ban_reason||"",roles:(p.roles||"").split(",").map(x=>x.trim()).filter(Boolean),discord:p.discord_id||"",avatar:p.custom_avatar||p.avatar_url,custom:p.custom_avatar||"",created:Date.parse(p.created_at)||0,pos:(p.board_pos==null?null:+p.board_pos)}));
   loaded=true;
   if(onboarding&&uid&&profiles.some(p=>p.id===uid))closeModal();
-  renderAuth();render();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();
+  renderAuth();render();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();rbLoad();
   if(reopen&&uid){reopen=false;openOwn()}
 }
 /* ---- site profile pictures (stored in Supabase Storage bucket "avatars", see avatars.sql) ---- */
