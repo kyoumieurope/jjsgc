@@ -213,6 +213,8 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 .rrow .host{font-size:10px;padding:4px 10px}
 
 /* ---- fight notes ---- */
+.ghost.danger,button.danger{border-color:#7a3a3a;color:#ff8a8a}
+.ghost.danger:hover{background:#2a1414;color:#ffb3b3}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
 @media(max-width:820px){.fgrid{grid-template-columns:1fr}}
 .fgrid .rbox{margin:0}.fcol{display:grid;gap:14px}
@@ -378,7 +380,6 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 <div class="ann" id="ann" hidden></div>
 
 <section class="hero view" id="v_home">
-  <div class="icon"><img src="JJSGC_mystic_vstretch_icon.gif" alt="JJSGC"></div>
   <p class="lead">Hosted site by JJSGC for people to inspire climbing the ladder and getting better at the competitive scene. Have a blast people.</p>
   <div class="sub"><b id="cnt">0</b> registered people · Hosted by Kyoumiv &amp; Tooj</div>
   <div class="cta"><button class="solid" data-go="board">Enter the list</button><button data-go="players">See all players</button></div>
@@ -460,10 +461,12 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
   <div class="list" id="hlist"></div>
   </div>
   <div id="hp_logs" hidden>
+    <div class="trow" data-own style="margin:0 0 10px" hidden><button class="ghost danger" data-purge="audit">Purge activity log</button><span class="sub" style="margin:0">Deletes every entry, placements included. Hosts only.</span></div>
     <div class="bar"><div class="sl" id="lcount" style="padding-bottom:12px"></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"><select id="lf" style="width:auto"><option value="">All types</option><option value="placement">Placements</option><option value="bans">Bans</option><option value="roles">Roles</option><option value="players">Players</option><option value="site">Site</option></select><input id="lq" placeholder="Search activity…" autocomplete="off" style="max-width:220px"></div></div>
     <div class="list" id="llist"></div>
   </div>
   <div id="hp_place" hidden>
+    <div class="trow" data-own style="margin:0 0 10px" hidden><button class="ghost danger" data-purge="place">Purge placement history</button><span class="sub" style="margin:0">Deletes only the placement entries. Hosts only.</span></div>
     <div class="bar"><div class="sl" id="ccount" style="padding-bottom:12px"></div><input id="cq" placeholder="Search placements…" autocomplete="off" style="max-width:240px;margin-bottom:10px"></div>
     <div class="list" id="clist"></div>
   </div>
@@ -522,6 +525,7 @@ function rbImgErr(img){const c=RB[img.dataset.k];img.className="rbpic none";
   if(c){c.rt=(c.rt||0)+1;c.u="";c.nt=c.rt>2?Date.now():0;rbSave();if(c.rt<=2)rbLoad()}}
 let rbBusy=false,rbCool=0,rbState="",rbErr="";
 const rbSave=()=>{try{localStorage.setItem("jj_rb3",JSON.stringify(RB))}catch(e){}};
+const RB_TTL=18e5; /* re-check pictures every 30 min */
 const fx=(u,o)=>fetch(u,Object.assign({},o||{},{signal:(typeof AbortSignal!=="undefined"&&AbortSignal.timeout)?AbortSignal.timeout(8000):undefined}));
 async function rbFind(n){
   /* username -> Roblox user id. Roblox blocks direct browser requests, so try a few public mirrors/proxies. */
@@ -546,6 +550,15 @@ async function rbThumbs(ids){
   }
   return out;
 }
+async function rbInvoke(part){
+  let fe="";
+  for(const fn of ["quick-function","smart-service","roblox"]){
+    const q=await sb.functions.invoke(fn,{body:{usernames:part}});
+    if(!q.error&&q.data&&!q.data.error)return q.data;
+    fe=fn+": "+(q.error?((q.error.context&&q.error.context.status?"HTTP "+q.error.context.status+" - ":"")+q.error.message):((q.data&&q.data.error)||"no data"));
+  }
+  throw new Error(fe);
+}
 async function rbLoad(){
   if(rbBusy||Date.now()<rbCool)return;
   try{await rbLoadRun()}catch(e){rbErr=String(e&&e.message||e);console.warn("roblox avatars:",e)}finally{rbBusy=false}
@@ -554,21 +567,15 @@ async function rbLoadRun(){
   const names=[...new Set(profiles.map(p=>p.roblox).filter(Boolean))];
   const stale=c=>!c||(!c.id&&Date.now()-c.t>36e5);
   const need=names.filter(n=>stale(RB[rbKey(n)]));
-  const nopic=()=>names.filter(n=>{const c=RB[rbKey(n)];return c&&c.id&&!c.u&&!(c.nt&&Date.now()-c.nt<3e5)});
+  const nopic=()=>names.filter(n=>{const c=RB[rbKey(n)];return c&&c.id&&(!c.u||Date.now()-(c.ut||0)>RB_TTL)&&!(c.nt&&Date.now()-c.nt<3e5)});
   if(!need.length&&!nopic().length){if(!rbState&&names.some(n=>(RB[rbKey(n)]||{}).u))rbState="proxy";return}
   rbBusy=true;let fails=0,got=0;
   /* 1) our own Supabase edge function "roblox" (most reliable, see roblox-function.ts) */
   if(sb&&need.length){try{
     for(let i=0;i<need.length;i+=100){
       const part=need.slice(i,i+100);
-      let r=null,fe="";
-      for(const fn of ["quick-function","smart-service","roblox"]){
-        const q=await sb.functions.invoke(fn,{body:{usernames:part}});
-        if(!q.error&&q.data&&!q.data.error){r=q;break}
-        fe=fn+": "+(q.error?((q.error.context&&q.error.context.status?"HTTP "+q.error.context.status+" - ":"")+q.error.message):((q.data&&q.data.error)||"no data"));
-      }
-      if(!r)throw new Error(fe);
-      part.forEach(n=>{const x=r.data[rbKey(n)];if(x){RB[rbKey(n)]={id:x.id,u:x.url||"",t:Date.now()};got++}});
+      const r={data:await rbInvoke(part)};
+      part.forEach(n=>{const x=r.data[rbKey(n)];if(x){RB[rbKey(n)]={id:x.id,u:x.url||"",ut:x.url?Date.now():0,t:Date.now()};got++}});
     }
     rbState="function";rbErr="";
   }catch(e){rbErr=((e.context&&e.context.status)?"HTTP "+e.context.status+" - ":"")+(e.message||e);console.warn("roblox edge function failed:",rbErr)}}
@@ -590,16 +597,27 @@ async function rbLoadRun(){
     }
     if(rbState!=="function")rbState=got?"proxy":"fail";
   }
+  /* 2b) refresh pictures that are missing or older than 30 min, server-side first */
+  const tf=nopic();
+  if(sb&&tf.length){try{
+    for(let i=0;i<tf.length;i+=100){
+      const part=tf.slice(i,i+100),d=await rbInvoke(part);
+      part.forEach(n=>{const x=d[rbKey(n)],c=RB[rbKey(n)];if(x&&x.url&&c){if(x.id)c.id=x.id;c.u=x.url;c.ut=Date.now();c.nt=0;c.rt=0;got++}});
+    }
+    rbState="function";rbErr="";
+  }catch(e){rbErr=e.message||String(e);console.warn("roblox refresh failed:",rbErr)}}
   /* 3) ids -> actual image urls */
   const tn=nopic();
   if(tn.length){try{
     const m=await rbThumbs([...new Set(tn.map(n=>RB[rbKey(n)].id))]);let any=false;
-    tn.forEach(n=>{const c=RB[rbKey(n)],u=m[c.id];if(u){c.u=u;c.nt=0;any=true}else c.nt=Date.now()});
+    tn.forEach(n=>{const c=RB[rbKey(n)],u=m[c.id];if(u){c.u=u;c.ut=Date.now();c.nt=0;c.rt=0;any=true}else c.nt=Date.now()});
     if(any){got++;if(rbState!=="function")rbState="proxy"}
   }catch(e){console.warn("roblox thumbnails failed:",e.message)}}
   rbSave();if(fails>=3&&!got)rbCool=Date.now()+12e4;
   rbBusy=false;render();
 }
+setInterval(()=>{if(!document.hidden&&typeof profiles!=="undefined"&&profiles.length)rbLoad()},6e5);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&typeof profiles!=="undefined"&&profiles.length)rbLoad()});
 let hostSynced=false;
 /* hosts tag themselves with a "Host" role so every viewer sees them as host (the role is public, Discord IDs may not be) */
 async function hostSync(){
@@ -686,7 +704,7 @@ let pf="ALL";
 const onB=p=>p.ranked&&!p.banned;
 function pcard(p,i){
   const on=onB(p);
-  return `<div class="lrow np" data-id="${esc(p.id)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${on?esc(gl(p))+" · #"+p.rank:p.banned?"Banned":"Not competitive"} · ${rbA(p)}</div></div></div>${rbPic(p)}<span class="lrg">${p.region}</span></div>`;
+  return `<div class="lrow np" data-id="${esc(p.id)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${on?esc(gl(p))+" · #"+p.rank:p.banned?"Banned":"Not registered in"} · ${rbA(p)}</div></div></div>${rbPic(p)}<span class="lrg">${p.region}</span></div>`;
 }
 function scard(p,i){
   const rl=(isHost(p)?'<span class="host">Host</span>':"")+p.roles.filter(r=>!/^hosts?$/i.test(r)).map(badge).join("");
@@ -778,6 +796,7 @@ function renderHost(board){
   if(hostTab==="order")renderOrder(board);
   if(hostTab==="export")$("#exL").disabled=!can("logs");
   if(hostTab==="fights")renderFights();
+  document.querySelectorAll("[data-own]").forEach(x=>x.hidden=!isOwner);
 }
 const catOf=a=>a.kind==="placement"?"placement":/ban/.test(a.action)?"bans":/role/.test(a.action)?"roles":/profile|joined/.test(a.action)?"players":"site";
 function renderAuditList(listSel,cntSel,q,placeOnly,cat){
@@ -937,6 +956,7 @@ function renderFights(){
     const u=Date.parse(r.until)||0;return `<b>${esc(pName(r.a,r.a_name))}</b> \u00b7 ${u>Date.parse(r.created_at)+6e4?"cooldown started":"cooldown cleared"}`;
   };
   el.innerHTML=`
+  ${isOwner?`<div class="trow" style="margin:0 0 12px"><button class="ghost danger" data-purge="fights">Purge fight log</button><button class="ghost danger" data-purge="fnotes">Purge notes</button><span class="sub" style="margin:0">Hosts only \u2014 fights, dodges &amp; cooldowns, or notes.</span></div>`:""}
   <div class="rbox"><div class="sl">First to the milestones</div>
     <div class="mini" style="border-top:0">First to <b>5 wins</b> \u00b7 ${ms(5)}</div>
     <div class="mini">First to <b>10 wins</b> \u00b7 ${ms(10)}</div>
@@ -1016,6 +1036,29 @@ async function fightAct(act,id){
 }
 document.addEventListener("input",e=>{const k=e.target&&e.target.dataset&&e.target.dataset.fd;if(k&&e.target.tagName!=="SELECT")fd[k]=e.target.value});
 document.addEventListener("change",e=>{const k=e.target&&e.target.dataset&&e.target.dataset.fd;if(k&&e.target.tagName==="SELECT"){fd[k]=e.target.value;if(k==="a"||k==="b"){if(fd.w!==fd.a&&fd.w!==fd.b)fd.w=""}fMsg="";renderFights()}});
+
+
+/* ---- purge logs (hosts only) ---- */
+async function purgeLog(what){
+  if(!sb||!isOwner)return alert("Only hosts can purge logs.");
+  const M={audit:["the ENTIRE activity log (placements included)","activity log"],place:["all placement history entries","placement history"],fights:["every fight, dodge and cooldown record","fight log"],fnotes:["every fight note","fight notes"]}[what];
+  if(!M)return;
+  if(!confirm("Permanently delete "+M[0]+"?\n\nThis can\u2019t be undone."))return;
+  if((prompt("Type PURGE to confirm.")||"").trim().toUpperCase()!=="PURGE")return;
+  let n=null,err=null;
+  if(what==="audit"||what==="place"){
+    const r=await sb.rpc("purge_audit",{k:what==="place"?"placement":null});
+    if(r.error)err=/purge_audit|function|schema cache/i.test(r.error.message)?"Couldn\u2019t purge: run purge_logs.sql in Supabase first.":"Couldn\u2019t purge: "+r.error.message;else n=r.data;
+  }else{
+    const q=sb.from("fight_notes").delete();
+    const r=await (what==="fights"?q.in("kind",["fight","dodge","cooldown"]):q.eq("kind","note")).select("id");
+    if(r.error)err="Couldn\u2019t purge: "+r.error.message;else n=(r.data||[]).length;
+  }
+  if(err)return alert(err);
+  logEvent("log purged","general",null,"",M[1]+(n!=null?" ("+n+" entries)":""));
+  alert("Purged "+M[1]+(n!=null?" \u2014 "+n+" entr"+(n===1?"y":"ies")+" deleted.":"."));
+  if(what==="audit"||what==="place"){audit=[];setTimeout(loadAudit,800);render()}else{fMsg="";await loadFights()}
+}
 
 /* ---- tools tab ---- */
 async function makeBoardImage(region){
@@ -1345,6 +1388,7 @@ async function refreshAuth(){
 document.addEventListener("click",async e=>{
   const t=e.target;
   if(t.closest&&t.closest("a[href]"))return;
+  const pgb=t.closest("[data-purge]");if(pgb)return purgeLog(pgb.dataset.purge);
   const fa=t.closest("[data-fa]");if(fa)return fightAct(fa.dataset.fa,fa.dataset.id);
   const rx=t.closest("[data-rbx]");if(rx){const f=$("#f_rb");if(f)f.value=rx.dataset.rbx;return}
   if(t.closest("#lnkDisc")){try{sessionStorage.setItem("jj_link","1")}catch(_){}return sb.auth.signInWithOAuth({provider:"discord",options:{scopes:"identify email connections",redirectTo:location.origin+location.pathname}})}
