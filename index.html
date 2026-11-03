@@ -562,7 +562,7 @@ async function rbLoadRun(){
     for(let i=0;i<need.length;i+=100){
       const part=need.slice(i,i+100);
       let r=null,fe="";
-      for(const fn of ["smart-service","roblox"]){
+      for(const fn of ["quick-function","smart-service","roblox"]){
         const q=await sb.functions.invoke(fn,{body:{usernames:part}});
         if(!q.error&&q.data&&!q.data.error){r=q;break}
         fe=fn+": "+(q.error?((q.error.context&&q.error.context.status?"HTTP "+q.error.context.status+" - ":"")+q.error.message):((q.data&&q.data.error)||"no data"));
