@@ -323,10 +323,13 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 .logo{cursor:pointer;user-select:none;transition:opacity .15s}.logo:hover{opacity:.8}.logo:focus-visible{outline:1px solid #888;outline-offset:6px;border-radius:6px}
 #pgrid{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--line)}
 .lrow.np{grid-template-columns:1fr 64px;padding:14px 24px 14px 8px}
-.rbw{display:inline-flex;align-items:center;gap:7px;vertical-align:middle;max-width:100%}
-.rbimg{width:22px;height:22px;flex:none;border-radius:50%;object-fit:cover;background:#1a1a20;border:1px solid #3a3a46}
-.rl.rbn,.rl.rbn:hover{color:#fff;font-weight:700;text-decoration:none;text-shadow:0 0 6px rgba(255,255,255,.95),0 0 14px rgba(255,255,255,.6),0 0 26px rgba(190,170,255,.45)}
 .pt{padding:2px 0}
+.rl.rbn,.rl.rbn:hover{color:#fff;font-weight:600;text-decoration:none;text-shadow:0 0 6px rgba(255,255,255,.28)}
+.rbpic{display:block;width:48px;height:48px;border-radius:50%;object-fit:cover;background:#1a1a20;border:1px solid #33333d;justify-self:center}
+.cols{grid-template-columns:56px 1fr 48px 64px;gap:18px}
+.lrow{grid-template-columns:56px 1fr 48px 64px}
+.lrow.np{grid-template-columns:1fr 48px 64px;padding:12px 24px 12px 8px}
+.lrow.edit{grid-template-columns:22px 48px 1fr auto}
 </style>
 </head>
 <body>
@@ -377,7 +380,7 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
     <main>
       <div class="bar"><div class="tabs" id="tabs"></div><input id="q" placeholder="Search players…" autocomplete="off"></div>
       <div class="lbtools" id="lbtools" hidden></div>
-      <div class="cols" id="lbcols"><span>#</span><span>PLAYER</span><span>REGION</span></div>
+      <div class="cols" id="lbcols"><span>#</span><span>PLAYER</span><span></span><span>REGION</span></div>
       <div class="sub" id="head" style="margin:0 20px 8px"></div>
       <div class="list simple" id="list"></div>
     </main>
@@ -453,8 +456,8 @@ const REG={NA:"North America",EU:"Europe",AS:"Asia"};
 const GRADES={G1:"Grade 1",SG1:"Special Grade 1",SG:"Special Grade"},GKEYS=["G1","SG1","SG"];
 const SUBS=["Low","Mid","High"],SSUBS=["Weak","Stable","Strong"];
 const score=p=>Math.max(0,GKEYS.indexOf(p.grade))*9+(p.grade==="SG"?0:Math.max(0,SUBS.indexOf(p.sub))*3+Math.max(0,SSUBS.indexOf(p.subsub)));
-const PERMS={ban:"Ban / unban players",grades:"Edit grades & board",reorder:"Reorder leaderboard",changelog:"Edit change log",logs:"View activity log",placements:"View placement history",stats:"View stats",export:"Export data (CSV)"};
-const STAFFP=["ban","grades","reorder","logs","placements","stats","export"];
+const PERMS={roblox:"Edit Roblox names",ban:"Ban / unban players",grades:"Edit grades & board",reorder:"Reorder leaderboard",changelog:"Edit change log",logs:"View activity log",placements:"View placement history",stats:"View stats",export:"Export data (CSV)"};
+const STAFFP=["roblox","ban","grades","reorder","logs","placements","stats","export"];
 let roleDefs={};
 const roleTip=r=>(roleDefs[r]||[]).map(k=>PERMS[k]).filter(Boolean).join(" · ");
 const badge=r=>`<span class="host" title="${esc(roleTip(r))}">${esc(r)}</span>`;
@@ -475,32 +478,42 @@ const rkStyle=r=>{
   return`background:hsl(0 0% ${L}%);color:${L>50?"#000":"#cfcfd6"}`;
 };
 const rbUrl=p=>"https://www.roblox.com/user.aspx?username="+encodeURIComponent(p.roblox||"");
-let RB={};try{RB=JSON.parse(localStorage.getItem("jj_rb")||"{}")}catch(e){}
+let RB={};try{RB=JSON.parse(localStorage.getItem("jj_rb2")||"{}")}catch(e){}
 const rbKey=n=>String(n||"").toLowerCase();
-const rbA=p=>{const c=RB[rbKey(p.roblox)],src=c&&c.u?c.u:"";
-  return `<span class="rbw">${src?`<img class="rbimg" src="${esc(src)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">`:`<span class="rbimg"></span>`}<a class="rl rbn" href="${esc(rbUrl(p))}" target="_blank" rel="noopener noreferrer" title="Open Roblox profile">@${esc(p.roblox)}</a></span>`};
-let rbBusy=false;
+const rbA=p=>`<a class="rl rbn" href="${esc(rbUrl(p))}" target="_blank" rel="noopener noreferrer" title="Open Roblox profile">@${esc(p.roblox)}</a>`;
+const rbPic=p=>{const c=RB[rbKey(p.roblox)];
+  return c&&c.id?`<img class="rbpic" src="https://www.roblox.com/headshot-thumbnail/image?userId=${esc(c.id)}&width=150&height=150&format=png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">`:`<span class="rbpic"></span>`};
+let rbBusy=false,rbCool=0;
+const rbSave=()=>{try{localStorage.setItem("jj_rb2",JSON.stringify(RB))}catch(e){}};
+async function rbFind(n){
+  /* username -> Roblox user id. Roblox blocks direct browser requests, so try a few public mirrors/proxies. */
+  const t="https://users.roblox.com/v1/users/search?keyword="+encodeURIComponent(n)+"&limit=10";
+  const urls=[t.replace("users.roblox.com","users.roproxy.com"),"https://api.allorigins.win/raw?url="+encodeURIComponent(t),"https://corsproxy.io/?url="+encodeURIComponent(t),"https://api.codetabs.com/v1/proxy/?quest="+encodeURIComponent(t)];
+  for(const u of urls){
+    try{const r=await fetch(u);if(!r.ok)continue;const j=await r.json();if(!j||!Array.isArray(j.data))continue;
+      const m=j.data.find(x=>rbKey(x.name)===rbKey(n));return m?m.id:0}catch(e){}
+  }
+  return null;
+}
 async function rbLoad(){
-  if(rbBusy)return;
-  const stale=c=>!c||Date.now()-c.t>(c.u?6048e5:36e5);
+  if(rbBusy||Date.now()<rbCool)return;
+  const stale=c=>!c||(!c.id&&Date.now()-c.t>36e5);
   const need=[...new Set(profiles.map(p=>p.roblox).filter(Boolean))].filter(n=>stale(RB[rbKey(n)]));
-  if(!need.length)return;rbBusy=true;
+  if(!need.length)return;rbBusy=true;let fails=0,got=0;
   try{
     for(let i=0;i<need.length;i+=100){
       const part=need.slice(i,i+100);
       const r=await fetch("https://users.roproxy.com/v1/usernames/users",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({usernames:part,excludeBannedUsers:false})});
-      if(!r.ok)throw new Error("users "+r.status);
-      const ids={};((await r.json()).data||[]).forEach(u=>{ids[rbKey(u.requestedUsername)]=u.id});
-      const idl=Object.values(ids),urls={};
-      if(idl.length){
-        const t=await fetch("https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds="+idl.join(",")+"&size=150x150&format=Png&isCircular=false");
-        if(!t.ok)throw new Error("thumbs "+t.status);
-        ((await t.json()).data||[]).forEach(x=>{if(x.state==="Completed"&&x.imageUrl)urls[x.targetId]=x.imageUrl});
-      }
-      part.forEach(n=>{const id=ids[rbKey(n)];RB[rbKey(n)]={u:(id&&urls[id])||"",t:Date.now()}});
+      if(!r.ok)throw new Error("batch "+r.status);
+      ((await r.json()).data||[]).forEach(u=>{RB[rbKey(u.requestedUsername)]={id:u.id,t:Date.now()};got++});
     }
-    try{localStorage.setItem("jj_rb",JSON.stringify(RB))}catch(e){}
-  }catch(e){console.warn("roblox avatars:",e.message)}
+  }catch(e){console.warn("roblox batch lookup failed:",e.message)}
+  for(const n of need.filter(n=>stale(RB[rbKey(n)]))){
+    const id=await rbFind(n);
+    if(id===null){fails++;if(fails>=3)break;continue}
+    RB[rbKey(n)]={id,t:Date.now()};got++;
+  }
+  rbSave();if(fails>=3&&!got)rbCool=Date.now()+12e4;
   rbBusy=false;render();
 }
 const gtxt=(g,s,ss)=>(GRADES[g]||GRADES.G1)+(g==="SG"?"":" · "+(s||"Low")+" "+(ss||"Weak"));
@@ -537,11 +550,11 @@ function renderAuth(){
   if($("#login"))$("#login").disabled=!sb;
 }
 function row(p,i,rk){const on=p.ranked&&!p.banned;
-  return `<div class="lrow ${on&&rk<=3?"t3":""}" data-id="${esc(p.id)}"><span class="lrk">${on?rk:"—"}</span><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${on?esc(gl(p)):"Not competitive"} · ${rbA(p)}</div></div></div><span class="lrg">${p.region}</span></div>`;
+  return `<div class="lrow ${on&&rk<=3?"t3":""}" data-id="${esc(p.id)}"><span class="lrk">${on?rk:"—"}</span><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${on?esc(gl(p)):"Not competitive"} · ${rbA(p)}</div></div></div>${rbPic(p)}<span class="lrg">${p.region}</span></div>`;
 }
 function hrow(p,i){
   return `<div class="card hrow" data-id="${esc(p.id)}" style="--i:${Math.min(i||0,14)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${esc(gl(p))} · ${rbA(p)} · ${p.region}${p.ranked?" · on board":""} · ${esc(p.discord)} · joined ${ago(p.created)}</div></div></div>
-  <div style="display:flex;gap:6px">${p.discord?`<button class="ghost" data-copy="${esc(p.discord)}" title="Copy Discord ID">ID</button>`:""}${can("ban")?`<button class="ghost" data-ban="${esc(p.id)}">${p.banned?"Unban":"Ban"}</button>`:""}</div></div>`;
+  <div style="display:flex;gap:6px">${p.discord?`<button class="ghost" data-copy="${esc(p.discord)}" title="Copy Discord ID">ID</button>`:""}${can("roblox")?`<button class="ghost" data-rbn="${esc(p.id)}">Roblox</button>`:""}${can("ban")?`<button class="ghost" data-ban="${esc(p.id)}">${p.banned?"Unban":"Ban"}</button>`:""}</div></div>`;
 }
 function go(v){
   if(v==="host"&&!staff())v="home";pg=v;
@@ -579,7 +592,7 @@ let pf="ALL";
 const onB=p=>p.ranked&&!p.banned;
 function pcard(p,i){
   const on=onB(p);
-  return `<div class="lrow np" data-id="${esc(p.id)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${on?esc(gl(p))+" · #"+p.rank:p.banned?"Banned":"Not competitive"} · ${rbA(p)}</div></div></div><span class="lrg">${p.region}</span></div>`;
+  return `<div class="lrow np" data-id="${esc(p.id)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${on?esc(gl(p))+" · #"+p.rank:p.banned?"Banned":"Not competitive"} · ${rbA(p)}</div></div></div>${rbPic(p)}<span class="lrg">${p.region}</span></div>`;
 }
 function scard(p,i){
   const rl=(isHost(p)?'<span class="host">Host</span>':"")+p.roles.filter(r=>!/^hosts?$/i.test(r)).map(badge).join("");
@@ -900,7 +913,7 @@ async function grabLinked(tok){
     const r=await fetch("https://discord.com/api/v10/users/@me/connections",{headers:{Authorization:"Bearer "+tok}});
     if(!r.ok)throw new Error("Discord answered "+r.status);
     const a=await r.json();
-    linkedRoblox=(Array.isArray(a)?a:[]).filter(c=>c.type==="roblox"&&/^[A-Za-z0-9_]{3,20}$/.test(c.name||"")).map(c=>({name:c.name,verified:!!c.verified}));lnkErr="";
+    linkedRoblox=(Array.isArray(a)?a:[]).filter(c=>c.type==="roblox"&&/^[A-Za-z0-9_]{3,20}$/.test(c.name||"")).map(c=>({name:c.name,verified:!!c.verified,id:c.id}));lnkErr="";linkedRoblox.forEach(c=>{if(/^\d+$/.test(String(c.id||""))){RB[rbKey(c.name)]={id:c.id,t:Date.now()}}});rbSave();
   }catch(e){linkedRoblox=[];lnkErr="Couldn’t read your Discord connections: "+(e.message||"failed")}
   if(loaded&&uid)openOwn();else reopen=true;
 }
@@ -1114,6 +1127,14 @@ document.addEventListener("click",async e=>{
   if(rd){if(!isOwner||!confirm("Remove the role \u201c"+rd.dataset.rdel+"\u201d and its permissions?"))return;
     const x=await sb.from("roles").delete().eq("name",rd.dataset.rdel);
     if(x.error)$("#rerr").textContent="Couldn\u2019t remove: "+x.error.message;else{logEvent("role removed","general",null,rd.dataset.rdel,"");delete roleDefs[rd.dataset.rdel];renderAuth();render()}return}
+  const rn=t.closest("[data-rbn]");
+  if(rn){const p=profiles.find(x=>x.id===rn.dataset.rbn);if(!p||!can("roblox"))return;
+    const v=prompt("New Roblox username for "+p.name,p.roblox);if(v===null)return;
+    const nv=v.trim().replace(/^@/,"");if(nv===p.roblox)return;
+    if(!/^[A-Za-z0-9_]{3,20}$/.test(nv))return alert("Roblox usernames are 3–20 letters, numbers or underscores.");
+    const x=isOwner?await sb.rpc("admin_update",{target:p.id,rb:nv,rg:p.region,g:p.grade||"G1",s:p.sub,ss:p.subsub,rk:p.ranked,bn:p.banned,br:p.reason||"",rl:p.roles.join(",")}):await sb.rpc("role_set_roblox",{target:p.id,rb:nv});
+    if(x.error)return alert(x.error.code==="23505"?"That Roblox username is already taken.":"Couldn’t change it: "+x.error.message+(isOwner?"":" (run roblox_edit.sql in Supabase first)"));
+    logEvent("roblox name changed","general",p.id,p.name,p.roblox+" → "+nv);await loadProfiles();return}
   const bb=t.closest("[data-ban]");
   if(bb){const p=profiles.find(p=>p.id===bb.dataset.ban);if(!p||!can("ban"))return;let r="";if(!p.banned){r=prompt("Ban reason (optional)");if(r===null)return}
     const x=await sb.rpc(isOwner?"admin_ban":"role_ban",{target:p.id,bn:!p.banned,br:(r||"").slice(0,80)});if(x.error)alert(x.error.message);else{logEvent(p.banned?"unbanned":"banned","general",p.id,p.name,(r||"").slice(0,80));loadProfiles()}return}
