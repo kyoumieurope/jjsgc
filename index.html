@@ -513,11 +513,11 @@ async function rbLoad(){
   if(sb){try{
     for(let i=0;i<need.length;i+=100){
       const part=need.slice(i,i+100);
-      const r=await sb.functions.invoke("roblox",{body:{usernames:part}});
+      const r=await sb.functions.invoke("smart-service",{body:{usernames:part}});
       if(r.error||!r.data||r.data.error)throw new Error(r.error?r.error.message:((r.data&&r.data.error)||"no data"));
       part.forEach(n=>{const x=r.data[rbKey(n)];if(x){RB[rbKey(n)]={id:x.id,u:x.url||"",t:Date.now()};got++}});
     }
-    rbState="function";
+    rbState="function";rbErr="";
   }catch(e){rbErr=((e.context&&e.context.status)?"HTTP "+e.context.status+" - ":"")+(e.message||e);console.warn("roblox edge function failed:",rbErr)}}
   /* 2) public mirrors as a fallback */
   let left=need.filter(n=>stale(RB[rbKey(n)]));
@@ -574,7 +574,8 @@ function setCloud(){
   const ok=!demo;
   $("#cloud").className="cloud "+(ok?"ok":"bad");
   $("#cloud").lastChild.textContent=ok?"Cloud synced":"Cloud offline";
-  $("#note").hidden=ok;$("#note").textContent=reason;
+  const rbMsg=ok&&staff()&&rbErr&&rbState!=="function"?"Roblox avatars aren\u2019t loading: "+rbErr+" \u2014 see Panel \u203a Tools \u203a System check.":"";
+  $("#note").hidden=ok&&!rbMsg;$("#note").textContent=ok?rbMsg:reason;
 }
 function renderAuth(){
   $("#authbox").innerHTML=uid&&me
