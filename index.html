@@ -324,12 +324,13 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 #pgrid{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--line)}
 .lrow.np{grid-template-columns:1fr 64px;padding:14px 24px 14px 8px}
 .pt{padding:2px 0}
-.rl.rbn,.rl.rbn:hover{color:#fff;font-weight:600;text-decoration:none;text-shadow:0 0 6px rgba(255,255,255,.28)}
-.rbpic{display:block;width:48px;height:48px;border-radius:50%;object-fit:cover;background:#1a1a20;border:1px solid #33333d;justify-self:center}
-.cols{grid-template-columns:56px 1fr 48px 64px;gap:18px}
-.lrow{grid-template-columns:56px 1fr 48px 64px}
-.lrow.np{grid-template-columns:1fr 48px 64px;padding:12px 24px 12px 8px}
+.rl.rbn,.rl.rbn:hover{color:#fff;font-weight:600;text-decoration:none;text-shadow:0 0 3px rgba(255,255,255,.12)}
+.rbpic{display:block;width:60px;height:60px;border-radius:50%;object-fit:cover;background:#1a1a20;border:1px solid #33333d;justify-self:center}
+.cols{grid-template-columns:56px 1fr 60px 64px;gap:18px}
+.lrow{grid-template-columns:56px 1fr 60px 64px}
+.lrow.np{grid-template-columns:1fr 60px 64px;padding:10px 24px 12px 8px}
 .lrow.edit{grid-template-columns:22px 48px 1fr auto}
+.rbpic.big{width:64px;height:64px;margin-left:auto;flex:none}
 </style>
 </head>
 <body>
@@ -465,7 +466,7 @@ const myRoles=()=>{const p=profiles.find(p=>p.id===uid);return p&&!p.banned?p.ro
 const can=k=>isOwner||(!!uid&&myRoles().some(r=>(roleDefs[r]||[]).includes(k)));
 const staff=()=>isOwner||STAFFP.some(k=>can(k));
 /* Hosts flash. Add Discord IDs in config.js as hostIds:["123..."], or give someone a role named "Host". */
-const HOST_IDS=["1213453133175324784",...((window.JJSGC_CONFIG||{}).hostIds||[])].map(String);
+const HOST_IDS=["1213453133175324784","523755389544693791",...((window.JJSGC_CONFIG||{}).hostIds||[])].map(String);
 const HOST_NAMES=["toojways","kyoum1i",...((window.JJSGC_CONFIG||{}).hostNames||[])].map(x=>String(x).toLowerCase());
 const isHost=p=>(!!p.discord&&HOST_IDS.includes(String(p.discord)))||(!!p.roblox&&HOST_NAMES.includes(String(p.roblox).toLowerCase()))||(p.roles||[]).some(r=>/^hosts?$/i.test(r))||(p.id===uid&&isOwner);
 const nmx=p=>`<span class="${isHost(p)?"flash":""}">${esc(p.name)}</span>`;
@@ -482,8 +483,8 @@ let RB={};try{RB=JSON.parse(localStorage.getItem("jj_rb2")||"{}")}catch(e){}
 const rbKey=n=>String(n||"").toLowerCase();
 const rbA=p=>`<a class="rl rbn" href="${esc(rbUrl(p))}" target="_blank" rel="noopener noreferrer" title="Open Roblox profile">@${esc(p.roblox)}</a>`;
 const rbPic=p=>{const c=RB[rbKey(p.roblox)];
-  return c&&c.id?`<img class="rbpic" src="https://www.roblox.com/headshot-thumbnail/image?userId=${esc(c.id)}&width=150&height=150&format=png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">`:`<span class="rbpic"></span>`};
-let rbBusy=false,rbCool=0;
+  return c&&c.id?`<img class="rbpic" src="${esc(c.u||("https://www.roblox.com/headshot-thumbnail/image?userId="+c.id+"&width=150&height=150&format=png"))}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">`:`<span class="rbpic"></span>`};
+let rbBusy=false,rbCool=0,rbState="";
 const rbSave=()=>{try{localStorage.setItem("jj_rb2",JSON.stringify(RB))}catch(e){}};
 async function rbFind(n){
   /* username -> Roblox user id. Roblox blocks direct browser requests, so try a few public mirrors/proxies. */
@@ -500,21 +501,45 @@ async function rbLoad(){
   const stale=c=>!c||(!c.id&&Date.now()-c.t>36e5);
   const need=[...new Set(profiles.map(p=>p.roblox).filter(Boolean))].filter(n=>stale(RB[rbKey(n)]));
   if(!need.length)return;rbBusy=true;let fails=0,got=0;
-  try{
+  /* 1) our own Supabase edge function "roblox" (most reliable, see roblox-function.ts) */
+  if(sb){try{
     for(let i=0;i<need.length;i+=100){
       const part=need.slice(i,i+100);
-      const r=await fetch("https://users.roproxy.com/v1/usernames/users",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({usernames:part,excludeBannedUsers:false})});
-      if(!r.ok)throw new Error("batch "+r.status);
-      ((await r.json()).data||[]).forEach(u=>{RB[rbKey(u.requestedUsername)]={id:u.id,t:Date.now()};got++});
+      const r=await sb.functions.invoke("roblox",{body:{usernames:part}});
+      if(r.error||!r.data||r.data.error)throw new Error(r.error?r.error.message:((r.data&&r.data.error)||"no data"));
+      part.forEach(n=>{const x=r.data[rbKey(n)];if(x){RB[rbKey(n)]={id:x.id,u:x.url||"",t:Date.now()};got++}});
     }
-  }catch(e){console.warn("roblox batch lookup failed:",e.message)}
-  for(const n of need.filter(n=>stale(RB[rbKey(n)]))){
-    const id=await rbFind(n);
-    if(id===null){fails++;if(fails>=3)break;continue}
-    RB[rbKey(n)]={id,t:Date.now()};got++;
+    rbState="function";
+  }catch(e){console.warn("roblox edge function failed:",e.message||e)}}
+  /* 2) public mirrors as a fallback */
+  let left=need.filter(n=>stale(RB[rbKey(n)]));
+  if(left.length){
+    try{
+      for(let i=0;i<left.length;i+=100){
+        const part=left.slice(i,i+100);
+        const r=await fetch("https://users.roproxy.com/v1/usernames/users",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({usernames:part,excludeBannedUsers:false})});
+        if(!r.ok)throw new Error("batch "+r.status);
+        ((await r.json()).data||[]).forEach(u=>{RB[rbKey(u.requestedUsername)]={id:u.id,t:Date.now()};got++});
+      }
+    }catch(e){console.warn("roblox batch lookup failed:",e.message)}
+    for(const n of left.filter(n=>stale(RB[rbKey(n)]))){
+      const id=await rbFind(n);
+      if(id===null){fails++;if(fails>=3)break;continue}
+      RB[rbKey(n)]={id,t:Date.now()};got++;
+    }
+    if(rbState!=="function")rbState=got?"proxy":"fail";
   }
   rbSave();if(fails>=3&&!got)rbCool=Date.now()+12e4;
   rbBusy=false;render();
+}
+let hostSynced=false;
+/* hosts tag themselves with a "Host" role so every viewer sees them as host (the role is public, Discord IDs may not be) */
+async function hostSync(){
+  if(hostSynced||!isOwner||!uid||!sb)return;
+  const p=profiles.find(x=>x.id===uid);if(!p||p.roles.some(r=>/^hosts?$/i.test(r)))return;
+  hostSynced=true;
+  const r=await sb.rpc("admin_update",{target:p.id,rb:p.roblox,rg:p.region,g:p.grade||"G1",s:p.sub,ss:p.subsub,rk:p.ranked,bn:false,br:"",rl:[...p.roles,"Host"].slice(0,5).join(",")});
+  if(r.error)console.warn("host tag:",r.error.message);else loadProfiles();
 }
 const gtxt=(g,s,ss)=>(GRADES[g]||GRADES.G1)+(g==="SG"?"":" · "+(s||"Low")+" "+(ss||"Weak"));
 const gl=p=>p.ranked?gtxt(p.grade,p.sub,p.subsub):"No grade";
@@ -802,7 +827,7 @@ function renderTools(board){
   const over=board.filter(p=>now-age(p)>evDays*day).sort((a,b)=>age(a)-age(b));
   const evRows=over.slice(0,12).map(p=>`<div class="mini click" data-id="${esc(p.id)}"><b>${esc(p.name)}</b> · ${esc(gl(p))} · ${p.region}<span>${last[p.id]?"Last placement":"Joined"} ${Math.floor((now-age(p))/day)} days ago</span></div>`).join("")||`<div class="sub">Everyone on the board was evaluated within ${evDays} days.</div>`;
   const ex=can("export"),ac=can("changelog");
-  const chk=[["Cloud connection",!demo,demo?reason:"Connected"],["Roles table",rolesOk,rolesOk?"OK":"Run roles.sql"],["Member count",regN!==null,regN!==null?"OK":"registered_count missing"],["Change log / announcement",!logErr,logErr?logErr:"OK"],["Activity log",canA?true:null,canA?"OK":(auditErr?"Run audit_log.sql":"No permission")],["Hosts with flashing badge",true,HOST_IDS.length+" Discord ID"+(HOST_IDS.length===1?"":"s")]]
+  const chk=[["Cloud connection",!demo,demo?reason:"Connected"],["Roles table",rolesOk,rolesOk?"OK":"Run roles.sql"],["Member count",regN!==null,regN!==null?"OK":"registered_count missing"],["Change log / announcement",!logErr,logErr?logErr:"OK"],["Activity log",canA?true:null,canA?"OK":(auditErr?"Run audit_log.sql":"No permission")],["Roblox avatars",rbState==="function"||rbState==="proxy",rbState==="function"?"Edge function OK":rbState==="proxy"?"Public proxy only - deploy the roblox function":rbState==="fail"?"Not loading - deploy the roblox function":"Not loaded yet"],["Hosts with flashing badge",true,HOST_IDS.length+" Discord ID"+(HOST_IDS.length===1?"":"s")]]
     .map(([l,ok,d])=>`<div class="chkrow"><span>${esc(l)}</span><b class="${ok===null?"":ok?"ok":"no"}">${ok===null?"—":ok?"✓":"✗"} ${esc(d)}</b></div>`).join("");
   const regOpts=["ALL","NA","EU","AS"].map(r=>`<option value="${r}" ${r===imgR?"selected":""}>${r==="ALL"?"Overall":REG[r]}</option>`).join("");
   $("#tbox").innerHTML=`<div class="tgrid">
@@ -934,7 +959,7 @@ function editor(p,isNew){
 }
 function view(p){
   editId=p.id;const self=(p.id===uid&&!p.banned)||isOwner,canEdit=self||can("grades")||can("ban");
-  openModal(`<div style="display:flex;gap:14px;align-items:center"><span id="avtop">${av(p)}</span><div><h3>${nmx(p)}</h3><div class="sub">${rbA(p)} ↗</div></div></div>
+  openModal(`<div style="display:flex;gap:14px;align-items:center"><span id="avtop">${av(p)}</span><div><h3>${nmx(p)}</h3><div class="sub">${rbA(p)} ↗</div></div>${rbPic(p).replace("rbpic","rbpic big")}</div>
   ${self?"":`<span class="badge">◈ Roblox name is self-reported</span>`}
   <div class="kv"><span>Status</span><span>${p.banned?"Banned"+(p.reason?" — "+esc(p.reason):""):p.ranked?"Competitive #"+p.rank:"Not competitive"}</span><span>Grade</span><span>${p.ranked?esc(gl(p)):"—"}</span><span>Region</span><span>${REG[p.region]}</span><span>Roles</span><span>${p.roles.length?`<span class="rchips">${p.roles.map(badge).join("")}</span>`:"—"}</span></div>
   ${histHtml(p)}${canEdit?editor(p,false):""}<div class="err" id="err"></div>
@@ -1018,7 +1043,7 @@ async function loadProfiles(){
   profiles=data.filter(p=>REG[p.region]).map(p=>({id:p.user_id,name:p.name,roblox:p.roblox,region:p.region,grade:p.grade,sub:SUBS.includes(p.sub)?p.sub:"Low",subsub:SSUBS.includes(p.subsub)?p.subsub:"Weak",ranked:!!p.ranked,banned:!!p.banned,reason:p.ban_reason||"",roles:(p.roles||"").split(",").map(x=>x.trim()).filter(Boolean),discord:p.discord_id||"",avatar:p.custom_avatar||p.avatar_url,custom:p.custom_avatar||"",created:Date.parse(p.created_at)||0,pos:(p.board_pos==null?null:+p.board_pos)}));
   loaded=true;
   if(onboarding&&uid&&profiles.some(p=>p.id===uid))closeModal();
-  renderAuth();render();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();rbLoad();
+  renderAuth();render();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();rbLoad();hostSync();
   if(reopen&&uid){reopen=false;openOwn()}
 }
 /* ---- site profile pictures (stored in Supabase Storage bucket "avatars", see avatars.sql) ---- */
@@ -1086,7 +1111,7 @@ async function refreshAuth(){
     const r=await sb.rpc("is_admin");isOwner=r.data===true;
     if(syncedFor!==uid){syncedFor=uid;sb.rpc("sync_discord").then(()=>loaded&&loadProfiles())}
   }
-  renderAuth();render();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();
+  hostSync();renderAuth();render();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();
 }
 document.addEventListener("click",async e=>{
   const t=e.target;
