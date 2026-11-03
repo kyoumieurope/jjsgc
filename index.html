@@ -365,6 +365,13 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 .lrow.edit{grid-template-columns:22px 48px 1fr auto}
 .lrow .nm,.lrow .pt{white-space:normal;overflow:visible;text-overflow:clip}
 .lrow .nm .host{margin-top:2px}
+
+/* ---- intro line: bold white with a soft glow ---- */
+.hero .lead{max-width:620px;margin:18px auto 12px;font:700 clamp(14px,2.2vw,17px)/1.55 var(--sans);letter-spacing:0;color:#fff;text-shadow:0 0 10px rgba(255,255,255,.45),0 0 24px rgba(190,170,255,.35);animation:rise 1s .2s both}
+.lead .lead-a,.lead .lead-b{color:#fff;background:none;-webkit-text-fill-color:#fff;animation:none}
+.lead .lead-a b{font-family:inherit;font-weight:inherit;letter-spacing:inherit}
+.lead .lead-a em{font-style:normal;font-weight:800}
+.lead .lead-b{display:block;margin-top:6px;font-size:11px;font-weight:600;letter-spacing:.04em}
 </style>
 </head>
 <body>
@@ -380,7 +387,7 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 <div class="ann" id="ann" hidden></div>
 
 <section class="hero view" id="v_home">
-  <p class="lead">Hosted site by JJSGC for people to inspire climbing the ladder and getting better at the competitive scene. Have a blast people.</p>
+  <p class="lead"><span class="lead-a">Hosted site by <b>JJSGC</b> for people to inspire <em>climbing the ladder</em> and getting better at the competitive scene.</span> <span class="lead-b">Have a blast people.</span></p>
   <div class="sub"><b id="cnt">0</b> registered people · Hosted by Kyoumiv &amp; Tooj</div>
   <div class="cta"><button class="solid" data-go="board">Enter the list</button><button data-go="players">See all players</button></div>
   <div class="cloud" id="cloud"><i></i><span>Connecting…</span></div>
