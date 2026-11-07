@@ -284,6 +284,12 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 #gate h2{margin:6px 0 0}
 #gate p{max-width:420px;margin:0;color:var(--dim);font-size:14px;line-height:1.6;white-space:pre-wrap}
 #gate .acts{justify-content:center}
+#hostpw{position:fixed;inset:0;z-index:95;background:var(--bg);display:grid;place-content:center;justify-items:center;text-align:center;gap:14px;padding:24px}
+#hostpw[hidden]{display:none}
+#hostpw .gl{font:800 22px var(--sans);letter-spacing:.2em}
+#hostpw h2{margin:6px 0 0}
+#hostpw p{max-width:420px;margin:0;color:var(--dim);font-size:14px;line-height:1.6}
+#hostpw .acts{justify-content:center}
 body.gated .wrap{visibility:hidden}
 .swrow{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:12px 0;border-top:1px solid var(--line)}
 .swrow:first-of-type{border-top:0}
@@ -379,6 +385,7 @@ body.gated .wrap{visibility:hidden}
 </head>
 <body>
 <div id="gate" hidden></div>
+<div id="hostpw" hidden><div class="gl">\u2726 JJSGC</div><h2>Host access</h2><p>Enter the host password to use host privileges.</p><input id="hpw" type="password" placeholder="Password" autocomplete="off" style="max-width:300px"><div class="err" id="hpwerr" style="margin:0"></div><div class="acts"><button class="solid" id="hpwGo">Unlock</button><button class="ghost" id="hpwSkip">Continue as player</button><button class="ghost" id="hpwOut">Sign out</button></div></div>
 <div id="boot"><div class="bootlogo">✦ JJSGC</div><div class="bootbar"><i></i></div></div>
 <div class="fog"></div><div class="stars"></div>
 <div class="wrap">
@@ -503,9 +510,23 @@ body.gated .wrap{visibility:hidden}
 const REG={NA:"North America",EU:"Europe",AS:"Asia"};
 const GRADES={G1:"Grade 1",SG1:"Special Grade 1",SG:"Special Grade"},GKEYS=["G1","SG1","SG"];
 const SUBS=["Low","Mid","High"],SSUBS=["Weak","Stable","Strong"];
-const score=p=>Math.max(0,GKEYS.indexOf(p.grade))*9+(p.grade==="SG"?0:Math.max(0,SUBS.indexOf(p.sub))*3+Math.max(0,SSUBS.indexOf(p.subsub)));
+const NONE="None";
+const score=p=>{const gi=GKEYS.indexOf(p.grade||"G1");if(gi<0)return -10;if(p.grade==="SG")return gi*9;const si=SUBS.indexOf(p.sub);if(si<0)return gi*9-1;const ss=SSUBS.indexOf(p.subsub);return gi*9+si*3+(ss<0?-.5:ss)};
 const PERMS={roblox:"Edit Roblox names",ban:"Ban / unban players",grades:"Edit grades & board",reorder:"Reorder leaderboard",changelog:"Edit change log",logs:"View activity log",placements:"View placement history",stats:"View stats",export:"Export data (CSV)",fights:"Edit fight notes & cooldowns"};
 const STAFFP=["roblox","ban","grades","reorder","logs","placements","stats","export","fights"];
+/* host password: asked on every visit (and every sign-in) before host privileges switch on */
+const HPW_HASH="f9412f69b27514929e3a0b6526c70664e1faaaff8f28c372a527840237c60878";
+let hostUnlocked=false,hostPending=false,hostSkipped=false,hpwFails=0,hpwUntil=0;
+const sha256=async t=>[...new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t)))].map(x=>x.toString(16).padStart(2,"0")).join("");
+function applyHostPw(){const el=document.getElementById("hostpw");if(!el)return;const was=el.hidden;el.hidden=!hostPending;if(hostPending&&was){const i=document.getElementById("hpw");if(i)setTimeout(()=>i.focus(),50)}}
+async function tryHostPw(){
+  const i=document.getElementById("hpw"),er=document.getElementById("hpwerr");
+  if(Date.now()<hpwUntil){er.textContent="Too many tries. Wait a few seconds.";return}
+  if(!(window.crypto&&crypto.subtle)){er.textContent="This needs a secure (https) page.";return}
+  if(await sha256(i.value)!==HPW_HASH){hpwFails++;i.value="";if(hpwFails>=5){hpwFails=0;hpwUntil=Date.now()+30000;er.textContent="Too many tries. Wait 30 seconds."}else er.textContent="Wrong password.";return}
+  hpwFails=0;i.value="";er.textContent="";hostUnlocked=true;await refreshAuth();
+}
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target&&e.target.id==="hpw"){e.preventDefault();tryHostPw()}});
 let roleDefs={};
 const roleTip=r=>(roleDefs[r]||[]).map(k=>PERMS[k]).filter(Boolean).join(" · ");
 const badge=r=>`<span class="host" title="${esc(roleTip(r))}">${esc(r)}</span>`;
@@ -638,7 +659,9 @@ async function hostSync(){
   const r=await sb.rpc("admin_update",{target:p.id,rb:p.roblox,rg:p.region,g:p.grade||"G1",s:p.sub,ss:p.subsub,rk:p.ranked,bn:false,br:"",rl:[...p.roles,"Host"].slice(0,5).join(",")});
   if(r.error)console.warn("host tag:",r.error.message);else loadProfiles();
 }
-const gtxt=(g,s,ss)=>(GRADES[g]||GRADES.G1)+(g==="SG"?"":" · "+(s||"Low")+" "+(ss||"Weak"));
+const gtxt=(g,s,ss)=>{g=g||"G1";if(g===NONE)return"No grade";const t=GRADES[g]||GRADES.G1;if(g==="SG"||s===NONE)return t;return t+" · "+(s||"Low")+(ss===NONE?"":" "+(ss||"Weak"))};
+/* site names always come from Discord: the signed-in user's own name is forced to their Discord name */
+function syncOwnName(){const p=profiles.find(x=>x.id===uid);if(p&&me&&me.name&&me.name!=="You")p.name=me.name}
 const gl=p=>p.ranked?gtxt(p.grade,p.sub,p.subsub):"No grade";
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -813,11 +836,6 @@ function renderStats(board){
     <div class="sl" style="margin-top:18px">Board by grade</div><div class="dist">${bars(rungs)}</div>
     ${top.length?`<div class="sl" style="margin-top:18px">Most active staff (latest log)</div><div class="dist">${bars(top)}</div>`:""}</div>`;
 }
-const histHtml=p=>{
-  if(!(can("placements")||can("logs"))||auditErr)return"";
-  const h=audit.filter(a=>a.target===p.id&&(a.kind==="placement"||can("logs"))).slice(0,6);
-  return h.length?`<label>History</label>${h.map(a=>`<div class="mini"><b>${esc(a.action)}</b>${a.detail?` — ${esc(a.detail)}`:""}<span>${esc(a.actor_name)} · ${esc(fmt(a.created_at))}</span></div>`).join("")}`:"";
-};
 function renderOverview(board){
   const day=864e5,now=Date.now();
   const waiting=profiles.filter(p=>!p.banned&&!p.ranked).sort((a,b)=>a.created-b.created);
@@ -1149,7 +1167,7 @@ function csv(rows){return"\ufeff"+rows.map(r=>r.map(v=>{let s=String(v==null?"":
 function dl(name,text){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"text/csv;charset=utf-8"}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
 function exportPlayers(){
   if(!can("export"))return;ranked();
-  dl("jjsgc-players.csv",csv([["Name","Roblox","Region","Grade","Sub","Subsub","On board","Rank","Banned","Roles","Discord ID"]].concat(profiles.map(p=>[p.name,p.roblox,p.region,GRADES[p.grade]||GRADES.G1,p.sub,p.subsub,p.ranked?"yes":"no",onB(p)?p.rank:"",p.banned?"yes":"no",p.roles.join("; "),p.discord]))));
+  dl("jjsgc-players.csv",csv([["Name","Roblox","Region","Grade","Sub","Subsub","On board","Rank","Banned","Roles","Discord ID"]].concat(profiles.map(p=>[p.name,p.roblox,p.region,p.grade===NONE?"None":(GRADES[p.grade]||GRADES.G1),p.sub,p.subsub,p.ranked?"yes":"no",onB(p)?p.rank:"",p.banned?"yes":"no",p.roles.join("; "),p.discord]))));
   logEvent("exported players","general",null,"",profiles.length+" rows");
 }
 function exportLog(){
@@ -1257,12 +1275,12 @@ function openOwn(){ranked();const p=profiles.find(x=>x.id===uid);return p?view(p
 function editor(p,isNew){
   const base=isNew||isOwner||(p.id===uid&&!p.banned),og=!isNew&&can("grades"),ob=!isNew&&can("ban"),orl=!isNew&&isOwner;
   const all=[...new Set([...Object.keys(roleDefs),...(p.roles||[])])];
-  return `${base&&!isNew?`<label>Profile picture</label><div class="avrow"><span id="avprev">${av(p)}</span><div class="avbtn"><button type="button" class="ghost" id="avpick">Change picture</button><button type="button" class="ghost" id="avreset">Use Discord picture</button></div><input type="file" id="avfile" accept="image/*" hidden></div><div class="sub" id="avmsg" style="margin-top:8px"></div>`:""}
+  return `${base&&!isNew?`<div class="sub" style="margin:0 0 10px">Display name is synced from Discord and can\u2019t be changed here.</div>`:""}${base&&!isNew?`<label>Profile picture</label><div class="avrow"><span id="avprev">${av(p)}</span><div class="avbtn"><button type="button" class="ghost" id="avpick">Change picture</button><button type="button" class="ghost" id="avreset">Use Discord picture</button></div><input type="file" id="avfile" accept="image/*" hidden></div><div class="sub" id="avmsg" style="margin-top:8px"></div>`:""}
   ${base?`<label>Roblox account</label><input id="f_rb" maxlength="20" value="${esc(p.roblox)}" placeholder="Your Roblox username">${isNew||p.id===uid?linkHtml()+(isNew?"":`<div class="sub" style="margin-top:8px">You can change your Roblox account any time — press Save afterwards. Hosts can see changes in the activity log.</div>`):""}
-  <label>Region</label><select id="f_r">${isNew?`<option value="" disabled selected>Choose a region</option>`:""}${Object.entries(REG).map(([k,v])=>`<option value="${k}" ${k===p.region?"selected":""}>${k} · ${v}</option>`).join("")}</select>`:""}
-  ${og?`<label>Grade</label><select id="f_g">${Object.entries(GRADES).map(([k,v])=>`<option value="${k}" ${k===(p.grade||"G1")?"selected":""}>${v}</option>`).join("")}</select>
-  <div id="subwrap" ${(p.grade||"G1")==="SG"?"hidden":""}><label>Sub-grade</label><select id="f_s">${SUBS.slice().reverse().map(s=>`<option ${s===(p.sub||"Low")?"selected":""}>${s}</option>`).join("")}</select>
-  <label>Sub-sub-grade</label><select id="f_ss">${SSUBS.slice().reverse().map(s=>`<option ${s===(p.subsub||"Weak")?"selected":""}>${s}</option>`).join("")}</select></div>
+  <label>Region</label><select id="f_r">${isNew?`<option value="" disabled selected>Choose a region</option>`:""}${Object.entries(REG).map(([k,v])=>`<option value="${k}" ${k===p.region?"selected":""}>${k} · ${v}</option>`).join("")}${!isNew&&(isOwner||can("grades"))?`<option value="None" ${p.region==="None"?"selected":""}>None</option>`:""}</select>`:""}
+  ${og?`<label>Grade</label><select id="f_g">${Object.entries(GRADES).map(([k,v])=>`<option value="${k}" ${k===(p.grade||"G1")?"selected":""}>${v}</option>`).join("")}<option value="None" ${p.grade==="None"?"selected":""}>None</option></select>
+  <div id="subwrap" ${["SG","None"].includes(p.grade||"G1")?"hidden":""}><label>Sub-grade</label><select id="f_s">${SUBS.slice().reverse().map(s=>`<option ${s===(p.sub||"Low")?"selected":""}>${s}</option>`).join("")}<option value="None" ${p.sub==="None"?"selected":""}>None</option></select>
+  <div id="ssubwrap" ${p.sub==="None"?"hidden":""}><label>Sub-sub-grade</label><select id="f_ss">${SSUBS.slice().reverse().map(s=>`<option ${s===(p.subsub||"Weak")?"selected":""}>${s}</option>`).join("")}<option value="None" ${p.subsub==="None"?"selected":""}>None</option></select></div></div>
   <div class="chk"><input type="checkbox" id="f_k" ${p.ranked?"checked":""}><span>On the competitive board</span></div>`:""}
   ${ob?`<div class="chk"><input type="checkbox" id="f_b" ${p.banned?"checked":""}><span>Banned</span></div>
   <label>Ban reason</label><input id="f_br" maxlength="80" value="${esc(p.reason||"")}">`:""}
@@ -1272,8 +1290,8 @@ function view(p){
   editId=p.id;const self=(p.id===uid&&!p.banned)||isOwner,canEdit=self||can("grades")||can("ban");
   openModal(`<div style="display:flex;gap:14px;align-items:center"><span id="avtop">${av(p)}</span><div><h3>${nmx(p)}</h3><div class="sub">${rbA(p)} ↗</div></div>${rbPic(p).replace("rbpic","rbpic big")}</div>
   ${self?"":`<span class="badge">◈ Roblox name is self-reported</span>`}
-  <div class="kv"><span>Status</span><span>${p.banned?"Banned"+(p.reason?" — "+esc(p.reason):""):p.ranked?"Competitive #"+p.rank:"Not competitive"}</span><span>Grade</span><span>${p.ranked?esc(gl(p)):"—"}</span><span>Region</span><span>${REG[p.region]}</span><span>Roles</span><span>${p.roles.length?`<span class="rchips">${p.roles.map(badge).join("")}</span>`:"—"}</span></div>
-  ${histHtml(p)}${canEdit?editor(p,false):""}<div class="err" id="err"></div>
+  <div class="kv"><span>Status</span><span>${p.banned?"Banned"+(p.reason?" — "+esc(p.reason):""):p.ranked?"Competitive #"+p.rank:"Not competitive"}</span><span>Grade</span><span>${p.ranked?esc(gl(p)):"—"}</span><span>Region</span><span>${REG[p.region]||"None"}</span><span>Roles</span><span>${p.roles.length?`<span class="rchips">${p.roles.map(badge).join("")}</span>`:"—"}</span></div>
+  ${canEdit?editor(p,false):""}<div class="err" id="err"></div>
   <div class="acts">${canEdit?`<button class="solid" id="save">Save</button>`:""}${isOwner?`<button class="ghost" id="del">Remove</button>`:""}<button class="ghost" id="x">Close</button></div>`);
 }
 function onboard(){
@@ -1302,10 +1320,11 @@ async function save(){
   if(has("f_rb")){
     rb=v("f_rb").replace(/^@/,"");rg=$("#f_r").value;
     if(!/^[A-Za-z0-9_]{3,20}$/.test(rb))return err("Roblox usernames are 3–20 letters, numbers or underscores.");
-    if(!REG[rg])return err("Choose your region.");
+    if(!REG[rg]&&!(rg===NONE&&!!old&&(isOwner||can("grades"))))return err("Choose your region.");
   }
-  const g=has("f_g")?$("#f_g").value:"",sg=g==="SG"?"Low":has("f_s")?$("#f_s").value:"",ss=g==="SG"?"Weak":has("f_ss")?$("#f_ss").value:"",rk=has("f_k")&&$("#f_k").checked;
-  if(rk&&g==="G1"&&sg==="Low")return err("The leaderboard needs Grade 1 Mid or above.");
+  const g=has("f_g")?$("#f_g").value:"",sg=(g==="SG"||g===NONE)?"Low":has("f_s")?$("#f_s").value:"",ss=(g==="SG"||g===NONE||sg===NONE)?"Weak":has("f_ss")?$("#f_ss").value:"",rk=has("f_k")&&$("#f_k").checked;
+  if(rk&&g===NONE)return err("Players with no grade can\u2019t be on the leaderboard.");
+  if(rk&&g==="G1"&&(sg==="Low"||sg===NONE))return err("The leaderboard needs Grade 1 Mid or above.");
   try{
     let r;
     if(!old){
@@ -1329,7 +1348,7 @@ async function save(){
     if(!old)logEvent("joined","general",uid,np?np.name:(me&&me.name),rb+" · "+rg);
     else{
       const nm=old.name,ng=g||"G1";
-      if(has("f_g")&&(!!old.ranked!==rk||(old.grade||"G1")!==ng||(ng!=="SG"&&(old.sub!==sg||old.subsub!==ss)))){
+      if(has("f_g")&&(!!old.ranked!==rk||(old.grade||"G1")!==ng||(ng!=="SG"&&ng!==NONE&&(old.sub!==sg||(sg!==NONE&&old.subsub!==ss))))){
         const a=wasR?`${oGl} (#${oRank})`:"Not on board";
         const b=rk?`${gtxt(ng,sg,ss)}${np&&onB(np)?` (#${np.rank})`:""}`:"Not on board";
         logEvent("placement","placement",editId,nm,a+" → "+b);
@@ -1339,7 +1358,7 @@ async function save(){
         if(add.length||rem.length)logEvent("roles changed","general",editId,nm,[add.length?"+ "+add.join(", "):"",rem.length?"− "+rem.join(", "):""].filter(Boolean).join(" · "))}
       if(has("f_rb")&&(old.roblox!==rb||old.region!==rg))logEvent("profile edited","general",editId,nm,`${old.roblox} / ${old.region} → ${rb} / ${rg}`);
     }
-  }catch(e){$("#err").textContent=e.code==="23505"?"That Roblox username is already taken.":"Couldn’t save: "+(e.message||"permission denied")}
+  }catch(e){$("#err").textContent=e.code==="23505"?"That Roblox username is already taken.":"Couldn’t save: "+(e.message||"permission denied")+(/check constraint|invalid input|violates/i.test(e.message||"")&&e.code!=="23505"?" \u2014 run none_values.sql in Supabase to allow \u201cNone\u201d.":"")}
 }
 async function loadProfiles(){
   const my=++loadSeq;
@@ -1352,10 +1371,10 @@ async function loadProfiles(){
   rolesOk=!rr.error;
   if(!rr.error)roleDefs=Object.fromEntries(rr.data.map(r=>[r.name,(r.perms||"").split(",").map(x=>x.trim()).filter(x=>PERMS[x])]));
   regN=(!rc.error&&typeof rc.data==="number")?rc.data:null;
-  profiles=data.filter(p=>REG[p.region]).map(p=>({id:p.user_id,name:p.name,roblox:p.roblox,region:p.region,grade:p.grade,sub:SUBS.includes(p.sub)?p.sub:"Low",subsub:SSUBS.includes(p.subsub)?p.subsub:"Weak",ranked:!!p.ranked,banned:!!p.banned,reason:p.ban_reason||"",roles:(p.roles||"").split(",").map(x=>x.trim()).filter(Boolean),discord:p.discord_id||"",avatar:p.custom_avatar||p.avatar_url,custom:p.custom_avatar||"",created:Date.parse(p.created_at)||0,pos:(p.board_pos==null?null:+p.board_pos)}));
+  profiles=data.filter(p=>REG[p.region]||p.region===NONE).map(p=>({id:p.user_id,name:p.name,roblox:p.roblox,region:p.region,grade:p.grade,sub:(SUBS.includes(p.sub)||p.sub===NONE)?p.sub:"Low",subsub:(SSUBS.includes(p.subsub)||p.subsub===NONE)?p.subsub:"Weak",ranked:!!p.ranked,banned:!!p.banned,reason:p.ban_reason||"",roles:(p.roles||"").split(",").map(x=>x.trim()).filter(Boolean),discord:p.discord_id||"",avatar:p.custom_avatar||p.avatar_url,custom:p.custom_avatar||"",created:Date.parse(p.created_at)||0,pos:(p.board_pos==null?null:+p.board_pos)}));
   loaded=true;
   if(onboarding&&uid&&profiles.some(p=>p.id===uid))closeModal();
-  renderAuth();render();applyGate();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();rbLoad();hostSync();
+  syncOwnName();renderAuth();render();applyGate();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();rbLoad();hostSync();
   if(reopen&&uid){reopen=false;openOwn()}
 }
 /* ---- site profile pictures (stored in Supabase Storage bucket "avatars", see avatars.sql) ---- */
@@ -1414,21 +1433,25 @@ document.addEventListener("change",async e=>{
 });
 async function refreshAuth(){
   const {data:{session}}=await sb.auth.getSession();
-  uid=session?session.user.id:null;isOwner=false;me=null;myDiscord="";
+  uid=session?session.user.id:null;isOwner=false;hostPending=false;me=null;myDiscord="";
+  if(!session){hostUnlocked=false;hostSkipped=false}
   if(session){
     let fl=null;try{fl=sessionStorage.getItem("jj_link")}catch(e){}
     if(fl&&session.provider_token)grabLinked(session.provider_token);
     const m=session.user.user_metadata||{};
     {const i=(session.user.identities||[]).find(x=>x.provider==="discord");myDiscord=String(m.provider_id||(i&&i.id)||(i&&i.identity_data&&i.identity_data.sub)||"")}
     me={name:(m.custom_claims&&m.custom_claims.global_name)||m.full_name||m.name||"You",avatar:m.avatar_url};
-    const r=await sb.rpc("is_admin");isOwner=r.data===true;
+    const r=await sb.rpc("is_admin"),adm=r.data===true;isOwner=adm&&hostUnlocked;hostPending=adm&&!hostUnlocked&&!hostSkipped;
     if(syncedFor!==uid){syncedFor=uid;sb.rpc("sync_discord").then(()=>loaded&&loadProfiles())}
   }
-  hostSync();renderAuth();render();applyGate();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();
+  syncOwnName();applyHostPw();hostSync();renderAuth();render();applyGate();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();
 }
 document.addEventListener("click",async e=>{
   const t=e.target;
   if(t.closest&&t.closest("a[href]"))return;
+  if(t.closest("#hpwGo"))return tryHostPw();
+  if(t.closest("#hpwSkip")){hostSkipped=true;hostPending=false;applyHostPw();return}
+  if(t.closest("#hpwOut")){await sb.auth.signOut();return}
   const pgb=t.closest("[data-purge]");if(pgb)return purgeLog(pgb.dataset.purge);
   const fa=t.closest("[data-fa]");if(fa)return fightAct(fa.dataset.fa,fa.dataset.id);
   const rx=t.closest("[data-rbx]");if(rx){const f=$("#f_rb");if(f)f.value=rx.dataset.rbx;return}
@@ -1501,7 +1524,8 @@ document.addEventListener("change",e=>{const t=e.target;if(!t)return;
   if(t.id==="hsort")render();
   if(t.id==="evd"){evDays=+t.value||30;render()}
   if(t.id==="imgR"){imgR=t.value;render()}
-  if(t.id==="f_g"){const w=$("#subwrap");if(w)w.hidden=t.value==="SG"}});
+  if(t.id==="f_g"){const w=$("#subwrap");if(w)w.hidden=t.value==="SG"||t.value==="None"}
+  if(t.id==="f_s"){const w=$("#ssubwrap");if(w)w.hidden=t.value==="None"}});
 document.addEventListener("dragstart",e=>{const r=e.target.closest&&e.target.closest("[data-ord]");if(!r)return;dragId=r.dataset.ord;e.dataTransfer.effectAllowed="move";try{e.dataTransfer.setData("text/plain",dragId)}catch(_){}r.classList.add("dragging")});
 document.addEventListener("dragover",e=>{if(dragId&&e.target.closest&&e.target.closest("[data-ord]"))e.preventDefault()});
 document.addEventListener("drop",e=>{const r=e.target.closest&&e.target.closest("[data-ord]");if(!r||!dragId||!orderDraft)return;e.preventDefault();moveOrd(dragId,orderDraft.indexOf(r.dataset.ord));dragId=null;ordMsg="";render()});
