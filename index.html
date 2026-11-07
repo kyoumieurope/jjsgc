@@ -244,17 +244,6 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 .avrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.avrow .av{width:56px;height:56px;border-radius:50%;font-size:30px}
 .avbtn{display:flex;gap:8px;flex-wrap:wrap}.avbtn button{padding:8px 12px}
 .credit{max-width:780px;margin:46px auto 0;text-align:center;font-size:10px;letter-spacing:.3em;line-height:1.9;color:#34343e}
-.staffsec{margin-top:16px}
-.staffsec .sl{margin-bottom:10px}
-.staffgrid{margin-top:0;overflow-y:auto;overscroll-behavior:contain;padding:2px 4px 2px 0;scrollbar-width:thin;scrollbar-color:#444 transparent}
-.staffgrid::-webkit-scrollbar{width:6px}.staffgrid::-webkit-scrollbar-thumb{background:#444;border-radius:6px}
-.staffmore{font:600 9px var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-top:8px}
-.sc{display:flex;flex-direction:column;gap:12px;background:var(--row);border:1px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer;transition:.18s;animation:rise .5s calc(var(--i,0)*45ms) both}
-.sc:hover{border-color:#555;transform:translateY(-2px)}
-.sc-top{display:flex;align-items:center;gap:12px}.sc-top>div:nth-child(2){min-width:0;flex:1}
-.sc-top .rg{width:44px;padding:7px 0;font-size:13px;flex:none}
-.sc-roles{display:flex;gap:6px;flex-wrap:wrap}
-.sc-roles .host{font-size:10px;padding:3px 9px}
 
 /* ---- host panel: overview ---- */
 .ovg{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;align-items:start}
@@ -288,6 +277,20 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 .chkrow b{font-weight:600;text-align:right}.chkrow b.ok{color:#7be0a0}.chkrow b.no{color:#ff8a8a}
 .imgprev{width:100%;border-radius:10px;border:1px solid var(--line);margin-top:12px}
 .trow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}.trow select{width:auto}
+/* ---- access gate (lock / whitelist) ---- */
+#gate{position:fixed;inset:0;z-index:90;background:var(--bg);display:grid;place-content:center;justify-items:center;text-align:center;gap:14px;padding:24px}
+#gate[hidden]{display:none}
+#gate .gl{font:800 22px var(--sans);letter-spacing:.2em}
+#gate h2{margin:6px 0 0}
+#gate p{max-width:420px;margin:0;color:var(--dim);font-size:14px;line-height:1.6;white-space:pre-wrap}
+#gate .acts{justify-content:center}
+body.gated .wrap{visibility:hidden}
+.swrow{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:12px 0;border-top:1px solid var(--line)}
+.swrow:first-of-type{border-top:0}
+.swrow b{font-weight:700}
+.sw{position:relative;width:44px;height:24px;border-radius:99px;background:#2a2a33;border:1px solid var(--line);cursor:pointer;flex:none;padding:0;transition:.18s}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#9a9aa6;transition:.18s}
+.sw.on{background:#e8e8ee}.sw.on::after{left:22px;background:#000}
 .cmd{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.72);display:none;align-items:flex-start;justify-content:center;padding:12vh 18px 0}
 .cmd.open{display:flex}
 .cmdp{width:100%;max-width:520px;background:var(--panel);border:1px solid #444;border-radius:14px;overflow:hidden;box-shadow:0 0 60px rgba(160,140,255,.2)}
@@ -304,7 +307,7 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 .cont.on path{filter:none!important}
 .fog{opacity:.3}
 .cta .solid::after{display:none}
-.pc:hover,.step:hover,.pill:hover,.sc:hover{transform:none}
+.pc:hover,.step:hover,.pill:hover{transform:none}
 .flash{background:none;-webkit-text-fill-color:#d6cffa;color:#d6cffa;animation:none;filter:none}
 .host.hostflash{animation:none;filter:none;border-color:#8f86d6;color:#cfc8ff}
 .ann{border-color:#3a3a48;background:var(--panel)}
@@ -375,6 +378,7 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 </style>
 </head>
 <body>
+<div id="gate" hidden></div>
 <div id="boot"><div class="bootlogo">✦ JJSGC</div><div class="bootbar"><i></i></div></div>
 <div class="fog"></div><div class="stars"></div>
 <div class="wrap">
@@ -434,7 +438,6 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 
 <section class="view" id="v_players" hidden style="margin-top:26px">
   <div><h2>Players</h2><div class="sub">Pick a continent to check its stats.</div></div>
-  <div class="staffsec" id="staffsec" hidden><div class="sl">Hosts &amp; Staff</div><div class="pgrid staffgrid" id="staffgrid"></div><div class="staffmore" id="staffmore" hidden></div></div>
   <div class="atlas" id="atlas">
     <svg viewBox="0 0 556 220" role="img" aria-label="Region map: North America, Europe, Asia">
       <g class="grat"><path d="M0 50H556M0 100H556M0 150H556M0 200H556M100 0V220M200 0V220M300 0V220M400 0V220M500 0V220"/></g>
@@ -479,6 +482,7 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
   </div>
   <div id="hp_stats" hidden><div id="sbox"></div></div>
   <div id="hp_tools" hidden><div id="tbox"></div></div>
+  <div id="hp_access" hidden><div id="abox"></div></div>
   <div id="hp_order" hidden><div id="ordbox"></div></div>
   <div id="hp_fights" hidden><div id="fbox"></div></div>
   <div id="hp_export" hidden>
@@ -713,12 +717,6 @@ function pcard(p,i){
   const on=onB(p);
   return `<div class="lrow np" data-id="${esc(p.id)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${on?esc(gl(p))+" · #"+p.rank:p.banned?"Banned":"Not registered in"} · ${rbA(p)}</div></div></div>${rbPic(p)}<span class="lrg">${p.region}</span></div>`;
 }
-function scard(p,i){
-  const rl=(isHost(p)?'<span class="host">Host</span>':"")+p.roles.filter(r=>!/^hosts?$/i.test(r)).map(badge).join("");
-  return `<div class="sc" data-id="${esc(p.id)}" style="--i:${Math.min(i,14)}">
-  <div class="sc-top">${av(p)}<div><div class="nm">${esc(p.name)}</div><div class="pt">${rbA(p)}</div></div><div class="rg ${p.region}">${p.region}</div></div>
-  ${rl?`<div class="sc-roles">${rl}</div>`:""}</div>`;
-}
 function renderPlayers(board){
   const t=$("#pq").value.trim().toLowerCase();
   const of=r=>profiles.filter(p=>r==="ALL"||p.region===r),bo=r=>board.filter(p=>r==="ALL"||p.region===r);
@@ -732,30 +730,10 @@ function renderPlayers(board){
   <div class="tile"><span>Top player</span><b class="sm">${top?esc(top.name):"—"}</b><em>${top?esc(gl(top)):"Nobody ranked yet"}</em></div>
   </div>`;
   const pl=L.filter(p=>!t||(p.name+" "+p.roblox).toLowerCase().includes(t)).sort((a,b)=>(a.banned-b.banned)||(onB(b)-onB(a))||score(b)-score(a));
-  renderStaff();
   $("#plabel").textContent=`${pl.length} player${pl.length===1?"":"s"}${pf==="ALL"?"":" · "+REG[pf]}`;
   $("#pgrid").innerHTML=pl.length?pl.map(pcard).join(""):`<div class="empty" style="grid-column:1/-1">${t?"No players found.":"Nobody has registered in this region yet."}</div>`;
 }
 
-/* ---- staff section on Players ---- */
-function renderStaff(){
-  const st=profiles.filter(p=>!p.banned&&(isHost(p)||p.roles.length)).sort((a,b)=>(isHost(b)-isHost(a))||(b.roles.length-a.roles.length)||score(b)-score(a));
-  $("#staffsec").hidden=!st.length;
-  $("#staffgrid").innerHTML=st.map((p,i)=>scard(p,i)).join("");
-  fitStaff(st.length);
-}
-/* show only the first 3 staff cards; the rest scroll inside the box */
-function fitStaff(n){
-  const g=$("#staffgrid"),m=$("#staffmore");if(!g)return;
-  g.style.maxHeight="";g.scrollTop=0;
-  const cs=[...g.children];
-  if(n>3&&cs.length>3&&g.offsetParent){
-    const top=cs[0].offsetTop,bot=Math.max(...cs.slice(0,3).map(c=>c.offsetTop+c.offsetHeight));
-    g.style.maxHeight=(bot-top+6)+"px";
-    m.textContent="+"+(n-3)+" more · scroll to see them";m.hidden=false;
-  }else m.hidden=true;
-}
-window.addEventListener("resize",()=>{if(!$("#staffsec").hidden)fitStaff([...$("#staffgrid").children].length)});
 
 /* ---- host panel: tabs, activity log, placements, stats, export ---- */
 let hostTab="over",audit=[],auditErr="";
@@ -776,7 +754,7 @@ const hSort=(a,b)=>{const m=$("#hsort").value;
   if(m==="name")return String(a.name).localeCompare(String(b.name));
   return b.created-a.created};
 const fmt=t=>new Date(t).toLocaleString([],{dateStyle:"medium",timeStyle:"short"});
-const HT=[["over","Overview",()=>true],["players","Players",()=>true],["order","Order",()=>can("reorder")],["tools","Tools",()=>true],["roles","Roles",()=>isOwner],["logs","Activity log",()=>can("logs")],["place","Placements",()=>can("placements")],["stats","Stats",()=>can("stats")],["export","Export",()=>can("export")],["fights","Fight notes",()=>can("fights")]];
+const HT=[["over","Overview",()=>true],["players","Players",()=>true],["order","Order",()=>can("reorder")],["tools","Tools",()=>true],["access","Access",()=>isOwner],["roles","Roles",()=>isOwner],["logs","Activity log",()=>can("logs")],["place","Placements",()=>can("placements")],["stats","Stats",()=>can("stats")],["export","Export",()=>can("export")],["fights","Fight notes",()=>can("fights")]];
 function logEvent(action,kind,tid,tname,detail){
   if(!sb||!uid)return;
   sb.from("audit_log").insert({actor:uid,actor_name:(me&&me.name)||"?",action:String(action).slice(0,60),kind,target:tid||null,target_name:String(tname||"").slice(0,60),detail:String(detail||"").slice(0,300)})
@@ -793,13 +771,14 @@ function renderHost(board){
   if(!tabs.some(t=>t[0]===hostTab))hostTab="over";
   $("#hh").textContent="Panel";
   $("#htabs").innerHTML=tabs.map(t=>`<button class="tab ${t[0]===hostTab?"on":""}" data-ht="${t[0]}">${t[1]}</button>`).join("");
-  ["over","players","order","tools","roles","logs","place","stats","export","fights"].forEach(k=>{$("#hp_"+k).hidden=k!==hostTab});
+  ["over","players","order","tools","access","roles","logs","place","stats","export","fights"].forEach(k=>{$("#hp_"+k).hidden=k!==hostTab});
   if(hostTab==="over")renderOverview(board);
   if(hostTab==="roles")renderRoles();
   if(hostTab==="logs")renderAuditList("#llist","#lcount",$("#lq").value,false,$("#lf").value);
   if(hostTab==="place")renderAuditList("#clist","#ccount",$("#cq").value,true);
   if(hostTab==="stats")renderStats(board);
   if(hostTab==="tools")renderTools(board);
+  if(hostTab==="access")renderAccess();
   if(hostTab==="order")renderOrder(board);
   if(hostTab==="export")$("#exL").disabled=!can("logs");
   if(hostTab==="fights")renderFights();
@@ -1178,13 +1157,66 @@ function exportLog(){
   dl("jjsgc-activity-log.csv",csv([["Time","Actor","Action","Target","Detail","Type"]].concat(audit.map(a=>[a.created_at,a.actor_name,a.action,a.target_name,a.detail,a.kind]))));
 }
 
+
+/* ---- site access: lock + whitelist (settings live in site_content: site_lock, site_whitelist) ---- */
+let lockOn=false,lockMsg="",wlOn=false,wlList=[],myDiscord="",accErr="",accMsg="",accDraft=null;
+const DID=/\d{15,25}/;
+const onWl=()=>!!uid&&[myDiscord,(profiles.find(x=>x.id===uid)||{}).discord].filter(Boolean).map(String).some(k=>wlList.includes(k));
+/* hosts always get in; staff get in when only the whitelist is on */
+function gateMode(){
+  if(!sb||isOwner)return"";
+  if(lockOn)return"lock";
+  if(wlOn&&!(staff()||onWl()))return"wl";
+  return"";
+}
+function applyGate(){
+  const g=$("#gate"),m=gateMode();
+  if(!g)return;
+  document.body.classList.toggle("gated",!!m);
+  if(!m){g.hidden=true;g.innerHTML="";return}
+  const title=m==="lock"?"Site locked":"Whitelist only";
+  const msg=m==="lock"?(lockMsg||"The site is locked for now. Check back soon."):(uid?"Your Discord account isn\u2019t on the whitelist. Ask a host to add you.":"This site is currently limited to whitelisted players. Sign in with Discord to continue.");
+  g.hidden=false;
+  g.innerHTML=`<div class="gl">\u2726 JJSGC</div><h2>${title}</h2><p>${esc(msg)}</p><div class="acts">${uid?`<button class="ghost" id="logout">Sign out</button>`:`<button class="solid" id="login">Continue with Discord</button>`}</div>`;
+}
+async function saveSetting(key,obj){
+  if(!sb||!isOwner){accErr="Only hosts can change this.";renderAccess();return false}
+  const {error}=await sb.from("site_content").upsert({key,body:JSON.stringify(obj),updated_at:new Date().toISOString()});
+  if(error){accErr="Couldn\u2019t save: "+error.message;renderAccess();return false}
+  accErr="";return true;
+}
+function renderAccess(){
+  const b=$("#abox");if(!b)return;
+  if(!isOwner){b.innerHTML=`<div class="rbox"><div class="sub">Only hosts can change site access.</div></div>`;return}
+  const nameOf=id=>{const p=profiles.find(x=>String(x.discord)===id);return p?p.name:""};
+  const txt=accDraft!==null?accDraft:wlList.map(id=>id+(nameOf(id)?"  # "+nameOf(id):"")).join("\n");
+  const have=new Set(wlList);
+  const opts=profiles.filter(p=>p.discord&&!have.has(String(p.discord))).sort((a,c)=>String(a.name).localeCompare(String(c.name))).map(p=>`<option value="${esc(p.discord)}">${esc(p.name)} (@${esc(p.roblox)})</option>`).join("");
+  b.innerHTML=`<div class="tgrid">
+  <div class="col"><div class="rbox"><div class="sl">Site lock</div>
+    <div class="swrow"><div><b>Lock the site</b><div class="sub" style="margin:2px 0 0">Everyone except hosts sees a locked screen. Takes effect live.</div></div><button class="sw ${lockOn?"on":""}" id="acLock" role="switch" aria-checked="${lockOn}" aria-label="Lock the site"></button></div>
+    <div class="sub" style="margin-top:6px">Message shown while locked</div>
+    <textarea id="acMsg" maxlength="200" placeholder="e.g. Back soon \u2014 updating the ladder." style="width:100%;min-height:64px;margin-top:6px;background:#000;border:1px solid var(--line);color:var(--fg);padding:11px 14px;font:400 14px var(--sans);border-radius:8px;resize:vertical;outline:none">${esc(lockMsg)}</textarea>
+    <div class="acts" style="margin-top:10px"><button class="solid" id="acMsgSave">Save message</button></div>
+  </div></div>
+  <div class="col"><div class="rbox"><div class="sl">Whitelist</div>
+    <div class="swrow"><div><b>Whitelist only</b><div class="sub" style="margin:2px 0 0">When on, only logged-in whitelisted players (plus hosts and staff) can see the site.</div></div><button class="sw ${wlOn?"on":""}" id="acWl" role="switch" aria-checked="${wlOn}" aria-label="Enable whitelist"></button></div>
+    <div class="trow" style="margin-top:8px"><select id="acPick" style="max-width:260px"><option value="">Add a registered player\u2026</option>${opts}</select><button class="ghost" id="acAdd">Add</button></div>
+    <div class="sub" style="margin-top:10px">Discord IDs, one per line. Anything after # is just a note.</div>
+    <textarea id="acList" placeholder="123456789012345678  # name" style="width:100%;min-height:150px;margin-top:6px;background:#000;border:1px solid var(--line);color:var(--fg);padding:11px 14px;font:400 13px ui-monospace,Menlo,Consolas,monospace;border-radius:8px;resize:vertical;outline:none">${esc(txt)}</textarea>
+    <div class="acts" style="margin-top:10px"><button class="solid" id="acSave">Save whitelist</button><span class="sub" style="margin:0">${wlList.length} whitelisted</span></div>
+  </div></div></div>
+  <div class="err">${esc(accErr)}</div>${accMsg?`<div class="sub">${esc(accMsg)}</div>`:""}`;
+}
+function accParse(){return[...new Set(($("#acList").value||"").split("\n").map(l=>l.split("#")[0]).map(l=>(l.match(DID)||[""])[0]).filter(Boolean))]}
+
 /* ---- change log (hosts can edit) ---- */
 let logText="",logAt=null,logErr="",editingLog=false;
 async function loadLog(){
   if(!sb)return;
-  const {data,error}=await sb.from("site_content").select("key,body,updated_at").in("key",["changelog","announcement"]);
-  if(error)logErr=error.message;else{logErr="";(data||[]).forEach(r=>{if(r.key==="changelog"){logText=r.body||"";logAt=r.updated_at}else if(r.key==="announcement"){annText=r.body||"";annAt=r.updated_at}})}
-  renderLog();
+  const {data,error}=await sb.from("site_content").select("key,body,updated_at").in("key",["changelog","announcement","site_lock","site_whitelist"]);
+  if(error)logErr=error.message;else{logErr="";(data||[]).forEach(r=>{if(r.key==="changelog"){logText=r.body||"";logAt=r.updated_at}else if(r.key==="announcement"){annText=r.body||"";annAt=r.updated_at}else if(r.key==="site_lock"){try{const o=JSON.parse(r.body||"{}");lockOn=!!o.on;lockMsg=String(o.msg||"")}catch(e){lockOn=false}}else if(r.key==="site_whitelist"){try{const o=JSON.parse(r.body||"{}");wlOn=!!o.on;wlList=(Array.isArray(o.list)?o.list:[]).map(String)}catch(e){wlOn=false}}})}
+  renderLog();applyGate();if(pg==="host"&&hostTab==="access"&&accDraft===null)renderAccess();
 }
 function renderLog(){
   const an=$("#ann");an.hidden=!annText.trim();an.textContent=annText;
@@ -1251,6 +1283,7 @@ function onboard(){
   <div class="acts"><button class="solid" id="save">Continue</button>${isOwner?`<button class="ghost" id="skip">Skip for now</button>`:""}</div>`);
 }
 async function maybeOnboard(){
+  if(gateMode())return;
   if(!sb||!uid||!loaded||lock||skipped||onbBusy||profiles.some(p=>p.id===uid)||$("#modal").classList.contains("open"))return;
   onbBusy=true;const who=uid;
   try{
@@ -1322,7 +1355,7 @@ async function loadProfiles(){
   profiles=data.filter(p=>REG[p.region]).map(p=>({id:p.user_id,name:p.name,roblox:p.roblox,region:p.region,grade:p.grade,sub:SUBS.includes(p.sub)?p.sub:"Low",subsub:SSUBS.includes(p.subsub)?p.subsub:"Weak",ranked:!!p.ranked,banned:!!p.banned,reason:p.ban_reason||"",roles:(p.roles||"").split(",").map(x=>x.trim()).filter(Boolean),discord:p.discord_id||"",avatar:p.custom_avatar||p.avatar_url,custom:p.custom_avatar||"",created:Date.parse(p.created_at)||0,pos:(p.board_pos==null?null:+p.board_pos)}));
   loaded=true;
   if(onboarding&&uid&&profiles.some(p=>p.id===uid))closeModal();
-  renderAuth();render();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();rbLoad();hostSync();
+  renderAuth();render();applyGate();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();rbLoad();hostSync();
   if(reopen&&uid){reopen=false;openOwn()}
 }
 /* ---- site profile pictures (stored in Supabase Storage bucket "avatars", see avatars.sql) ---- */
@@ -1381,16 +1414,17 @@ document.addEventListener("change",async e=>{
 });
 async function refreshAuth(){
   const {data:{session}}=await sb.auth.getSession();
-  uid=session?session.user.id:null;isOwner=false;me=null;
+  uid=session?session.user.id:null;isOwner=false;me=null;myDiscord="";
   if(session){
     let fl=null;try{fl=sessionStorage.getItem("jj_link")}catch(e){}
     if(fl&&session.provider_token)grabLinked(session.provider_token);
     const m=session.user.user_metadata||{};
+    {const i=(session.user.identities||[]).find(x=>x.provider==="discord");myDiscord=String(m.provider_id||(i&&i.id)||(i&&i.identity_data&&i.identity_data.sub)||"")}
     me={name:(m.custom_claims&&m.custom_claims.global_name)||m.full_name||m.name||"You",avatar:m.avatar_url};
     const r=await sb.rpc("is_admin");isOwner=r.data===true;
     if(syncedFor!==uid){syncedFor=uid;sb.rpc("sync_discord").then(()=>loaded&&loadProfiles())}
   }
-  hostSync();renderAuth();render();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();
+  hostSync();renderAuth();render();applyGate();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();
 }
 document.addEventListener("click",async e=>{
   const t=e.target;
@@ -1418,6 +1452,11 @@ document.addEventListener("click",async e=>{
   const cp=t.closest("[data-copy]");if(cp){const v=cp.dataset.copy,o=cp.textContent;const ok=()=>{cp.textContent="✓";setTimeout(()=>cp.textContent=o,1200)};(navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(ok).catch(()=>{const ta=document.createElement("textarea");ta.value=v;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");ok()}catch(e){}ta.remove()});return}
   if(t.closest("#imgGo")){if(!can("export"))return;boardImg=await makeBoardImage(imgR);logEvent("generated leaderboard image","general",null,"",imgR);return render()}
   if(t.closest("#imgDl")&&boardImg){const a=document.createElement("a");a.href=boardImg;a.download="jjsgc-leaderboard-"+imgR.toLowerCase()+".png";document.body.appendChild(a);a.click();a.remove();return}
+  if(t.closest("#acLock")){if(!await saveSetting("site_lock",{on:!lockOn,msg:lockMsg}))return;lockOn=!lockOn;logEvent(lockOn?"site locked":"site unlocked","general",null,"","");accMsg="";renderAccess();applyGate();return}
+  if(t.closest("#acMsgSave")){const m=($("#acMsg").value||"").slice(0,200).trim();if(!await saveSetting("site_lock",{on:lockOn,msg:m}))return;lockMsg=m;accMsg="Lock message saved.";renderAccess();return}
+  if(t.closest("#acWl")){if(!await saveSetting("site_whitelist",{on:!wlOn,list:wlList}))return;wlOn=!wlOn;logEvent(wlOn?"whitelist enabled":"whitelist disabled","general",null,"",wlList.length+" players");accMsg="";renderAccess();applyGate();return}
+  if(t.closest("#acAdd")){const v=$("#acPick").value;if(!v)return;const l=accParse();if(!l.includes(v))l.push(v);accDraft=l.map(id=>{const p=profiles.find(x=>String(x.discord)===id);return id+(p?"  # "+p.name:"")}).join("\n");accMsg="Not saved yet \u2014 press Save whitelist.";return renderAccess()}
+  if(t.closest("#acSave")){const l=accParse();if(!await saveSetting("site_whitelist",{on:wlOn,list:l}))return;wlList=l;accDraft=null;accMsg="Whitelist saved.";logEvent("whitelist edited","general",null,"",l.length+" players");renderAccess();applyGate();return}
   if(t.closest("#annSave"))return saveAnn(false);
   if(t.closest("#annClear"))return saveAnn(true);
   if(t.closest("#cmdBtn"))return openCmd();
@@ -1484,7 +1523,7 @@ $("#cmd").addEventListener("click",e=>{const ci=e.target.closest("[data-ci]");if
     if(!CFG.url||CFG.url.includes("YOUR-")){reason="Cloud not set up yet. Add your Supabase URL and key to config.js (see README).";renderAuth();render();return}
     sb=supabase.createClient(CFG.url,CFG.key);
     sb.auth.onAuthStateChange(()=>{setTimeout(refreshAuth,0)});
-    await loadProfiles();await refreshAuth();loadLog();
+    await loadProfiles();await refreshAuth();await loadLog();
     sb.channel("site_content").on("postgres_changes",{event:"*",schema:"public",table:"site_content"},loadLog).subscribe();
     sb.channel("roles").on("postgres_changes",{event:"*",schema:"public",table:"roles"},loadProfiles).subscribe();
     sb.channel("profiles").on("postgres_changes",{event:"*",schema:"public",table:"profiles"},loadProfiles).subscribe();
