@@ -385,7 +385,7 @@ body.gated .wrap{visibility:hidden}
 </head>
 <body>
 <div id="gate" hidden></div>
-<div id="hostpw" hidden><div class="gl">\u2726 JJSGC</div><h2>Host access</h2><p>Enter the host password to use host privileges.</p><input id="hpw" type="password" placeholder="Password" autocomplete="off" style="max-width:300px"><div class="err" id="hpwerr" style="margin:0"></div><div class="acts"><button class="solid" id="hpwGo">Unlock</button><button class="ghost" id="hpwSkip">Continue as player</button><button class="ghost" id="hpwOut">Sign out</button></div></div>
+<div id="hostpw" hidden><div class="gl">\u2726 JJSGC</div><h2>Host access</h2><p>Enter the host password to use host privileges.</p><input id="hpw" type="password" placeholder="Password" autocomplete="off" style="max-width:300px"><div class="err" id="hpwerr" style="margin:0"></div><div class="acts"><button class="solid" id="hpwGo">Unlock</button><button class="ghost" id="hpwOut">Sign out</button></div></div>
 <div id="boot"><div class="bootlogo">✦ JJSGC</div><div class="bootbar"><i></i></div></div>
 <div class="fog"></div><div class="stars"></div>
 <div class="wrap">
@@ -1450,7 +1450,6 @@ document.addEventListener("click",async e=>{
   const t=e.target;
   if(t.closest&&t.closest("a[href]"))return;
   if(t.closest("#hpwGo"))return tryHostPw();
-  if(t.closest("#hpwSkip")){hostSkipped=true;hostPending=false;applyHostPw();return}
   if(t.closest("#hpwOut")){await sb.auth.signOut();return}
   const pgb=t.closest("[data-purge]");if(pgb)return purgeLog(pgb.dataset.purge);
   const fa=t.closest("[data-fa]");if(fa)return fightAct(fa.dataset.fa,fa.dataset.id);
