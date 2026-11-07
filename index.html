@@ -385,7 +385,7 @@ body.gated .wrap{visibility:hidden}
 </head>
 <body>
 <div id="gate" hidden></div>
-<div id="hostpw" hidden><div class="gl">\u2726 JJSGC</div><h2>Host access</h2><p>Enter the host password to use host privileges.</p><input id="hpw" type="password" placeholder="Password" autocomplete="off" style="max-width:300px"><div class="err" id="hpwerr" style="margin:0"></div><div class="acts"><button class="solid" id="hpwGo">Unlock</button><button class="ghost" id="hpwOut">Sign out</button></div></div>
+<div id="hostpw" hidden><div class="gl">✦ JJSGC</div><h2>Host access</h2><p>Enter the host password to use host privileges.</p><input id="hpw" type="password" placeholder="Password" autocomplete="off" style="max-width:300px"><div class="err" id="hpwerr" style="margin:0"></div><div class="acts"><button class="solid" id="hpwGo">Unlock</button><button class="ghost" id="hpwOut">Sign out</button></div></div>
 <div id="boot"><div class="bootlogo">✦ JJSGC</div><div class="bootbar"><i></i></div></div>
 <div class="fog"></div><div class="stars"></div>
 <div class="wrap">
@@ -516,7 +516,7 @@ const PERMS={roblox:"Edit Roblox names",ban:"Ban / unban players",grades:"Edit g
 const STAFFP=["roblox","ban","grades","reorder","logs","placements","stats","export","fights"];
 /* host password: asked on every visit (and every sign-in) before host privileges switch on */
 const HPW_HASH="f9412f69b27514929e3a0b6526c70664e1faaaff8f28c372a527840237c60878";
-let hostUnlocked=false,hostPending=false,hostSkipped=false,hpwFails=0,hpwUntil=0;
+let hostUnlocked=false,hostPending=false,hpwFails=0,hpwUntil=0;
 const sha256=async t=>[...new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t)))].map(x=>x.toString(16).padStart(2,"0")).join("");
 function applyHostPw(){const el=document.getElementById("hostpw");if(!el)return;const was=el.hidden;el.hidden=!hostPending;if(hostPending&&was){const i=document.getElementById("hpw");if(i)setTimeout(()=>i.focus(),50)}}
 async function tryHostPw(){
@@ -1434,14 +1434,14 @@ document.addEventListener("change",async e=>{
 async function refreshAuth(){
   const {data:{session}}=await sb.auth.getSession();
   uid=session?session.user.id:null;isOwner=false;hostPending=false;me=null;myDiscord="";
-  if(!session){hostUnlocked=false;hostSkipped=false}
+  if(!session){hostUnlocked=false}
   if(session){
     let fl=null;try{fl=sessionStorage.getItem("jj_link")}catch(e){}
     if(fl&&session.provider_token)grabLinked(session.provider_token);
     const m=session.user.user_metadata||{};
     {const i=(session.user.identities||[]).find(x=>x.provider==="discord");myDiscord=String(m.provider_id||(i&&i.id)||(i&&i.identity_data&&i.identity_data.sub)||"")}
     me={name:(m.custom_claims&&m.custom_claims.global_name)||m.full_name||m.name||"You",avatar:m.avatar_url};
-    const r=await sb.rpc("is_admin"),adm=r.data===true;isOwner=adm&&hostUnlocked;hostPending=adm&&!hostUnlocked&&!hostSkipped;
+    const r=await sb.rpc("is_admin"),adm=r.data===true;isOwner=adm&&hostUnlocked;hostPending=adm&&!hostUnlocked;
     if(syncedFor!==uid){syncedFor=uid;sb.rpc("sync_discord").then(()=>loaded&&loadProfiles())}
   }
   syncOwnName();applyHostPw();hostSync();renderAuth();render();applyGate();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();
